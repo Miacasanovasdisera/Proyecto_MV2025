@@ -1,11 +1,11 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <limits.h>
-
+#include "Processor/processor.h"
+#include "Memory/mem.h"
+#include "InstrucSet/instruct.h"
+#include "Utils/disassembler.h"
 
 int main() {
 
-    
+
     return 0;
 }
