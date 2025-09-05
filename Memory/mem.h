@@ -14,3 +14,5 @@ typedef struct {
     segment_desc_t segments[8]; 
 } mem_t;
 
+void mem_init(mem_t *);
+void mem_load(mem_t *, char *, cpu_t *);
