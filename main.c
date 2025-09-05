@@ -5,7 +5,10 @@
 #include "Utils/disassembler.h"
 
 int main() {
+    cpu_t cpu;
+    mem_t mem;
 
+    
 
     return 0;
 }
