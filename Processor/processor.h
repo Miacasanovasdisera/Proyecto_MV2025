@@ -34,3 +34,5 @@ typedef struct {
     uint32_t reserved[15];
 
 } cpu_t;
+
+void cpu_init(cpu_t *);
