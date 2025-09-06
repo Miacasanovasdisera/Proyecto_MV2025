@@ -36,3 +36,11 @@ typedef struct {
 } cpu_t;
 
 void cpu_init(cpu_t *);
+// Funcion para coordinar el ciclo de leer de memoria, decodificar, actualizar IP y ejecutar(esta funcion iria en instruc.c)
+int cpu_step(cpu_t *,mem_t *);
+// Funcion para leer la instruccion de memoria y guardarla en un vector temporal para trabajar
+int cpu_fetch();
+// Funcion para trabajar con el vector de cpu_fetch; extaer OPC y decodificar los 2 operandos
+int cpu_decode();
+// Funcion para actualizar el IP
+void cpu_update_IP();
