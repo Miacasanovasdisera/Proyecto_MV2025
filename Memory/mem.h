@@ -15,4 +15,4 @@ typedef struct {
 } mem_t;
 
 void mem_init(mem_t *);
-void mem_load(mem_t *, char *, cpu_t *);
+int mem_load(mem_t *, char *, cpu_t *); 

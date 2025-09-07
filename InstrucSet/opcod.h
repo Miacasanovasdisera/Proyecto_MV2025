@@ -1,3 +1,5 @@
+//  Definiciones de los códigos de operación
+
 #define OP_SYS 0x00
 #define OP_JMP 0x1
 #define OP_JZ 0x02

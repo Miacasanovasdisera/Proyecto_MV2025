@@ -2,36 +2,61 @@
 #include "../Processor/processor.h"
 #include "../Memory/mem.h"
 
-void mem_load(mem_t *mem, char *archivo, cpu_t *cpu)
-{
+void mem_init(mem_t *mem) {
+    // Limpia toda la RAM (16 KiB)
+    memset(mem->data, 0, MEM_SIZE);
+
+    // Inicializa tabla de segmentos (las 8 entradas)
+    for (int i = 0; i < 8; i++) {
+        mem->segments[i].base = 0;
+        mem->segments[i].size = 0;
+    }
+}
+
+int mem_load(mem_t *mem, char *archivo, cpu_t *cpu) {
     FILE *arch = fopen(*archivo, "rb");
     char id[6];
-    uint8_t version, size_byte[2];
+    uint8_t version;
     uint16_t code_size;
 
-    if (fread(id, 1, 5, arch) != 5)
-    {
-        fprintf(stderr, "Error: No se pudo leer la cabecera del archivo.\n");
-        fclose(arch);
-        return 0;
-    }
+    if (arch) {
 
-    if (strcmp(id, "VMX25") != 0){
+        if (fread(id, 1, 5, arch) != 5) 
+            return -1;
         
+        if (strcmp(id, "VMX25") != 0)   
+            return -1;
+        
+        if (fread(&version,1,1,arch) != 1) 
+            return -1;  
+
+        if (version != 1) 
+            return -1;
+
+        if (fread(code_size,1,2,arch) != 2)
+            return -1;
+
+        if (code_size > MEM_SIZE)
+            return -1;
+        
+        if (fread(mem->data,1,code_size,arch) != code_size)
+            return -1;
+        
+        fclose(arch);
+
+        // Segmento de CODIGO
+        mem->segments[0].base = 0;
+        mem->segments[0].size = code_size;
+
+        // Segmento de DATOS
+        mem->segments[1].base = code_size;
+        mem->segments[1].size = MEM_SIZE - code_size;
+
+        cpu->CS = 0x00000000;
+        cpu->DS = 0x00010000;
+        cpu->IP = cpu->CS;
+
         return 0;
     }
-
-    if (fread(&version,1,1,arch) != 1) {
-        return 0;
-    }
-
-    
-
-        if (arch == NULL)
-            printf("no se pudo abrir el archivo");
-        else
-        {
-            for (size_t i = 0; i < code_size; i++)
-                mem->data[i] = fgetc(arch); // Lee un byte del archivo y lo guarda en la RAM
-        }
+    return -1;
 }
