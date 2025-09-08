@@ -1,4 +1,5 @@
 #include "processor.h"
+#include "../Memory/mem.h"
 
 void cpu_init(cpu_t *cpu){
     

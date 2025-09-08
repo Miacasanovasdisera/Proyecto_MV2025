@@ -4,15 +4,15 @@ TARGET = vmx
 # Directorios
 SRC_DIR = .
 PROC_DIR = Processor
-MEM_DIR = mem
+MEM_DIR = Memory
 IS_DIR = InstrucSet
-UTILS_DIR = utils
+UTILS_DIR = Utils
 
 # Archivos fuente
 SRCS = $(SRC_DIR)/main.c \
-       $(PROC_DIR)/Processor.c \
+       $(PROC_DIR)/processor.c \
        $(MEM_DIR)/mem.c \
-       $(IS_DIR)/instruc.c \
+       $(IS_DIR)/instruct.c \
        $(IS_DIR)/alu.c \
        $(IS_DIR)/syscalls.c \
        $(UTILS_DIR)/disassembler.c \
@@ -22,7 +22,7 @@ SRCS = $(SRC_DIR)/main.c \
 OBJS = $(SRCS:.c=.o)
 
 # Flags de compilación (puedes agregar -g para debuggear)
-CFLAGS = -Wall -Wextra -std=c99 -g
+CFLAGS = -Wall -Wextra -std=c99 -g -IInstrucSet -IProcessor -IMemory -IUtils
 
 # Regla principal
 all: $(TARGET)
