@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include "common.h"
 #include "Processor/processor.h"
 #include "Memory/mem.h"
 #include "InstrucSet/instruct.h"
@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 {
     cpu_t cpu;
     mem_t mem;
-    int result;
+    int result,disassembler;
 
     cpu_init(&cpu);
     mem_init(&mem);
@@ -18,6 +18,15 @@ int main(int argc, char *argv[])
         return 0;
     }
     
+    printf("Se cargo la memoria RAM.");
+
+    /*
+    
+    if (disassembler) {
+        
+        return 0;
+    }
+
     // Mientras no se ejecute STOP
     while (cpu.IP != 0xFFFFFFFF) { 
         
@@ -29,6 +38,7 @@ int main(int argc, char *argv[])
             return 0;
         }
     }
-
+    */
+   
     return 0;
 }

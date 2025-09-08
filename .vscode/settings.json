@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "common.h": "c",
-        "instruct.h": "c"
+        "instruct.h": "c",
+        "mem.h": "c",
+        "processor.h": "c"
     }
 }

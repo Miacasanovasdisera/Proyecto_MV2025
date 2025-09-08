@@ -1,4 +1,5 @@
 #include "../common.h"
+#include "../Memory/mem.h"
 
 // Estructura del estado del procesador
 typedef struct {

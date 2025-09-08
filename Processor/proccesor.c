@@ -6,3 +6,6 @@ void cpu_init(cpu_t *cpu){
     memset(cpu,0,sizeof(cpu_t));
     
 }
+void cpu_update_IP(cpu_t *cpu){
+    cpu->IP =  cpu->OP1|cpu->OP2|0x01;
+}
