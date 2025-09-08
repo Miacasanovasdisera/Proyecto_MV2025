@@ -1,3 +1,6 @@
+#ifndef REGISTERS_H
+#define REGISTERS_H
+
 #define R_LAR 0
 #define R_MAR 1
 #define R_MBR 2
@@ -15,3 +18,5 @@
 #define R_CC 17
 #define R_CS 26
 #define R_DS 27
+
+#endif

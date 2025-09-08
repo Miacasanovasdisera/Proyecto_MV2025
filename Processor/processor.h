@@ -1,3 +1,6 @@
+#ifndef PROCESSOR_H
+#define PROCESSOR_H
+
 #include "../common.h"
 #include "../Memory/mem.h"
 
@@ -45,3 +48,5 @@ int cpu_fetch();
 int cpu_decode();
 // Funcion para actualizar el IP
 void cpu_update_IP();
+
+#endif

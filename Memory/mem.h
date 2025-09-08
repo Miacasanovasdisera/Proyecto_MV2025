@@ -1,4 +1,8 @@
+#ifndef MEMORY_H
+#define MEMORY_H
+
 #include "../common.h"
+#include "../Processor/processor.h"
 
 #define MEM_SIZE 16384
 
@@ -16,3 +20,5 @@ typedef struct {
 
 void mem_init(mem_t *);
 int mem_load(mem_t *, char *, cpu_t *); 
+
+#endif

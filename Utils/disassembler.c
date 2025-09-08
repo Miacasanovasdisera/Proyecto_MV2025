@@ -1,6 +1,4 @@
 #include "disassembler.h"
-#include "../Processor/processor.h"
-
 
 void decoder(uint8_t byte1, uint8_t byte2, cpu_t *cpu) {
     uint8_t alto = byte1 >> 2;   // primeros 2 bits
