@@ -2,7 +2,7 @@
 #define MEMORY_H
 
 #include "../common.h"
-#include "../Processor/processor.h"
+typedef struct cpu_t cpu_t;
 
 #define MEM_SIZE 16384
 

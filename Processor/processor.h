@@ -4,7 +4,7 @@
 #include "../common.h"
 #include "../Memory/mem.h"
 // Estructura del estado del procesador
-typedef struct {
+typedef struct cpu_t{
     
     // Registros de acceso a memoria
     uint32_t LAR;

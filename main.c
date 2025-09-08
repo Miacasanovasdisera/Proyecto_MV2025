@@ -8,13 +8,14 @@ int main(int argc, char *argv[])
 {
     cpu_t cpu;
     mem_t mem;
-    int result,disassembler;
+    int result,disassembler,carga;
 
     cpu_init(&cpu);
     mem_init(&mem);
 
-    if (mem_load(&mem,argv[1],&cpu) != 0) {
-        fprintf(stderr, "Error: Fallo al cargar el programa '%s'.\n", argv[1]);
+    carga = mem_load(&mem,argv[1],&cpu);
+    if (carga != 0) {
+        fprintf(stderr, "Error %d: Fallo al cargar el programa '%s'.\n", carga,argv[1]);
         return 0;
     }
     

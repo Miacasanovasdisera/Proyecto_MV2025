@@ -30,7 +30,7 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
-# Regla para compilar archivos .c a .o
+# Compilar archivos .c a .o
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
