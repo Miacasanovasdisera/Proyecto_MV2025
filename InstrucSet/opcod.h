@@ -1,3 +1,6 @@
+#ifndef OPCOD_H
+#define OPCOD_H
+
 //  Definiciones de los códigos de operación
 
 #define OP_SYS 0x00
@@ -26,3 +29,5 @@
 #define OP_LDH 0x1E
 #define OP_RND 0x1F
 #define OP_STOP 0x0F
+
+#endif

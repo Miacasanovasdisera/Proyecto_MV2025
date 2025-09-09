@@ -1,4 +1,8 @@
+#ifndef MEMORY_H
+#define MEMORY_H
+
 #include "../common.h"
+typedef struct cpu_t cpu_t;
 
 #define MEM_SIZE 16384
 
@@ -15,4 +19,6 @@ typedef struct {
 } mem_t;
 
 void mem_init(mem_t *);
-int mem_load(mem_t *, char *, cpu_t *); 
+int mem_load(mem_t *, char *,cpu_t *); 
+
+#endif
