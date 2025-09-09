@@ -48,4 +48,6 @@ int cpu_decode();
 // Funcion para actualizar el IP
 void cpu_update_IP();
 
+int32_t cpu_logic_to_physic(mem_t ,int32_t);
+
 #endif

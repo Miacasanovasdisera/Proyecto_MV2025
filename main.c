@@ -15,31 +15,28 @@ int main(int argc, char *argv[])
 
     carga = mem_load(&mem,argv[1],&cpu);
     if (carga != 0) {
-        fprintf(stderr, "Error %d: Fallo al cargar el programa '%s'.\n", carga,argv[1]);
+        printf("Error %d: Fallo al cargar el programa '%s'.\n", carga,argv[1]);
         return 0;
     }
-    
-    printf("Se cargo la memoria RAM.");
-
-    /*
     
     if (disassembler) {
         
         return 0;
     }
 
-    // Mientras no se ejecute STOP
-    while (cpu.IP != 0xFFFFFFFF) { 
+    int CS = cpu.CS >> 4;
+    
+    while (cpu.IP < mem.segments[CS].size) { 
         
         result = cpu_step(&cpu, &mem);
-        
+    
         if (result != 0) {
             // Instrucción inválida, división por cero, fallo de segmento
-            fprintf(stderr, "Error durante la ejecución. Código: %d\n", result);
+            printf("Error durante la ejecución. Código: %d\n", result);
             return 0;
         }
     }
-    */
+
    
     return 0;
 }

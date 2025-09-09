@@ -16,8 +16,8 @@ int mem_load(mem_t *mem, char *archivo, cpu_t *cpu) {
     FILE *arch = fopen(archivo, "rb");
     // el archivo no guarda el caracter nulo, por eso id[5]
     char id[5];
-    uint8_t version,size_bytes[2];
-    uint16_t code_size;
+    int8_t version,size_bytes[2];
+    int16_t code_size;
 
     if (arch) {
 
@@ -45,9 +45,6 @@ int mem_load(mem_t *mem, char *archivo, cpu_t *cpu) {
             return 7;
         
         fclose(arch);
-
-        for (int i = 0; i < code_size; i++)
-            printf("mem->data[%d] = 0x%02X\n", i, mem->data[i]);  
 
         // Segmento de CODIGO
         mem->segments[0].base = 0;
