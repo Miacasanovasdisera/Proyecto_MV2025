@@ -46,9 +46,9 @@ int cpu_fetch();
 // Funcion para trabajar con el vector de cpu_fetch; extaer OPC y decodificar los 2 operandos
 int cpu_decode();
 // Funcion para actualizar el IP
-void cpu_update_IP();
+void cpu_update_IP(cpu_t *, int8_t, int8_t);
 
-int32_t cpu_logic_to_physic(mem_t ,int32_t);
+int32_t cpu_logic_to_physic(mem_t ,int32_t, int);
 void Operators_Registers_Load(mem_t, cpu_t *);
 
 #endif
