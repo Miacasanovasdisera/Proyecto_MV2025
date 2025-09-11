@@ -4,7 +4,7 @@
 #include "../common.h"
 #include "../Memory/mem.h"
 // Estructura del estado del procesador
-typedef struct cpu_t{
+typedef struct cpu_t {
     
     // Registros de acceso a memoria
     int32_t LAR;
@@ -46,5 +46,6 @@ int8_t get_operand_type(int32_t);
 int32_t get_operand_value(int32_t);
 int32_t read_register(cpu_t *, uint8_t);
 void write_register(cpu_t *, uint8_t, uint32_t);
+int32_t calculate_logical_address(cpu_t *, uint8_t, uint32_t);
 
 #endif

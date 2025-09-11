@@ -1,5 +1,7 @@
 #include "processor.h"
 #include "../Memory/mem.h"
+#include "registers.h"
+#include "operands.h"
 
 void cpu_init(cpu_t *cpu) {
     memset(cpu, 0, sizeof(cpu_t));
@@ -73,26 +75,82 @@ void Operators_Registers_Load(mem_t mem, cpu_t *cpu) {
     cpu_update_IP(cpu, typeOP1, typeOP2);
 }
 
-int32_t Aritmetic_Shifter(int32_t K, int n) {
-    int32_t X = K;
-    int i;
-    
-    X = X >> 31;
-    
-    if (X != 0)
-        for (i = 1; i<n ;i++) {
-            K = K >> 1;
-            K = K & 0x80000000;
-        }
-    
-    else
-        K >> n;
-}
-
 int8_t get_operand_type(int32_t OP_register) {
     return (OP_register >> 30) & 0x03;
 }
 
 int32_t get_operand_value(int32_t OP_register) {
     return OP_register & 0x3FFFFFFF;
+}
+
+int32_t calculate_logical_address(cpu_t *cpu, uint8_t OP_type, uint32_t OP_value) {
+    int16_t segment_selector;
+    int16_t offset;
+    
+    //Determina segmento
+    if (OP_type == MEMORY_OPERAND) 
+        segment_selector = (cpu->DS >> 16) & 0xFFFF;
+    
+    else 
+        segment_selector = (cpu->CS >> 16) & 0xFFFF;
+    
+    //Extrae EL OFFSET del valor del operando
+    if (OP_type == IMMEDIATE_OPERAND) 
+        offset = OP_value & 0xFFFF;
+
+    else if (OP_type == MEMORY_OPERAND) 
+        offset = OP_value & 0xFFFF;
+
+    else if (OP_type == REGISTER_OPERAND) 
+        offset = read_register(cpu, OP_value) & 0xFFFF;
+    
+    //Ensambla dir logica
+    return (segment_selector << 16) | offset;
+}
+
+void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
+    switch (reg_code) {
+        case R_LAR: cpu->LAR = value; break;
+        case R_MAR: cpu->MAR = value; break;
+        case R_MBR: cpu->MBR = value; break;
+        case R_IP:  cpu->IP  = value; break;
+        case R_EAX: cpu->EAX = value; break;
+        case R_EBX: cpu->EBX = value; break;
+        case R_ECX: cpu->ECX = value; break;
+        case R_EDX: cpu->EDX = value; break;
+        case R_EEX: cpu->EEX = value; break;
+        case R_EFX: cpu->EFX = value; break;
+        case R_CC:  cpu->CC  = value & 0xC0000000; break;
+        case R_AC:  cpu->AC  = value; break;
+        case R_CS:  cpu->CS  = value; break;
+        case R_DS:  
+            if ((value & 0xFFFF0000) <= 0x00070000) {
+                cpu->CS = value;
+            }    
+        break;
+        default:
+            printf("Error: Registro de solo lectura o no válido 0x%02X\n", reg_code);
+    }
+}
+
+int32_t read_register(cpu_t *cpu, uint8_t reg_code) {
+    switch (reg_code) {
+        case R_EAX: return cpu->EAX;
+        case R_EBX: return cpu->EBX;
+        case R_ECX: return cpu->ECX;
+        case R_EDX: return cpu->EDX;
+        case R_EEX: return cpu->EEX;
+        case R_EFX: return cpu->EFX;
+        case R_CS : return cpu->CS;
+        case R_DS : return cpu->DS;        
+        case R_AC : return cpu->AC;
+        case R_CC : return cpu->CC;        
+        case R_IP : return cpu->IP;        
+        case R_MAR: return cpu->MAR;
+        case R_MBR: return cpu->MBR;
+        case R_LAR: return cpu->LAR;
+        default:
+            printf("Error: Registro no válido 0x%02X\n", reg_code);
+            return 0;
+    }
 }
