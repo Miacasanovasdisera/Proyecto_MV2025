@@ -14,6 +14,8 @@ SRCS = $(SRC_DIR)/main.c \
        $(MEM_DIR)/mem.c \
        $(IS_DIR)/instruct.c \
        $(IS_DIR)/alu.c \
+       $(IS_DIR)/dataTransfer.c \
+       $(IS_DIR)/fluxControl.c \
        $(IS_DIR)/syscalls.c \
        $(UTILS_DIR)/disassembler.c \
        $(UTILS_DIR)/debug.c
