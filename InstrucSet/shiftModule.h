@@ -1,11 +1,10 @@
-#ifndef ALU_H
-#define ALU_H
+#ifndef SHIFT_MODULE_H
+#define SHIFT_MODULE_H
 
 #include "../common.h"
 #include "../Processor/processor.h"
 #include "../Memory/mem.h"
 
-// Funciones de la ALU que actualizan el registro CC.
-
+// Funciones auxiliares para desplazamientos.
 
 #endif

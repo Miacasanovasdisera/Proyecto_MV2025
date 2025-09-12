@@ -125,7 +125,7 @@ void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
         case R_CS:  cpu->CS  = value; break;
         case R_DS:  
             if ((value & 0xFFFF0000) <= 0x00070000) {
-                cpu->CS = value;
+                cpu->DS = value;
             }    
         break;
         default:
