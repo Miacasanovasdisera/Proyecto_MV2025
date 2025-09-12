@@ -10,6 +10,7 @@ UTILS_DIR = Utils
 
 # Archivos fuente
 SRCS = $(SRC_DIR)/main.c \
+       $(SRC_DIR)/errors.c \
        $(PROC_DIR)/processor.c \
        $(MEM_DIR)/mem.c \
        $(IS_DIR)/instruct.c \

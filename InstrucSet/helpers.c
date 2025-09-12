@@ -1,7 +1,8 @@
 #include "helpers.h"
 #include "../Processor/operands.h"
+#include "../errors.h"
 
-int get_destination_address(cpu_t *cpu, int32_t OP, int32_t *dest_addrss) {     // obtiene la direccion del destino para luego sobreescribirlo
+int get_destination_address(cpu_t *cpu, int32_t OP, int32_t *dest_addrss) {
     int32_t dataOP;
     int8_t typeOP;
 
@@ -17,39 +18,40 @@ int get_destination_address(cpu_t *cpu, int32_t OP, int32_t *dest_addrss) {     
         *dest_addrss = dataOP;
         return 0;
     }
-    else {
-        return 9;
-    }
+    else 
+        return error_Output(INVALID_OPERAND);
+    
 }
 
-int get_value(cpu_t *cpu, int32_t OP, mem_t *mem, int32_t *content){        // obtiene el valor contenido en un registro o una direccion de memoria (si es un inmediato lo devuelve)
+int get_value(cpu_t *cpu, mem_t *mem, int32_t OP, int32_t *content) {
     int32_t dataOP,logic_addr;
     int8_t typeOP;
 
     dataOP = get_operand_value(OP);
     typeOP = get_operand_type(OP);
     
-    switch (typeOP)
-        {
-        case REGISTER_OPERAND:
+    switch (typeOP) {
+        case REGISTER_OPERAND: 
             *content = read_register(cpu, dataOP);      
-            break;
+        break;
 
         case IMMEDIATE_OPERAND:
             *content = dataOP;
-            break;
+        break;
         
         case MEMORY_OPERAND:{
             logic_addr = calculate_logical_address(cpu,typeOP,dataOP);
             *content = mem_read(mem,cpu,logic_addr,content,4);
-        }break;
-    
+        } break;
+
+        default:
+            return error_Output(INVALID_OPERAND);
     }
 
-    
+    return 0;
 }
 
-int write_dest(cpu_t *cpu, mem_t *mem, int8_t type, int32_t dest_addrss, int32_t value){   // escribe en la direccion obtenida por la funcion (la de arriba) el valor 
+int write_dest(cpu_t *cpu, mem_t *mem, int8_t type, int32_t dest_addrss, int32_t value) {
     
     if (type == MEMORY_OPERAND) {
         return mem_write(mem, cpu, dest_addrss, value, 4);
@@ -61,18 +63,18 @@ int write_dest(cpu_t *cpu, mem_t *mem, int8_t type, int32_t dest_addrss, int32_t
     }
 
     else {
-        return 9;
+        return error_Output(INVALID_OPERAND);
     }
 }
 
-void update_CC(cpu_t *cpu,int32_t result){      // funcion que me modifica el registro cc 
+void update_CC(cpu_t *cpu,int32_t result) { 
+    cpu->CC &= ~(0X80000000 | 0X40000000); //Limpia los bits N y Z
 
     if(result == 0)
-        cpu->CC = 0x40000000;
-    else{                                   
-        if(result < 0)
-            cpu->CC = 0x80000000;
-    }
+        cpu->CC |= 0x40000000;
+    
+    else if(result < 0)
+        cpu->CC |= 0x80000000;
 
 }
 

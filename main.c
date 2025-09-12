@@ -3,12 +3,13 @@
 #include "Memory/mem.h"
 #include "InstrucSet/instruct.h"
 #include "Utils/disassembler.h"
+#include "errors.h"
 
 int main(int argc, char *argv[])
 {
     cpu_t cpu;
     mem_t mem;
-    int result,disassembler,carga;
+    int result,disassembler = argv[2],carga;
     
     cpu_init(&cpu);
     mem_init(&mem);
@@ -19,11 +20,16 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    if(disassembler == "-d") {
+        disassemble_program(&mem, &cpu);
+        return 0; 
+    }
+
     int CS = cpu.CS >> 16; //antes estaba 4
     
     while (cpu.IP < mem.segments[CS].size) { 
         
-        Operators_Registers_Load(mem,&cpu);
+        operators_registers_load(&cpu,mem);
         
         result = execute_instruction(&cpu,&mem);
     
