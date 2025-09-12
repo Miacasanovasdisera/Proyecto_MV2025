@@ -72,7 +72,7 @@ int mem_read(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t *value, int s
     
     // Setear MAR (parte alta) y LAR 
     cpu->LAR = logical_addr;
-    cpu->MAR = (size << 16) | (cpu->MAR & 0x0000FFFF);
+    cpu->MAR = size << 16;
     
     int32_t physical_addr = cpu_logic_to_physic(*mem, logical_addr, size);
     
@@ -84,7 +84,7 @@ int mem_read(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t *value, int s
     
     // Actualizar MBR y cargar parte baja MAR
     cpu->MBR = *value;
-    cpu->MAR = (cpu->MAR & 0xFFFF0000) | physical_addr;
+    cpu->MAR = cpu->MAR | physical_addr;
     
     return 0;
 }
@@ -98,7 +98,7 @@ int mem_write(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t value, int s
     
     // Setear LAR, MAR y MBR
     cpu->LAR = logical_addr;
-    cpu->MAR = (size << 16) | (cpu->MAR & 0x0000FFFF);
+    cpu->MAR = size << 16;
     cpu->MBR = value;
     
     int32_t physical_addr = cpu_logic_to_physic(*mem, logical_addr, size);
@@ -110,7 +110,7 @@ int mem_write(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t value, int s
     }
     
     // Actualizar MAR con dirección física
-    cpu->MAR = (cpu->MAR & 0xFFFF0000) | (physical_addr & 0x0000FFFF);
+    cpu->MAR = cpu->MAR | physical_addr;
     
     return 0;
 }
