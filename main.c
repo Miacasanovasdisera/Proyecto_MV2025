@@ -18,28 +18,21 @@ int main(int argc, char *argv[])
         printf("Error %d: Fallo al cargar el programa '%s'.\n", carga,argv[1]);
         return 0;
     }
-       
-    Operators_Registers_Load(mem,&cpu);
-    printf("\n");
-    Operators_Registers_Load(mem,&cpu);
-    printf("\n");
-    Operators_Registers_Load(mem,&cpu);
-
     /* 
-    
     int CS = cpu.CS >> 16; //antes estaba 4
     
     while (cpu.IP < mem.segments[CS].size) { 
         
-        result = cpu_step(&cpu, &mem);
+        Operators_Registers_Load(mem,&cpu);
+        
+        result = execute_instruction(&cpu,&mem);
     
         if (result != 0) {
-            // Instrucción inválida, división por cero, fallo de segmento
-            printf("Error durante la ejecución. Código: %d\n", result);
-            return 0;
+            
+            // Manejar errores
+            break;
         }
     }
     */
-   
     return 0;
 }

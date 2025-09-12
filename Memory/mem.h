@@ -19,6 +19,8 @@ typedef struct {
 } mem_t;
 
 void mem_init(mem_t *);
-int mem_load(mem_t *, char *,cpu_t *); 
+int mem_load(mem_t *, char *,cpu_t *);
+int mem_read(mem_t *, cpu_t *, int32_t, int32_t *, int);
+int mem_write(mem_t *, cpu_t *, int32_t, int32_t, int);
 
 #endif
