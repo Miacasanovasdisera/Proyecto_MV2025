@@ -10,12 +10,16 @@ UTILS_DIR = Utils
 
 # Archivos fuente
 SRCS = $(SRC_DIR)/main.c \
+       $(SRC_DIR)/errors.c \
        $(PROC_DIR)/processor.c \
        $(MEM_DIR)/mem.c \
        $(IS_DIR)/instruct.c \
        $(IS_DIR)/alu.c \
        $(IS_DIR)/dataTransfer.c \
+       $(IS_DIR)/helpers.c \
        $(IS_DIR)/fluxControl.c \
+       $(IS_DIR)/ccModifiers.c \
+       $(IS_DIR)/shiftModule.c \
        $(IS_DIR)/syscalls.c \
        $(UTILS_DIR)/disassembler.c \
        $(UTILS_DIR)/debug.c

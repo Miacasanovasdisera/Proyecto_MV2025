@@ -5,18 +5,16 @@
 #include "../Processor/processor.h"
 #include "../Memory/mem.h"
 
-// Funciones de la ALU que actualizan el registro CC.
-int execute_ADD(cpu_t *,mem_t *);
-int execute_SUB(cpu_t *,mem_t *);
-int execute_MUL(cpu_t *,mem_t *);
-int execute_DIV(cpu_t *,mem_t *);
-int execute_CMP(cpu_t *,mem_t *);
-int execute_NOT(cpu_t *,mem_t *);
-int execute_SHL(cpu_t *,mem_t *);
-int execute_SHR(cpu_t *,mem_t *);
-int execute_SAR(cpu_t *,mem_t *);
-int execute_AND(cpu_t *,mem_t *);
-int execute_OR(cpu_t *,mem_t *);
-int execute_XOR(cpu_t *,mem_t *);
+// Funciones de la ALU que actualizan el registro CC. Se pasan: el cpu, el valor destino y el valor origen (excepto en NOT que solo tiene un operando)
+// Devuelven el resultado de la operación (excepto CMP que no devuelve nada)
+int alu_ADD(cpu_t *, int32_t, int32_t);
+int alu_SUB(cpu_t *, int32_t, int32_t);
+int alu_MUL(cpu_t *, int32_t, int32_t);
+int alu_DIV(cpu_t *, int32_t, int32_t);
+int alu_NOT(cpu_t *, int32_t);
+void alu_CMP(cpu_t *, int32_t, int32_t);
+int alu_AND(cpu_t *, int32_t, int32_t);
+int alu_OR(cpu_t *, int32_t, int32_t);
+int alu_XOR(cpu_t *, int32_t, int32_t);
 
 #endif

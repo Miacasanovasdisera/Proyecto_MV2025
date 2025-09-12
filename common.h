@@ -5,3 +5,11 @@
 #include <string.h>
 #include <limits.h>
 #include <stdint.h>
+
+#define INVALID_OPERAND 9
+#define WRONG_SIZE 6
+#define REGISTER_ERROR 5
+#define MEMORY_ERROR 4
+#define DIVISION_BY_ZERO 3
+#define INVALID_INSTRUCTION 2
+#define LOAD_PROGRAM_ERROR 1

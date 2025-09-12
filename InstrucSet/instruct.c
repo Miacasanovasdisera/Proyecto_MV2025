@@ -1,5 +1,6 @@
 #include "instruct.h"
 #include "opcod.h"
+#include "../errors.h"
 
 instruction_handler_t instruction_table[256] = {
     [OP_SYS]  = execute_SYS,
@@ -39,8 +40,7 @@ void InstrucSet_init() {
 }
 
 int execute_ILLEGAL(cpu_t *cpu, mem_t *mem) {
-    printf("Error: OPC ilegal o no implementado 0x%02X\n", cpu->OPC);
-    return 9;
+    return error_Output(INVALID_INSTRUCTION);
 }
 
 int execute_instruction(cpu_t *cpu, mem_t *mem) {
