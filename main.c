@@ -9,8 +9,9 @@ int main(int argc, char *argv[])
 {
     cpu_t cpu;
     mem_t mem;
-    int result,disassembler = argv[2],carga;
-    
+    int result,carga;
+    char *disassembler = argv[2];
+
     cpu_init(&cpu);
     mem_init(&mem);
     
@@ -20,8 +21,8 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    if(disassembler == "-d") {
-        disassemble_program(&mem, &cpu);
+    if(strcmp(disassembler, "-d") == 0) {
+        //disassemble_program(&mem, &cpu);
         return 0; 
     }
 

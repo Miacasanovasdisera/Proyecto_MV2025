@@ -29,8 +29,7 @@ int32_t cpu_logic_to_physic(mem_t mem, int32_t logic_address, int bytesToRead) {
 }
 
 void operators_registers_load(cpu_t *cpu, mem_t mem) {
-    int8_t i, increment, firstByte = mem.data[cpu->IP];
-    uint32_t typeOP1, typeOP2;
+    int8_t i, increment,  typeOP1, typeOP2, firstByte = mem.data[cpu->IP];
     int32_t dataOP1, dataOP2, a, b;
 
     cpu->OPC = firstByte & 0x1F;
@@ -108,7 +107,7 @@ int32_t calculate_logical_address(cpu_t *cpu, uint8_t OP_type, uint32_t OP_value
     return (segment_selector << 16) | offset;
 }
 
-void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
+int write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
     switch (reg_code) {
         case R_LAR: cpu->LAR = value; break;
         case R_MAR: cpu->MAR = value; break;
@@ -131,6 +130,7 @@ void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
         default:
             return error_Output(REGISTER_ERROR); //Error de registro
     }
+    return 0;
 }
 
 int32_t read_register(cpu_t *cpu, uint8_t reg_code) {

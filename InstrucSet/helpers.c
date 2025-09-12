@@ -53,18 +53,14 @@ int get_value(cpu_t *cpu, mem_t *mem, int32_t OP, int32_t *content) {
 
 int write_dest(cpu_t *cpu, mem_t *mem, int8_t type, int32_t dest_addrss, int32_t value) {
     
-    if (type == MEMORY_OPERAND) {
+    if (type == MEMORY_OPERAND) 
         return mem_write(mem, cpu, dest_addrss, value, 4);
-    }
+    
+    else if (type == REGISTER_OPERAND) 
+        return write_register(cpu, dest_addrss, value);
 
-    else if (type == REGISTER_OPERAND) {
-        write_register(cpu, dest_addrss, value);
-        return 0;
-    }
-
-    else {
-        return error_Output(INVALID_OPERAND);
-    }
+    else 
+        return error_Output(INVALID_OPERAND); 
 }
 
 void update_CC(cpu_t *cpu,int32_t result) { 
