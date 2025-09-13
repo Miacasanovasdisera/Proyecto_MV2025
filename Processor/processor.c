@@ -2,6 +2,7 @@
 #include "../Memory/mem.h"
 #include "registers.h"
 #include "operands.h"
+#include "../errors.h"
 
 void cpu_init(cpu_t *cpu) {
     memset(cpu, 0, sizeof(cpu_t));
@@ -24,13 +25,11 @@ int32_t cpu_logic_to_physic(mem_t mem, int32_t logic_address, int bytesToRead) {
     if (dir_physic + bytesToRead > mem.segments[segment].base && dir_physic < mem.segments[segment].size)
         return dir_physic;
 
-    printf("Segmentation fault\n");
-    exit(1);
+    return error_Output(MEMORY_ERROR); //Fallo de segmento
 }
 
-void Operators_Registers_Load(mem_t mem, cpu_t *cpu) {
-    int8_t i, increment, firstByte = mem.data[cpu->IP];
-    uint32_t typeOP1, typeOP2;
+void operators_registers_load(cpu_t *cpu, mem_t mem) {
+    int8_t i, increment,  typeOP1, typeOP2, firstByte = mem.data[cpu->IP];
     int32_t dataOP1, dataOP2, a, b;
 
     cpu->OPC = firstByte & 0x1F;
@@ -108,7 +107,7 @@ int32_t calculate_logical_address(cpu_t *cpu, uint8_t OP_type, uint32_t OP_value
     return (segment_selector << 16) | offset;
 }
 
-void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
+int write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
     switch (reg_code) {
         case R_LAR: cpu->LAR = value; break;
         case R_MAR: cpu->MAR = value; break;
@@ -125,12 +124,13 @@ void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
         case R_CS:  cpu->CS  = value; break;
         case R_DS:  
             if ((value & 0xFFFF0000) <= 0x00070000) {
-                cpu->CS = value;
+                cpu->DS = value;
             }    
         break;
         default:
-            printf("Error: Registro de solo lectura o no válido 0x%02X\n", reg_code);
+            return error_Output(REGISTER_ERROR); //Error de registro
     }
+    return 0;
 }
 
 int32_t read_register(cpu_t *cpu, uint8_t reg_code) {
@@ -150,7 +150,6 @@ int32_t read_register(cpu_t *cpu, uint8_t reg_code) {
         case R_MBR: return cpu->MBR;
         case R_LAR: return cpu->LAR;
         default:
-            printf("Error: Registro no válido 0x%02X\n", reg_code);
-            return 0;
+            return error_Output(REGISTER_ERROR); //Error de registro
     }
 }
