@@ -1,10 +1,7 @@
 #include "instruct.h"
 #include "opcod.h"
 #include "../Utils/errors.h"
-#include "Operations/dataTransfer.h"
-#include "Operations/fluxControl.h"
-#include "Operations/syscalls.h"
-#include "Operations/ccModifiers.h"
+#include "Operations/executeFunctions.h"
 
 instruction_handler_t instruction_table[256] = {
     [OP_SYS]  = execute_SYS,

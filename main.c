@@ -9,26 +9,18 @@ int main(int argc, char *argv[])
 {
     cpu_t cpu;
     mem_t mem;
-    int result,carga;
+    int result;
     char *disassembler = argv[2];
 
     cpu_init(&cpu);
     mem_init(&mem);
-    
-    carga = mem_load(&mem,argv[1],&cpu);
-    if (carga != 0) {
-        printf("Error %d: Fallo al cargar el programa '%s'.\n", carga,argv[1]);
-        return 0;
-    }
+    mem_load(&mem,argv[1],&cpu);
 
     printf("Modo desensamblador no implementado.\n");   
     if(strcmp(disassembler, "-d") == 0) {
         //disassemble_program(&mem, &cpu);
     }
-
     /*
-    
-    
     int CS = cpu.CS >> 16; //antes estaba 4
     
     while (cpu.IP < mem.segments[CS].size) { 
@@ -42,8 +34,7 @@ int main(int argc, char *argv[])
             // Manejar errores
             break;
         }
-    }
-        
+    }   
     */
     return 0;
 }

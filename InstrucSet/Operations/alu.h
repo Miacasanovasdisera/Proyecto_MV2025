@@ -10,7 +10,7 @@
 int alu_ADD(cpu_t *, int32_t, int32_t);
 int alu_SUB(cpu_t *, int32_t, int32_t);
 int alu_MUL(cpu_t *, int32_t, int32_t);
-int alu_DIV(cpu_t *, int32_t, int32_t);
+void alu_DIV(cpu_t *, int32_t, int32_t, int32_t *);
 int alu_NOT(cpu_t *, int32_t);
 void alu_CMP(cpu_t *, int32_t, int32_t);
 int alu_AND(cpu_t *, int32_t, int32_t);

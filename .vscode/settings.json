@@ -5,6 +5,7 @@
         "mem.h": "c",
         "processor.h": "c",
         "stdio.h": "c",
-        "datatransfer.h": "c"
+        "datatransfer.h": "c",
+        "helpers.h": "c"
     }
 }

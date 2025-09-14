@@ -25,18 +25,14 @@ int alu_MUL(cpu_t *cpu, int32_t dest_value, int32_t origin_value) {
     return result;
 }
 
-int alu_DIV(cpu_t *cpu, int32_t dest_value, int32_t origin_value) {
-    int32_t result;
-
+void alu_DIV(cpu_t *cpu, int32_t dest_value, int32_t origin_value, int32_t *result) {
     if(origin_value != 0){
-        result = dest_value / origin_value;
+        *result = dest_value / origin_value;
         cpu->AC =  dest_value % origin_value;
-        update_CC(cpu,result);
-        return result;
+        update_CC(cpu,*result);
     }
     else
-        return error_Output(DIVISION_BY_ZERO); // Indica error de división por cero
-    
+        return error_Output(DIVISION_BY_ZERO);
 }
 
 int alu_NOT(cpu_t *cpu, int32_t dest_value) {

@@ -3,6 +3,6 @@
 
 #include "common.h"
 
-int error_Output(int error_code);
+void error_Output(int error_code);
 
 #endif
