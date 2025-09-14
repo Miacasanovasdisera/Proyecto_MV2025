@@ -25,7 +25,7 @@ int32_t cpu_logic_to_physic(mem_t mem, int32_t logic_address, int bytesToRead) {
     if (dir_physic + bytesToRead > mem.segments[segment].base && dir_physic < mem.segments[segment].size)
         return dir_physic;
 
-    error_Output(MEMORY_ERROR); //Fallo de segmento
+    return error_Output(MEMORY_ERROR); //Fallo de segmento
 }
 
 void operators_registers_load(cpu_t *cpu, mem_t mem) {
@@ -108,6 +108,7 @@ int32_t calculate_logical_address(cpu_t *cpu, uint8_t OP_type, uint32_t OP_value
 }
 
 void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
+    int verif = 0;
     switch (reg_code) {
         case R_LAR: cpu->LAR = value; break;
         case R_MAR: cpu->MAR = value; break;
@@ -127,8 +128,11 @@ void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
                 cpu->DS = value;
             }    
         break;
-        default:
-            error_Output(REGISTER_ERROR); //Error de registro
+        default: {
+            //Error de registro
+            error_Output(REGISTER_ERROR); 
+            return;
+        }
     }
 }
 
@@ -149,6 +153,7 @@ int32_t read_register(cpu_t *cpu, uint8_t reg_code) {
         case R_MBR: return cpu->MBR;
         case R_LAR: return cpu->LAR;
         default:
-            error_Output(REGISTER_ERROR); //Error de registro
+            return error_Output(REGISTER_ERROR);
+        break; //Error de registro
     }
 }

@@ -9,14 +9,16 @@ int main(int argc, char *argv[])
 {
     cpu_t cpu;
     mem_t mem;
-    int result;
+    int result,carga;
     char *disassembler = argv[2];
 
     cpu_init(&cpu);
     mem_init(&mem);
-    mem_load(&mem,argv[1],&cpu);
+    carga = mem_load(&mem, argv[1], &cpu);
 
-    printf("Modo desensamblador no implementado.\n");   
+    if (carga != 0) 
+        return carga;  
+    
     if(strcmp(disassembler, "-d") == 0) {
         //disassemble_program(&mem, &cpu);
     }

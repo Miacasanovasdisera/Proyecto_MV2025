@@ -15,8 +15,10 @@ void get_destination_address(cpu_t *cpu, int32_t OP, int32_t *dest_addrss) {
     else if (typeOP == REGISTER_OPERAND) 
         *dest_addrss = dataOP;
     
-    else 
-        return error_Output(INVALID_OPERAND); 
+    else {
+        error_Output(INVALID_OPERAND); 
+        return;
+    }
 }
 
 void get_value(cpu_t *cpu, mem_t *mem, int32_t OP, int32_t *content) {
@@ -40,8 +42,10 @@ void get_value(cpu_t *cpu, mem_t *mem, int32_t OP, int32_t *content) {
             mem_read(mem,cpu,logic_addr,content,4);
         } break;
 
-        default:
-            return error_Output(INVALID_OPERAND);
+        default: {
+            error_Output(INVALID_OPERAND);
+            return;
+        }
     }
 }
 
@@ -53,8 +57,10 @@ void write_dest(cpu_t *cpu, mem_t *mem, int8_t type, int32_t dest_addrss, int32_
     else if (type == REGISTER_OPERAND) 
         write_register(cpu, dest_addrss, value);
 
-    else 
-        return error_Output(INVALID_OPERAND); 
+    else {
+        error_Output(INVALID_OPERAND);
+        return;
+    }
 }
 
 void update_CC(cpu_t *cpu,int32_t result) { 

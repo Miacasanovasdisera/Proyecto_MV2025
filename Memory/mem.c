@@ -13,7 +13,7 @@ void mem_init(mem_t *mem) {
     }
 }
 
-void mem_load(mem_t *mem, char *archivo, cpu_t *cpu) {
+int mem_load(mem_t *mem, char *archivo, cpu_t *cpu) {
     FILE *arch = fopen(archivo, "rb");
     // el archivo no guarda el caracter nulo, por eso id[5]
     char id[5];
@@ -31,10 +31,7 @@ void mem_load(mem_t *mem, char *archivo, cpu_t *cpu) {
     
     if (fread(&version,1,1,arch) != 1) 
         return error_Output(LOAD_PROGRAM_ERROR);
-        
-    if (fread(&version,1,1,arch) != 1) 
-        return error_Output(LOAD_PROGRAM_ERROR);
-        
+         
     if (version != 1) 
         return error_Output(LOAD_PROGRAM_ERROR);
 
@@ -62,13 +59,16 @@ void mem_load(mem_t *mem, char *archivo, cpu_t *cpu) {
     cpu->CS = 0x00000000;
     cpu->DS = 0x00010000;
     cpu->IP = cpu->CS;
- 
+    
+    return 0;
 }
 
 void mem_read(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t *value, int size) {
     // Verificar tamaño
-    if (size != 1 && size != 2 && size != 4) 
-        return error_Output(WRONG_SIZE); //Tamaño inválido
+    if (size != 1 && size != 2 && size != 4) {
+        error_Output(WRONG_SIZE); //Tamaño inválido
+        return;
+    }
     
     // Setear MAR (parte alta) y LAR 
     cpu->LAR = logical_addr;
@@ -90,9 +90,11 @@ void mem_read(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t *value, int 
 
 void mem_write(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t value, int size) {
     // Verificar tamaño
-    if (size != 1 && size != 2 && size != 4) 
-        return error_Output(WRONG_SIZE); //Tamaño inválido
-    
+    if (size != 1 && size != 2 && size != 4) {
+        error_Output(WRONG_SIZE);
+        return; //Tamaño inválido
+    }
+
     // Setear LAR, MAR y MBR
     cpu->LAR = logical_addr;
     cpu->MAR = size << 16;

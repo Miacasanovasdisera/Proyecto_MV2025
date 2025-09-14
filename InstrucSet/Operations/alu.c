@@ -31,8 +31,6 @@ void alu_DIV(cpu_t *cpu, int32_t dest_value, int32_t origin_value, int32_t *resu
         cpu->AC =  dest_value % origin_value;
         update_CC(cpu,*result);
     }
-    else
-        return error_Output(DIVISION_BY_ZERO);
 }
 
 int alu_NOT(cpu_t *cpu, int32_t dest_value) {

@@ -9,7 +9,7 @@ Error de registro: 5
 Tamaño de lectura o escritura inválido: 6
 */
 
-void error_Output(int error_code) {
+int error_Output(int error_code) {
     switch (error_code) {
         case LOAD_PROGRAM_ERROR:
             printf("Error %d: Fallo al cargar el programa.\n", error_code);
@@ -33,4 +33,5 @@ void error_Output(int error_code) {
             printf("Error desconocido.\n");
             break;
     }
+    return error_code;
 }

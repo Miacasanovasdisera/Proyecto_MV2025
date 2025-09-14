@@ -55,8 +55,8 @@ int execute_DIV(cpu_t *cpu, mem_t *mem) {
     get_value(cpu, mem, cpu->OP1, &dest_value);
     get_destination_address(cpu, cpu->OP1, &dest_addr);
 
-    if (src_value == 0){}
-        error_Output(DIVISION_BY_ZERO);
+    if (src_value == 0)
+        return error_Output(DIVISION_BY_ZERO);
     
     alu_DIV(cpu, dest_value, src_value, &result);
     
@@ -99,5 +99,30 @@ int execute_XOR(cpu_t *cpu, mem_t *mem) {
     
     result = alu_XOR(cpu, dest_value, src_value);
     write_dest(cpu, mem, dest_type, dest_addr, result);
+    return 0;
+}
+
+int execute_AND(cpu_t *cpu, mem_t *mem) {
+    
+    return 0;
+}
+
+int execute_NOT(cpu_t *cpu, mem_t *mem) {
+    
+    return 0;
+}
+
+int execute_SHL(cpu_t *cpu, mem_t *mem) {
+    
+    return 0;
+}
+
+int execute_SHR(cpu_t *cpu, mem_t *mem) {
+    
+    return 0;
+}
+
+int execute_SAR(cpu_t *cpu, mem_t *mem) {
+    
     return 0;
 }
