@@ -1,6 +1,6 @@
 #include "helpers.h"
 #include "../Processor/operands.h"
-#include "../errors.h"
+#include "../Utils/errors.h"
 
 int get_destination_address(cpu_t *cpu, int32_t OP, int32_t *dest_addrss) {
     int32_t dataOP;
@@ -73,8 +73,3 @@ void update_CC(cpu_t *cpu,int32_t result) {
         cpu->CC |= 0x80000000;
 
 }
-
-
-
-
-

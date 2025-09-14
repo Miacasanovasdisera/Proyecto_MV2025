@@ -1,9 +1,9 @@
-#include "common.h"
+#include "Utils/common.h"
 #include "Processor/processor.h"
 #include "Memory/mem.h"
 #include "InstrucSet/instruct.h"
 #include "Utils/disassembler.h"
-#include "errors.h"
+#include "Utils/errors.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,11 +21,14 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    printf("Modo desensamblador no implementado.\n");   
     if(strcmp(disassembler, "-d") == 0) {
         //disassemble_program(&mem, &cpu);
-        return 0; 
     }
 
+    /*
+    
+    
     int CS = cpu.CS >> 16; //antes estaba 4
     
     while (cpu.IP < mem.segments[CS].size) { 
@@ -40,6 +43,7 @@ int main(int argc, char *argv[])
             break;
         }
     }
-  
+        
+    */
     return 0;
 }

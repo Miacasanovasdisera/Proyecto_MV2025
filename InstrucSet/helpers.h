@@ -1,7 +1,7 @@
 #ifndef HELPERS_H
 #define HELPERS_H
 
-#include "../common.h"
+#include "../Utils/common.h"
 #include "../Processor/processor.h"
 #include "../Memory/mem.h"
 

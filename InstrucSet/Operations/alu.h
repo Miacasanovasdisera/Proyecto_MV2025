@@ -1,9 +1,9 @@
 #ifndef ALU_H
 #define ALU_H
 
-#include "../common.h"
-#include "../Processor/processor.h"
-#include "../Memory/mem.h"
+#include "../../Utils/common.h"
+#include "../../Processor/processor.h"
+#include "../../Memory/mem.h"
 
 // Funciones de la ALU que actualizan el registro CC. Se pasan: el cpu, el valor destino y el valor origen (excepto en NOT que solo tiene un operando)
 // Devuelven el resultado de la operación (excepto CMP que no devuelve nada)

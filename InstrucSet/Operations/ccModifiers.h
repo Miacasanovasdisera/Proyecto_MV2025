@@ -1,8 +1,8 @@
 #ifndef CC_MODIFIERS_H
 #define CC_MODIFIERS_H
 
-#include "../common.h"
-#include "../Processor/processor.h"
+#include "../../Utils/common.h"
+#include "../../Processor/processor.h"
 
 int execute_ADD(cpu_t *,mem_t *);
 int execute_SUB(cpu_t *,mem_t *);

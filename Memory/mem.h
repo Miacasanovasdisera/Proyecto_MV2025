@@ -1,7 +1,7 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
-#include "../common.h"
+#include "../Utils/common.h"
 typedef struct cpu_t cpu_t;
 
 #define MEM_SIZE 16384

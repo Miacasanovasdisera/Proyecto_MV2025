@@ -7,22 +7,22 @@ PROC_DIR = Processor
 MEM_DIR = Memory
 IS_DIR = InstrucSet
 UTILS_DIR = Utils
+OPERATIONS_DIR = InstrucSet/Operations
 
 # Archivos fuente
 SRCS = $(SRC_DIR)/main.c \
-       $(SRC_DIR)/errors.c \
+       $(UTILS_DIR)/errors.c \
        $(PROC_DIR)/processor.c \
        $(MEM_DIR)/mem.c \
        $(IS_DIR)/instruct.c \
-       $(IS_DIR)/alu.c \
-       $(IS_DIR)/dataTransfer.c \
+       $(OPERATIONS_DIR)/alu.c \
+       $(OPERATIONS_DIR)/dataTransfer.c \
        $(IS_DIR)/helpers.c \
-       $(IS_DIR)/fluxControl.c \
-       $(IS_DIR)/ccModifiers.c \
-       $(IS_DIR)/shiftModule.c \
-       $(IS_DIR)/syscalls.c \
+       $(OPERATIONS_DIR)/fluxControl.c \
+       $(OPERATIONS_DIR)/ccModifiers.c \
+       $(OPERATIONS_DIR)/shiftModule.c \
+       $(OPERATIONS_DIR)/syscalls.c \
        $(UTILS_DIR)/disassembler.c \
-       $(UTILS_DIR)/debug.c
 
 # Archivos objeto (reemplaza .c por .o)
 OBJS = $(SRCS:.c=.o)

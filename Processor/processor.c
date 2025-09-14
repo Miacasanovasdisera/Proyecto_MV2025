@@ -2,7 +2,7 @@
 #include "../Memory/mem.h"
 #include "registers.h"
 #include "operands.h"
-#include "../errors.h"
+#include "../Utils/errors.h"
 
 void cpu_init(cpu_t *cpu) {
     memset(cpu, 0, sizeof(cpu_t));

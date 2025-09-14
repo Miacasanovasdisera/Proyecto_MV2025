@@ -1,6 +1,6 @@
 #include "mem.h"
 #include "../Processor/processor.h"
-#include "../errors.h"
+#include "../Utils/errors.h"
 
 void mem_init(mem_t *mem) {
     // Limpia toda la RAM (16 KiB)

@@ -1,11 +1,9 @@
 #ifndef INSTRUCT_H
 #define INSTRUCT_H
 
-#include "../common.h"
-#include "dataTransfer.h"
-#include "fluxControl.h"
-#include "syscalls.h"
-#include "ccModifiers.h"
+#include "../Utils/common.h"
+#include "../Processor/processor.h"
+#include "../Memory/mem.h"
 
 // Tipo de función para todas las instrucciones
 typedef int (*instruction_handler_t)(cpu_t*, mem_t*);

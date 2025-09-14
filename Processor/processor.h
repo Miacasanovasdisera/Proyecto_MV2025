@@ -1,7 +1,7 @@
 #ifndef PROCESSOR_H
 #define PROCESSOR_H
 
-#include "../common.h"
+#include "../Utils/common.h"
 #include "../Memory/mem.h"
 // Estructura del estado del procesador
 typedef struct cpu_t {
