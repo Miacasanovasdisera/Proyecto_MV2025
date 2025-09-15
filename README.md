@@ -7,10 +7,10 @@ Esta máquina virtual emula un procesador de 32 bits que puede ejecutar programa
 Características principales
 
 # Memoria principal: 16 KiB (16,384 bytes)
-Registros: 32 registros de 4 bytes (17 utilizados en esta versión)
-Segmentación: Código y datos en segmentos separados
-Instrucciones: 26 instrucciones implementadas
-Llamadas al sistema: READ y WRITE para E/S
+- Registros: 32 registros de 4 bytes (17 utilizados en esta versión)
+- Segmentación: Código y datos en segmentos separados
+- Instrucciones: 26 instrucciones implementadas
+- Llamadas al sistema: READ y WRITE para E/S
 
 # Ejecucion basica
 ``` bash
@@ -77,3 +77,4 @@ La máquina virtual detecta y reporta los siguientes errores:
 
 
 Última actualización: Septiembre 2025
+
