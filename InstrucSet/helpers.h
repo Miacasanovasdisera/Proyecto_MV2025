@@ -5,7 +5,7 @@
 #include "../Processor/processor.h"
 #include "../Memory/mem.h"
 
-// get_value devuelve en el tercer parametro el valor del operando, que le pasas como tercer parametro. (ya sea registro, inmediato o memoria)
+// get_value devuelve en el cuarto parametro el valor del operando, que le pasas como tercer parametro. (ya sea registro, inmediato o memoria)
 // get_destination_address devuelve en el tercer parametro la direccion del destino, pasado en el segundo parametro, (registro o memoria) para luego escribir en esa direccion
 // write_dest escribe en la direccion obtenida por get_destination_address el valor pasado como parametro
 

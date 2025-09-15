@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 {
     cpu_t cpu;
     mem_t mem;
-    char *disassembler = argv[2];
+    char *disassembler = argc > 2 ? argv[2] : "";
 
     cpu_init(&cpu);
     mem_init(&mem);
@@ -26,12 +26,6 @@ int main(int argc, char *argv[])
         operators_registers_load(&cpu,mem);
         
         result = execute_instruction(&cpu,&mem);
-    
-        if (result != 0) {
-            
-            // Manejar errores
-            break;
-        }
     }   
     */
     return 0;
