@@ -2,7 +2,7 @@
 #include "../Memory/mem.h"
 #include "registers.h"
 #include "operands.h"
-#include "../errors.h"
+#include "../Utils/errors.h"
 
 void cpu_init(cpu_t *cpu) {
     memset(cpu, 0, sizeof(cpu_t));
@@ -107,7 +107,8 @@ int32_t calculate_logical_address(cpu_t *cpu, uint8_t OP_type, uint32_t OP_value
     return (segment_selector << 16) | offset;
 }
 
-int write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
+void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
+    int verif = 0;
     switch (reg_code) {
         case R_LAR: cpu->LAR = value; break;
         case R_MAR: cpu->MAR = value; break;
@@ -127,10 +128,12 @@ int write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
                 cpu->DS = value;
             }    
         break;
-        default:
-            return error_Output(REGISTER_ERROR); //Error de registro
+        default: {
+            //Error de registro
+            error_Output(REGISTER_ERROR); 
+            return;
+        }
     }
-    return 0;
 }
 
 int32_t read_register(cpu_t *cpu, uint8_t reg_code) {
@@ -150,6 +153,7 @@ int32_t read_register(cpu_t *cpu, uint8_t reg_code) {
         case R_MBR: return cpu->MBR;
         case R_LAR: return cpu->LAR;
         default:
-            return error_Output(REGISTER_ERROR); //Error de registro
+            return error_Output(REGISTER_ERROR);
+        break; //Error de registro
     }
 }

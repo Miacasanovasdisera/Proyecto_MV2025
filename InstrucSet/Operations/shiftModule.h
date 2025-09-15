@@ -1,9 +1,9 @@
 #ifndef SHIFT_MODULE_H
 #define SHIFT_MODULE_H
 
-#include "../common.h"
-#include "../Processor/processor.h"
-#include "../Memory/mem.h"
+#include "../../Utils/common.h"
+#include "../../Processor/processor.h"
+#include "../../Memory/mem.h"
 
 // Funciones auxiliares para desplazamientos.
 

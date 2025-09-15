@@ -1,9 +1,9 @@
 #ifndef FLUX_H
 #define FLUX_H
 
-#include "../common.h"
-#include "../Processor/processor.h"
-#include "../Memory/mem.h"
+#include "../../Utils/common.h"
+#include "../../Processor/processor.h"
+#include "../../Memory/mem.h"
 
 // Funciones de operaciones de control de flujo:
 int execute_JMP(cpu_t *, mem_t *);

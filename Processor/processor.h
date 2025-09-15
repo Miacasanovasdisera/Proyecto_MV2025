@@ -1,7 +1,7 @@
 #ifndef PROCESSOR_H
 #define PROCESSOR_H
 
-#include "../common.h"
+#include "../Utils/common.h"
 #include "../Memory/mem.h"
 // Estructura del estado del procesador
 typedef struct cpu_t {
@@ -55,7 +55,7 @@ void operators_registers_load(cpu_t *, mem_t);
 int8_t get_operand_type(int32_t);
 int32_t get_operand_value(int32_t);
 int32_t read_register(cpu_t *, uint8_t);
-int write_register(cpu_t *, uint8_t, uint32_t);
+void write_register(cpu_t *, uint8_t, uint32_t);
 int32_t calculate_logical_address(cpu_t *, uint8_t, uint32_t);
 
 #endif
