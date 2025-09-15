@@ -13,7 +13,7 @@ void mem_init(mem_t *mem) {
     }
 }
 
-int mem_load(mem_t *mem, char *archivo, cpu_t *cpu) {
+void mem_load(mem_t *mem, char *archivo, cpu_t *cpu) {
     FILE *arch = fopen(archivo, "rb");
     // el archivo no guarda el caracter nulo, por eso id[5]
     char id[5];
@@ -21,30 +21,30 @@ int mem_load(mem_t *mem, char *archivo, cpu_t *cpu) {
     int16_t code_size;
 
     if (!arch)
-        return error_Output(LOAD_PROGRAM_ERROR);
+        error_Output(LOAD_PROGRAM_ERROR);
 
     if (fread(id, 1, 5, arch) != 5) 
-        return error_Output(LOAD_PROGRAM_ERROR);
+        error_Output(LOAD_PROGRAM_ERROR);
     
     if (strcmp(id, "VMX25") != 0) 
-        return error_Output(LOAD_PROGRAM_ERROR);
+        error_Output(LOAD_PROGRAM_ERROR);
     
     if (fread(&version,1,1,arch) != 1) 
-        return error_Output(LOAD_PROGRAM_ERROR);
+        error_Output(LOAD_PROGRAM_ERROR);
          
     if (version != 1) 
-        return error_Output(LOAD_PROGRAM_ERROR);
+        error_Output(LOAD_PROGRAM_ERROR);
 
     if (fread(size_bytes, 1, 2, arch) != 2)
-        return error_Output(LOAD_PROGRAM_ERROR);
+        error_Output(LOAD_PROGRAM_ERROR);
 
     code_size = (size_bytes[0] << 8) | size_bytes[1];
 
     if (code_size > MEM_SIZE)
-        return error_Output(LOAD_PROGRAM_ERROR);
+        error_Output(LOAD_PROGRAM_ERROR);
             
     if (fread(mem->data,1,code_size,arch) != code_size)
-        return error_Output(LOAD_PROGRAM_ERROR);
+        error_Output(LOAD_PROGRAM_ERROR);
     
     fclose(arch);
 
@@ -59,8 +59,6 @@ int mem_load(mem_t *mem, char *archivo, cpu_t *cpu) {
     cpu->CS = 0x00000000;
     cpu->DS = 0x00010000;
     cpu->IP = cpu->CS;
-    
-    return 0;
 }
 
 void mem_read(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t *value, int size) {

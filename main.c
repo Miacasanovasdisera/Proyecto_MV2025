@@ -9,21 +9,17 @@ int main(int argc, char *argv[])
 {
     cpu_t cpu;
     mem_t mem;
-    int result,carga;
     char *disassembler = argv[2];
 
     cpu_init(&cpu);
     mem_init(&mem);
-    carga = mem_load(&mem, argv[1], &cpu);
-
-    if (carga != 0) 
-        return carga;  
+    mem_load(&mem, argv[1], &cpu); 
     
     if(strcmp(disassembler, "-d") == 0) {
         //disassemble_program(&mem, &cpu);
     }
     /*
-    int CS = cpu.CS >> 16; //antes estaba 4
+    int result,CS = cpu.CS >> 16; //antes estaba 4
     
     while (cpu.IP < mem.segments[CS].size) { 
         

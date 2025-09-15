@@ -30,8 +30,9 @@ int error_Output(int error_code) {
             printf("Error %d: Tamaño de lectura o escritura inválido.\n", error_code);
             break;
         default:
-            printf("Error desconocido.\n");
+            printf("Error de ejecucion.\n");
             break;
     }
-    return error_code;
+    printf("Se aborta la ejecución de la máquina virtual.\n");
+    exit(error_code);
 }
