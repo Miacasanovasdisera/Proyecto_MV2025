@@ -15,9 +15,6 @@ int main(int argc, char *argv[])
     mem_init(&mem);
     mem_load(&mem, argv[1], &cpu); 
     
-    if(strcmp(disassembler, "-d") == 0) {
-        //disassemble_program(&mem, &cpu);
-    }
     /*
     int result,CS = cpu.CS >> 16; //antes estaba 4
     

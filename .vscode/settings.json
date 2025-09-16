@@ -6,6 +6,7 @@
         "processor.h": "c",
         "stdio.h": "c",
         "datatransfer.h": "c",
-        "helpers.h": "c"
+        "helpers.h": "c",
+        "disassembler.h": "c"
     }
 }

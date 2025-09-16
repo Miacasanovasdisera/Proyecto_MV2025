@@ -71,8 +71,8 @@ void operators_registers_load(cpu_t *cpu, mem_t mem) {
 
     cpu->OP1 = (typeOP1 << 24) | dataOP1;
     cpu->OP2 = (typeOP2 << 24) | dataOP2;
-
-    disassemble(1 + typeOP1 + typeOP2, addr, cpu->OP1, cpu->OP2, typeOP1, typeOP2, cpu->OPC, mem, register_name);
+     if(strcmp(disassembler, "-d") == 0)
+        disassemble(1 + typeOP1 + typeOP2, addr, cpu->OP1, cpu->OP2, typeOP1, typeOP2, cpu->OPC, mem, register_name);
 
     cpu_update_IP(cpu, typeOP1, typeOP2);
 }
