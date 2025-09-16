@@ -1,32 +1,72 @@
-#include "disassembler.h"
-#include "../Processor/processor.h"
-#include "errors.h"
+#include "../Utils/disassembler.h"
+#include "../errors.h"
+#include "../InstrucSet/opcod.h"
+#include "../InstrucSet/registers.h"
+#include "../Memory/mem.h"
+#include "../Processor/operands.h"
 
-void decoder(int8_t byte1, int8_t byte2, cpu_t *cpu) {
-    int8_t alto = byte1 >> 2;   // primeros 2 bits
-    int8_t bajo  = byte1 & 0x03; // últimos 2 bits
 
-    cpu->OP2 = alto;
-    cpu->OP1 = bajo;
-    if (cpu->OP2 == 0x00){ //si solo hay un tipo de registro en la instruccion
-                            // utilizamos el operando 1
-        cpu->OP1=cpu->OP2;
-        cpu->OP2=0x00;
+// Se usan las tablas definidas en opcod.h y registers.h:
+//    const char *opcode_name[];
+//    const char *register_name[];
+
+// Esta funcion imprime un operando segun su tipo
+
+ void print_operand(uint32_t op, int type, char *register_name[]) {
+    switch (type) {
+        case OP_NONE:
+            break;
+
+        case IMMEDIATE_OPERAND:  // inmediato en decimal
+            printf("%d", op);
+            break;
+
+        case REGISTER_OPERAND:  // registro
+            if (op < 32) { //menos por ahora pero
+                printf("%s", register_name[op]);
+            } else {
+                printf("R?");
+            }
+            break;
+
+        case MEMORY_OPERAND:  // memoria
+            printf("[DS+%d]", op); // considero que la base es ds
+            break;
+
+        default:
+            printf("?");
+            break;
     }
-    cpu->OPC = ((byte1 & 0x01) << 4) | (byte2 & 0x0F); // ultimo bit + nibble de b2 (en total tendria 5 bits)
 }
 
-//void disassembler(int8_t *code, int size) { //mas que nada para verificar, no sirve de mucho
-//    int i = 0;
-//    while (i < size) {
-//        int8_t byte1 = code[i++];
-//        int8_t byte2 = code[i++];
-//
-//        Decoded d = decoder(byte1, byte2);
 
-//        printf("Opcode: %d, Op1Type: %d, Op2Type: %d\n", d.OPC, d.Top1, d.Top2);
 
-        // Segun el cod de operacion, leer mas bytes
-        // y mapear registros o inmediatos
-//    }
-//}
+void disassemble(int8_t instr_len,int32_t physical_addr, int8_t OP1, int8_t OP2, int8_t typeOP1, int8_t typeOP2, int8_t OPC, mem_t mem, char *register_name[],char *opcode_name[]) { //instr_len = 1 + typeOP1 + typeOP2;
+    
+    // 1. direc fisica
+    printf("[%04X] ", physical_addr);
+
+    // 2. instruccion en hex
+   for (int i = 0; i < instr_len; i++) {
+        printf("%02X ", mem->data[i]);
+    }
+
+    printf("| ");
+
+    // 3 mnemonico
+    const char *mnemonic = opcode_name[OPC];
+    printf("%s ", mnemonic);
+
+    // 4. Operando 1
+    if (typeOP1 != NO_OPERAND) {
+        print_operand(OP1, typeOP1, register_name);
+    }
+
+    // 5. Operando 2
+    if (typeOP2 != NO_OPERAND) {
+        printf(", ");
+        print_operand(OP2, typeOP2 , register_name);
+    }
+
+    printf("\n");
+}

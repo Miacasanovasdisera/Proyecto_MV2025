@@ -30,4 +30,14 @@
 #define OP_RND 0x1F
 #define OP_STOP 0x0F
 
+// Nombres de los opcodes para el disassembler
+const char *opcode_name[] = { //UNK = unknown porque todavia no sabemos que tienen, despues lo rellenamos
+    "SYS", "JMP", "JZ", "JP", "JN", "JNZ", "JNP", "JNN",
+    "NOT", "UNK", "MOV", "ADD", "SUB", "MUL", "DIV", "STOP",
+    "UNK", "UNK", "UNK", "UNK", "UNK", "UNK", "UNK", "UNK",
+    "UNK", "UNK", "UNK", "UNK", "UNK", "UNK", "UNK", "UNK",
+    "MOV", "ADD", "SUB", "MUL", "DIV", "CMP", "SHL", "SHR",
+    "SAR", "AND", "OR",  "XOR","SWAP","LDL","LDH","RND"
+};
 #endif
+

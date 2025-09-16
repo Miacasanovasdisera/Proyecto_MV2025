@@ -19,4 +19,13 @@
 #define R_CS 26
 #define R_DS 27
 
+const char *register_name[] = {
+    "LAR", "MAR", "MBR", "IP", "OPC", "OP1", "OP2",
+    "?", "?", "?",
+    "EAX", "EBX", "ECX", "EDX", "EEX", "EFX",
+    "AC", "CC",
+    "?","?","?","?","?","?","?","?",
+    "CS", "DS"
+};
+
 #endif
