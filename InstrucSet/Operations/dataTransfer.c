@@ -1,13 +1,29 @@
 #include "dataTransfer.h"
 
 int execute_MOV(cpu_t *cpu, mem_t *mem) {
-    
+    int32_t src_value, dest_addr,result;
+    int8_t dest_type = get_operand_type(cpu->OP1);
+        
+    get_value(cpu, mem, cpu->OP2, &src_value);
+    get_destination_address(cpu, cpu->OP1, &dest_addr);
+    result = src_value;
+    write_dest(cpu, mem, dest_type, dest_addr, result);
     return 0;
 }
 
 int execute_SWAP(cpu_t *cpu, mem_t *mem) {
+    int32_t A_value, B_value, A_addr, B_addr;
+    int8_t A_type = get_operand_type(cpu->OP1);
+    int8_t B_type = get_operand_type(cpu->OP2);
+        
+    get_value(cpu, mem, cpu->OP2, &B_value);
+    get_value(cpu, mem, cpu->OP1, &A_value);
+    get_destination_address(cpu, cpu->OP1, &A_addr);
+    get_destination_address(cpu, cpu->OP2, &B_addr);
+    write_dest(cpu, mem, A_type, A_addr, B_value);
+    write_dest(cpu, mem, B_type, B_addr, A_value);
     
-    return 0;
+    return 0; 
 }
 
 int execute_LDL(cpu_t *cpu, mem_t *mem) {
