@@ -34,8 +34,6 @@ void operators_registers_load(cpu_t *cpu, mem_t mem) {
 
     cpu->OPC = firstByte & 0x1F;
 
-    int32_t addr = cpu_logic_to_physic(mem, cpu->IP, 1);
-
     typeOP2 = (firstByte & 0xc0) >> 6;
     typeOP1 = (firstByte >> 4) & 0x03;
 
@@ -71,8 +69,6 @@ void operators_registers_load(cpu_t *cpu, mem_t mem) {
 
     cpu->OP1 = (typeOP1 << 24) | dataOP1;
     cpu->OP2 = (typeOP2 << 24) | dataOP2;
-     if(strcmp(disassembler, "-d") == 0)
-        disassemble(1 + typeOP1 + typeOP2, addr, cpu->OP1, cpu->OP2, typeOP1, typeOP2, cpu->OPC, mem, register_name);
 
     cpu_update_IP(cpu, typeOP1, typeOP2);
 }

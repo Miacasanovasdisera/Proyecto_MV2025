@@ -39,34 +39,92 @@
     }
 }
 
+// Decodifica la instruccion en OPC, OP1, OP2, typeOP1, typeOP2 y actualiza el IP
+void Decode(cpu_t *cpu, int8_t *OP1, int8_t *OP2, int8_t *typeOP1, int8_t *typeOP2, int8_t *OPC) {
+    int8_t i, increment,  typeOP1, typeOP2, firstByte = mem.data[cpu->IP];
+    int32_t dataOP1, dataOP2, a, b;
 
+    *OPC = firstByte & 0x1F;
 
-void disassemble(int8_t instr_len,int32_t physical_addr, int8_t OP1, int8_t OP2, int8_t typeOP1, int8_t typeOP2, int8_t OPC, mem_t mem, char *register_name[],char *opcode_name[]) { //instr_len = 1 + typeOP1 + typeOP2;
-    
-    // 1. direc fisica
-    printf("[%04X] ", physical_addr);
+    *typeOP2 = (firstByte & 0xc0) >> 6;
+    *typeOP1 = (firstByte >> 4) & 0x03;
 
-    // 2. instruccion en hex
-   for (int i = 0; i < instr_len; i++) {
-        printf("%02X ", mem->data[i]);
+    increment = cpu->IP + 1;
+    a = mem.data[increment];
+
+    for (i = 1; i < *typeOP2; i++) {
+        a = a << 8;
+        b = mem.data[increment + i];
+        a = a | b;
+    }
+    dataOP2 = a;
+    increment += i;
+
+    if (*typeOP1 == 0) {
+        *typeOP1 = typeOP2;
+        *typeOP2 = 0;
+
+        dataOP1 = dataOP2;
+        dataOP2 = 0;
     }
 
-    printf("| ");
+    else {
+        a = mem.data[increment];
+        for (i = 1; i < *typeOP1; i++) {
+            a = a << 8;
+            b = mem.data[increment + i];
+            a = a | b;
+        }
 
-    // 3 mnemonico
-    const char *mnemonic = opcode_name[OPC];
-    printf("%s ", mnemonic);
-
-    // 4. Operando 1
-    if (typeOP1 != NO_OPERAND) {
-        print_operand(OP1, typeOP1, register_name);
+        dataOP1 = a;
     }
 
-    // 5. Operando 2
-    if (typeOP2 != NO_OPERAND) {
-        printf(", ");
-        print_operand(OP2, typeOP2 , register_name);
-    }
+    *OP1 = (typeOP1 << 24) | dataOP1;
+    *OP2 = (typeOP2 << 24) | dataOP2;
 
-    printf("\n");
+    cpu_update_IP(cpu, typeOP1, typeOP2);
+}
+
+// Desensambla el codigo desde la posicion actual del IP hasta el final del segmento de codigo
+void disassemble(cpu_t *cpu, mem_t *mem) { //se va a implementar antes de la ejecucion de cada instruccion
+    uint32_t codsize = mem->segments[0].size; // tamaño del segmento de codigo
+    int8_t i, instrucSize, typeOP1, typeOP2, increment = cpu->IP = cpu->CS; // inicio del segmento de codigo (preguntar si estaria bien volver a setear el ip)
+    int32_t OP1, OP2, OPC;
+    while (increment < codsize) {
+        // 1. direc fisica
+        printf("[%04X] ", physical_addr);        
+
+        Decode(cpu, &OP1, &OP2, &typeOP1, &typeOP2, &OPC);
+        instrucSize = 1 + typeOP1 + typeOP2; //tamaño de la instruccion
+        // 2. instruccion en hex
+        for (int i = 0; i < InstructionSize; i++) {
+            printf("%02X ", mem.data[increment + i]);
+        }
+
+        // Formato
+        for (int i = InstrucSize; i < 6; i++) {
+            printf("   ");
+        }
+
+        printf("| ");
+
+        // 3 mnemonico
+        const char *mnemonic = opcode_name[OPC];
+            printf("%s ", mnemonic);
+
+        // 4. Operando 1
+        if (typeOP1 != NO_OPERAND) {
+            print_operand(OP1, typeOP1, register_name);
+        }
+
+        // 5. Operando 2
+        if (typeOP2 != NO_OPERAND) {
+            printf(", ");
+            print_operand(OP2, typeOP2 , register_name);
+        }   
+
+        printf("\n");
+        // Actualizo el incrementador
+        increment += 1 + typeOP1 + typeOP2;
+    }
 }
