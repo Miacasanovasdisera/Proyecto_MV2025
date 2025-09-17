@@ -1,4 +1,9 @@
 #include "fluxControl.h"
+#include "../helpers.h"
+#include "../../Utils/errors.h"
+#include "operands.h"
+#include "../instruct.h"
+#
 
 
 int execute_JMP(cpu_t *cpu, mem_t *mem) { 
