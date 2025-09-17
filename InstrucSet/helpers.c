@@ -64,12 +64,12 @@ void write_dest(cpu_t *cpu, mem_t *mem, int8_t type, int32_t dest_addrss, int32_
 }
 
 void update_CC(cpu_t *cpu,int32_t result) { 
-    cpu->CC &= ~(0X80000000 | 0X40000000); //Limpia los bits N y Z
+    cpu->CC &= ~(NMask| ZMask); //Limpia los bits N y Z
 
     if(result == 0)
-        cpu->CC |= 0x40000000;
+        cpu->CC |= ZMask;
     
     else if(result < 0)
-        cpu->CC |= 0x80000000;
+        cpu->CC |= NMask;
 
 }
