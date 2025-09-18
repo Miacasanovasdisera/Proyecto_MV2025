@@ -92,17 +92,17 @@ void disassemble(cpu_t *cpu, mem_t *mem) { //se va a implementar antes de la eje
     int32_t OP1, OP2, OPC;
     while (increment < codsize) {
         // 1. direc fisica
-        printf("[%04X] ", physical_addr);        
+        printf("[%04X] ", increment);        
 
         Decode(cpu, &OP1, &OP2, &typeOP1, &typeOP2, &OPC);
         instrucSize = 1 + typeOP1 + typeOP2; //tamaño de la instruccion
         // 2. instruccion en hex
-        for (int i = 0; i < InstructionSize; i++) {
+        for (int i = 0; i < instrucSize; i++) {
             printf("%02X ", mem.data[increment + i]);
         }
 
         // Formato
-        for (int i = InstrucSize; i < 6; i++) {
+        for (int i = instrucSize; i < 6; i++) {
             printf("   ");
         }
 
