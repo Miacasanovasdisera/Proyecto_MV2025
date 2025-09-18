@@ -36,7 +36,7 @@ int execute_LDL(cpu_t *cpu, mem_t *mem) {
 
     get_destination_address(cpu, cpu->OP1, &dest_addr);
 
-    result = (val1 & 0xFFFF0000) | (val2 & 0x0000FFFF);
+    result = (src_valueOP1 & 0xFFFF0000) | (src_valueOP2 & 0x0000FFFF);
     write_dest(cpu, mem, dest_type, dest_addr, result);
     return 0; 
     

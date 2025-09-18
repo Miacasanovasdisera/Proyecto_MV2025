@@ -1,5 +1,5 @@
 #include "../Utils/disassembler.h"
-#include "../errors.h"
+#include "errors.h"
 #include "../InstrucSet/opcod.h"
 #include "../InstrucSet/registers.h"
 #include "../Memory/mem.h"
@@ -14,7 +14,7 @@
 
  void print_operand(uint32_t op, int type, char *register_name[]) {
     switch (type) {
-        case OP_NONE:
+        case NO_OPERAND:  // sin operando
             break;
 
         case IMMEDIATE_OPERAND:  // inmediato en decimal
@@ -40,9 +40,9 @@
 }
 
 // Decodifica la instruccion en OPC, OP1, OP2, typeOP1, typeOP2 y actualiza el IP
-void Decode(cpu_t *cpu, int8_t *OP1, int8_t *OP2, int8_t *typeOP1, int8_t *typeOP2, int8_t *OPC) {
-    int8_t i, increment,  typeOP1, typeOP2, firstByte = mem.data[cpu->IP];
-    int32_t dataOP1, dataOP2, a, b;
+void Decode(cpu_t *cpu, mem_t *mem,int8_t *OP1, int8_t *OP2, int8_t *typeOP1, int8_t *typeOP2, int8_t *OPC) {
+    int8_t i, increment, firstByte = mem->data[cpu->IP];
+    int32_t dataOP1, dataOP2, a, b, typeOP1, typeOP2;
 
     *OPC = firstByte & 0x1F;
 
@@ -50,11 +50,11 @@ void Decode(cpu_t *cpu, int8_t *OP1, int8_t *OP2, int8_t *typeOP1, int8_t *typeO
     *typeOP1 = (firstByte >> 4) & 0x03;
 
     increment = cpu->IP + 1;
-    a = mem.data[increment];
+    a = mem->data[increment];
 
     for (i = 1; i < *typeOP2; i++) {
         a = a << 8;
-        b = mem.data[increment + i];
+        b = mem->data[increment + i];
         a = a | b;
     }
     dataOP2 = a;
@@ -69,10 +69,10 @@ void Decode(cpu_t *cpu, int8_t *OP1, int8_t *OP2, int8_t *typeOP1, int8_t *typeO
     }
 
     else {
-        a = mem.data[increment];
+        a = mem->data[increment];
         for (i = 1; i < *typeOP1; i++) {
             a = a << 8;
-            b = mem.data[increment + i];
+            b = mem->data[increment + i];
             a = a | b;
         }
 
@@ -98,7 +98,7 @@ void disassemble(cpu_t *cpu, mem_t *mem) { //se va a implementar antes de la eje
         instrucSize = 1 + typeOP1 + typeOP2; //tamaño de la instruccion
         // 2. instruccion en hex
         for (int i = 0; i < instrucSize; i++) {
-            printf("%02X ", mem.data[increment + i]);
+            printf("%02X ", mem->data[increment + i]);
         }
 
         // Formato
