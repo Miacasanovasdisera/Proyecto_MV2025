@@ -129,42 +129,44 @@ int execute_NOT(cpu_t *cpu, mem_t *mem) {
     return 0;
 }
 
-int execute_SHL(cpu_t *cpu, mem_t *mem, int num_bits) {
-    int32_t value, addr,result;
-    int8_t type = get_operand_type(cpu->OP1);
+int execute_SHL(cpu_t *cpu, mem_t *mem) {
+    int32_t valueOP1,valueOP2, dest_addr,result;
+    int8_t dest_type = get_operand_type(cpu->OP1);
         
-    get_value(cpu, mem, cpu->OP1, &value);
-    get_destination_address(cpu, cpu->OP1, &addr);
+    get_value(cpu, mem, cpu->OP1, &valueOP1);
+    get_value(cpu,mem,cpu->OP2, &valueOP2);
+    get_destination_address(cpu, cpu->OP1, &dest_addr);
 
-    result = shift_SHL(cpu, value, num_bits);
+    result = shift_SHL(cpu, valueOP1, valueOP2);
     
-    write_dest(cpu, mem, type, addr, result);
+    write_dest(cpu, mem, dest_type, dest_addr, result);
     return 0;
 }
 
-int execute_SHR(cpu_t *cpu, mem_t *mem, int num_bits) {
-    int32_t value, addr,result;
-    int8_t type = get_operand_type(cpu->OP1);
+int execute_SHR(cpu_t *cpu, mem_t *mem) {
+    int32_t valueOP1,valueOP2, dest_addr,result;
+    int8_t dest_type = get_operand_type(cpu->OP1);
         
-    get_value(cpu, mem, cpu->OP1, &value);
-    get_destination_address(cpu, cpu->OP1, &addr);
+    get_value(cpu, mem, cpu->OP1, &valueOP1);
+    get_value(cpu,mem,cpu->OP2, &valueOP2);
+    get_destination_address(cpu, cpu->OP1, &dest_addr);
 
-    result = shift_SHR(cpu, value, num_bits);
+    result = shift_SHR(cpu, valueOP1, valueOP2);
     
-    write_dest(cpu, mem, type, addr, result);
+    write_dest(cpu, mem, dest_type, dest_addr, result);
     return 0;
 }
 
-int execute_SAR(cpu_t *cpu, mem_t *mem, int num_bits) {
-    int32_t value, addr,result;
-    int8_t type = get_operand_type(cpu->OP1);
+int execute_SAR(cpu_t *cpu, mem_t *mem) {
+    int32_t valueOP1,valueOP2, dest_addr,result;
+    int8_t dest_type = get_operand_type(cpu->OP1);
         
-    get_value(cpu, mem, cpu->OP1, &value);
-    get_destination_address(cpu, cpu->OP1, &addr);
+    get_value(cpu, mem, cpu->OP1, &valueOP1);
+    get_value(cpu,mem,cpu->OP2, &valueOP2);
+    get_destination_address(cpu, cpu->OP1, &dest_addr);
 
-    result = shift_SAR(cpu, value, num_bits);
+    result = shift_SHL(cpu, valueOP1, valueOP2);
     
-    write_dest(cpu, mem, type, addr, result);
+    write_dest(cpu, mem, dest_type, dest_addr, result);
     return 0;
-    
 }

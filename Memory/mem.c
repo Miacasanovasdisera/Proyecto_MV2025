@@ -73,7 +73,7 @@ void mem_read(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t *value, int 
     cpu->LAR = logical_addr;
     
     uint32_t physical_addr = cpu_logic_to_physic(*mem, logical_addr, size);
-    cpu->MAR = ((uint32_t)size << 16) | pyshical_addres;
+    cpu->MAR = ((uint32_t)size << 16) | physical_addr;
     
     // Leer bytes de la memoria física
     uint32_t aux = 0;
@@ -99,7 +99,7 @@ void mem_write(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t value, int 
     cpu->MBR = value;
     
     uint32_t physical_addr = cpu_logic_to_physic(*mem, logical_addr, size);
-    cpu->MAR = ((uint32_t)size << 16) | pyshical_addres;
+    cpu->MAR = ((uint32_t)size << 16) | physical_addr;
     
     uint32_t aux = (uint32_t)value;
     for (int i = size - 1; i >= 0; i--) {
