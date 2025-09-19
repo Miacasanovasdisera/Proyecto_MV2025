@@ -12,13 +12,14 @@ void mem_init(mem_t *mem) {
         mem->segments[i].size = 0;
     }
 }
+// scoop install main/gcc
 
 void mem_load(mem_t *mem, char *archivo, cpu_t *cpu) {
     FILE *arch = fopen(archivo, "rb");
     // el archivo no guarda el caracter nulo, por eso id[5]
     char id[5];
-    int8_t version,size_bytes[2];
-    int16_t code_size;
+    uint8_t version,size_bytes[2];
+    uint16_t code_size;
 
     if (!arch)
         error_Output(LOAD_PROGRAM_ERROR);
@@ -70,19 +71,19 @@ void mem_read(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t *value, int 
     
     // Setear MAR (parte alta) y LAR 
     cpu->LAR = logical_addr;
-    cpu->MAR = size << 16;
     
-    int32_t physical_addr = cpu_logic_to_physic(*mem, logical_addr, size);
+    uint32_t physical_addr = cpu_logic_to_physic(*mem, logical_addr, size);
+    cpu->MAR = ((uint32_t)size << 16) | pyshical_addres;
     
     // Leer bytes de la memoria física
-    *value = 0;
-    for (int i = 0; i < size; i++) {
-        *value = (*value << 8) | mem->data[physical_addr + i];
-    }
+    uint32_t aux = 0;
+    for (int i = 0; i < size; i++)
+        aux = (aux << 8) | (uint8_t)mem->data[physical_addr + i];
     
+    *value = (int32_t)aux;
+
     // Actualizar MBR y cargar parte baja MAR
     cpu->MBR = *value;
-    cpu->MAR = cpu->MAR | physical_addr;
     
 }
 
@@ -95,18 +96,21 @@ void mem_write(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t value, int 
 
     // Setear LAR, MAR y MBR
     cpu->LAR = logical_addr;
-    cpu->MAR = size << 16;
     cpu->MBR = value;
     
-    int32_t physical_addr = cpu_logic_to_physic(*mem, logical_addr, size);
+    uint32_t physical_addr = cpu_logic_to_physic(*mem, logical_addr, size);
+    cpu->MAR = ((uint32_t)size << 16) | pyshical_addres;
     
+    uint32_t aux = (uint32_t)value;
+    for (int i = size - 1; i >= 0; i--) {
+        mem->data[physical_addr + i] = (uint8_t)(aux & 0xFF);
+        aux >>= 8;
+    }
+
     // Escribir bytes en memoria física
     for (int i = size - 1; i >= 0; i--) {
         mem->data[physical_addr + i] = value & 0xFF;
         value >>= 8;
     }
-    
-    // Actualizar MAR con dirección física
-    cpu->MAR = cpu->MAR | physical_addr;
     
 }

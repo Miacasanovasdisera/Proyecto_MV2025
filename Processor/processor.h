@@ -50,12 +50,12 @@ typedef struct cpu_t {
 
 void cpu_init(cpu_t *);
 void cpu_update_IP(cpu_t *, int8_t, int8_t);
-int32_t cpu_logic_to_physic(mem_t ,int32_t, int);
+uint32_t cpu_logic_to_physic(mem_t ,int32_t, int);
 void operators_registers_load(cpu_t *, mem_t);
 int8_t get_operand_type(int32_t);
 int32_t get_operand_value(int32_t);
 int32_t read_register(cpu_t *, uint8_t);
 void write_register(cpu_t *, uint8_t, uint32_t);
-int32_t calculate_logical_address(cpu_t *, uint8_t, uint32_t);
+uint32_t calculate_logical_address(cpu_t *, uint8_t, uint32_t);
 
 #endif
