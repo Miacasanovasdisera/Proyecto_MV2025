@@ -1,10 +1,7 @@
-#include "../Utils/disassembler.h"
+#include "disassembler.h"
 #include "errors.h"
 #include "../InstrucSet/opcod.h"
 #include "../InstrucSet/registers.h"
-#include "../Memory/mem.h"
-#include "../Processor/operands.h"
-
 
 // Se usan las tablas definidas en opcod.h y registers.h:
 //    const char *opcode_name[];
@@ -22,7 +19,7 @@
             break;
 
         case REGISTER_OPERAND:  // registro
-            if (op < 32) { //menos por ahora pero
+            if (op < 32 && strcmp(register_name[op],'?')!=0) { //menos por ahora pero
                 printf("%s", register_name[op]);
             } else {
                 printf("R?");
@@ -34,14 +31,13 @@
             break;
 
         default:
-            printf("?");
-            break;
+            error_Output(INVALID_OPERAND);
     }
 }
 
 // Decodifica la instruccion en OPC, OP1, OP2, typeOP1, typeOP2 y actualiza el IP
-void Decode(cpu_t *cpu, mem_t *mem,int8_t *OP1, int8_t *OP2, int8_t *typeOP1, int8_t *typeOP2, int8_t *OPC) {
-    int8_t i, increment, firstByte = mem->data[cpu->IP];
+void Decode(cpu_t *cpu, mem_t mem,int8_t *OP1, int8_t *OP2, int8_t *typeOP1, int8_t *typeOP2, int8_t *OPC) {
+    int8_t i, increment, firstByte = mem.data[cpu->IP];
     int32_t dataOP1, dataOP2, a, b, typeOP1, typeOP2;
 
     *OPC = firstByte & 0x1F;
@@ -50,11 +46,11 @@ void Decode(cpu_t *cpu, mem_t *mem,int8_t *OP1, int8_t *OP2, int8_t *typeOP1, in
     *typeOP1 = (firstByte >> 4) & 0x03;
 
     increment = cpu->IP + 1;
-    a = mem->data[increment];
+    a = mem.data[increment];
 
     for (i = 1; i < *typeOP2; i++) {
         a = a << 8;
-        b = mem->data[increment + i];
+        b = mem.data[increment + i];
         a = a | b;
     }
     dataOP2 = a;
@@ -69,10 +65,10 @@ void Decode(cpu_t *cpu, mem_t *mem,int8_t *OP1, int8_t *OP2, int8_t *typeOP1, in
     }
 
     else {
-        a = mem->data[increment];
+        a = mem.data[increment];
         for (i = 1; i < *typeOP1; i++) {
             a = a << 8;
-            b = mem->data[increment + i];
+            b = mem.data[increment + i];
             a = a | b;
         }
 
@@ -86,8 +82,8 @@ void Decode(cpu_t *cpu, mem_t *mem,int8_t *OP1, int8_t *OP2, int8_t *typeOP1, in
 }
 
 // Desensambla el codigo desde la posicion actual del IP hasta el final del segmento de codigo
-void disassemble(cpu_t *cpu, mem_t *mem) { //se va a implementar antes de la ejecucion de cada instruccion
-    uint32_t codsize = mem->segments[0].size; // tamaño del segmento de codigo
+void disassemble(cpu_t *cpu, mem_t mem) { //se va a implementar antes de la ejecucion de cada instruccion
+    uint32_t codsize =  mem.segments[0].size;// tamaño del segmento de codigo
     int8_t i, instrucSize, typeOP1, typeOP2, increment = cpu->IP = cpu->CS; // inicio del segmento de codigo (preguntar si estaria bien volver a setear el ip)
     int32_t OP1, OP2, OPC;
     while (increment < codsize) {
@@ -98,7 +94,7 @@ void disassemble(cpu_t *cpu, mem_t *mem) { //se va a implementar antes de la eje
         instrucSize = 1 + typeOP1 + typeOP2; //tamaño de la instruccion
         // 2. instruccion en hex
         for (int i = 0; i < instrucSize; i++) {
-            printf("%02X ", mem->data[increment + i]);
+            printf("%02X ", mem.data[increment + i]);
         }
 
         // Formato

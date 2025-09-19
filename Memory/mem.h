@@ -8,13 +8,13 @@ typedef struct cpu_t cpu_t;
 
 //Tabla de segmentos
 typedef struct {
-    int16_t base;
-    int16_t size;
+    uint16_t base;
+    uint16_t size;
 } segment_desc_t;
 
 //Estructura memoria principal
 typedef struct {
-    int8_t data[MEM_SIZE]; 
+    uint8_t data[MEM_SIZE]; 
     segment_desc_t segments[8]; 
 } mem_t;
 

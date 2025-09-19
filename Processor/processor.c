@@ -12,15 +12,15 @@ void cpu_update_IP(cpu_t *cpu, int8_t typeOP1, int8_t typeOP2) {
     cpu->IP = cpu->IP + typeOP1 + typeOP2 + 1;
 }
 
-int32_t cpu_logic_to_physic(mem_t mem, int32_t logic_address, int bytesToRead) {
-    int16_t segment, offset, base;
-    int32_t dir_physic;
+uint32_t cpu_logic_to_physic(mem_t mem, uint32_t logic_address, int bytesToRead) {
+    uint16_t segment, offset, base;
+    uint32_t dir_physic;
 
     segment = logic_address >> 16;
-    offset = logic_address & 0xFF;
+    offset = logic_address & 0xFFFF;
     base = mem.segments[segment].base;
 
-    dir_physic = (int32_t)base + offset;
+    dir_physic = (uint32_t)base + offset;
 
     if (dir_physic + bytesToRead > mem.segments[segment].base && dir_physic < mem.segments[segment].size)
         return dir_physic;
@@ -81,9 +81,9 @@ int32_t get_operand_value(int32_t OP_register) {
     return OP_register & 0x3FFFFFFF;
 }
 
-int32_t calculate_logical_address(cpu_t *cpu, uint8_t OP_type, uint32_t OP_value) {
-    int16_t segment_selector;
-    int16_t offset;
+uint32_t calculate_logical_address(cpu_t *cpu, uint8_t OP_type, uint32_t OP_value) {
+    uint16_t segment_selector;
+    uint16_t offset;
     
     //Determina segmento
     if (OP_type == MEMORY_OPERAND) 
