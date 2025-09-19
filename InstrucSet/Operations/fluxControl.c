@@ -3,8 +3,6 @@
 #include "../../Utils/errors.h"
 #include "operands.h"
 #include "../instruct.h"
-#
-
 
 int execute_JMP(cpu_t *cpu, mem_t *mem) { 
     int32_t src_value;
@@ -15,7 +13,7 @@ int execute_JMP(cpu_t *cpu, mem_t *mem) {
 
 int execute_JZ(cpu_t *cpu, mem_t *mem) {
      if (cpu->CC & ZMask) 
-        excecute_JMP(cpu, mem);
+        execute_JMP(cpu, mem);
     return 0;
 }
 

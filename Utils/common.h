@@ -5,6 +5,7 @@
 #include <string.h>
 #include <limits.h>
 #include <stdint.h>
+#include <time.h>
 
 #define INVALID_OPERAND 9
 #define WRONG_SIZE 6

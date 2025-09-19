@@ -8,7 +8,12 @@
         "datatransfer.h": "c",
         "helpers.h": "c",
         "disassembler.h": "c",
-        "registers.h": "c"
+        "registers.h": "c",
+        "errors.h": "c",
+        "opcod.h": "c",
+        "operands.h": "c",
+        "executefunctions.h": "c",
+        "syscalls.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

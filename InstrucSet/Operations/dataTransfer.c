@@ -1,4 +1,5 @@
 #include "dataTransfer.h"
+#include "../helpers.h"
 
 int execute_MOV(cpu_t *cpu, mem_t *mem) {
     int32_t src_value, dest_addr,result;
@@ -57,6 +58,15 @@ int execute_LDH(cpu_t *cpu, mem_t *mem) {
 }
 
 int execute_RND(cpu_t *cpu, mem_t *mem) {
+    int32_t src_valueOP2, dest_addr, src_valueOP1;
+    int8_t dest_type = get_operand_type(cpu->OP1);
     
+    srand(time(NULL));
+    get_value(cpu, mem, cpu->OP1, &src_valueOP2);
+    get_destination_address(cpu, cpu->OP1, &dest_addr);
+    
+    src_valueOP1 = rand() % (src_valueOP2 + 1);
+    
+    write_dest(cpu, mem, dest_type, dest_addr, src_valueOP1);
     return 0;
 }
