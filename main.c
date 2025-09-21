@@ -9,21 +9,24 @@ int main(int argc, char *argv[])
 {
     cpu_t cpu;
     mem_t mem;
-    char *disassembler = argc > 2 ? argv[2] : "";
+    char *disassemble = argc > 2 ? argv[2] : "";
 
     cpu_init(&cpu);
     mem_init(&mem);
-    mem_load(&mem, argv[1], &cpu); 
+    mem_load(&mem, argv[1], &cpu);
+    InstrucSet_init(); 
     
-    /*
-    int result,CS = cpu.CS >> 16; //antes estaba 4
+    if (strcmp(disassemble, "-d") == 0)
+        disassembler(&cpu, mem);
     
-    while (cpu.IP < mem.segments[CS].size) { 
-        
+    printf("\n");
+    cpu_init(&cpu);
+    int result,CS = cpu.CS >> 16;
+
+    do {
         operators_registers_load(&cpu,mem);
-        
-        result = execute_instruction(&cpu,&mem);
-    }   
-    */
+        result = execute_instruction(&cpu,&mem); 
+    } while (cpu.IP < mem.segments[CS].size);
+
     return 0;
 }

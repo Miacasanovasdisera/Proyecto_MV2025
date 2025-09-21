@@ -3,6 +3,7 @@
 #include "registers.h"
 #include "operands.h"
 #include "../Utils/errors.h"
+#include "../InstrucSet/Operations/shiftModule.h"
 
 void cpu_init(cpu_t *cpu) {
     memset(cpu, 0, sizeof(cpu_t));
@@ -66,19 +67,31 @@ void operators_registers_load(cpu_t *cpu, mem_t mem) {
 
         dataOP1 = a;
     }
-
+    
+    if(typeOP1 == IMMEDIATE_OPERAND)
+        if(dataOP1 & 0x8000){
+            dataOP1 = dataOP1 << 8;
+            dataOP1 = shift_SAR(cpu,dataOP1,8);
+        }
+                                                       // caso particular de inmediatos negativos      
+    if(typeOP2 == IMMEDIATE_OPERAND)
+        if(dataOP2 & 0x8000){
+            dataOP2 <<= 8;
+            dataOP2 = shift_SAR(cpu,dataOP2,8);            
+        }
+        
     cpu->OP1 = (typeOP1 << 24) | dataOP1;
     cpu->OP2 = (typeOP2 << 24) | dataOP2;
 
     cpu_update_IP(cpu, typeOP1, typeOP2);
 }
 
-int8_t get_operand_type(int32_t OP_register) {
-    return (OP_register >> 30) & 0x03;
+int8_t get_operand_type(uint32_t OP_register) {
+    return (OP_register >> 24) & 0x03;
 }
 
 int32_t get_operand_value(int32_t OP_register) {
-    return OP_register & 0x3FFFFFFF;
+    return (int32_t)((OP_register & 0x00FFFFFF) << 8) >> 8;
 }
 
 uint32_t calculate_logical_address(cpu_t *cpu, uint8_t OP_type, uint32_t OP_value) {

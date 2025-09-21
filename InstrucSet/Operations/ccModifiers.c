@@ -8,7 +8,10 @@
 int execute_ADD(cpu_t *cpu, mem_t *mem) {
     int32_t dest_value, src_value, dest_addr, result;
     int8_t dest_type = get_operand_type(cpu->OP1);
-        
+
+    if (dest_type == IMMEDIATE_OPERAND)
+        return error_Output(INVALID_OPERAND);
+    
     get_value(cpu, mem, cpu->OP2, &src_value);
     get_value(cpu, mem, cpu->OP1, &dest_value);
     get_destination_address(cpu, cpu->OP1, &dest_addr);

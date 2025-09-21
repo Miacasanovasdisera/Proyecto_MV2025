@@ -45,7 +45,8 @@ int execute_ILLEGAL(cpu_t *cpu, mem_t *mem) {
 }
 
 int execute_instruction(cpu_t *cpu, mem_t *mem) {
-    
+    //printf("EJECUTANDO INSTRUCCION OPC: %02X\n", cpu->OPC);
+
     if (cpu->OPC < 256) {
         return instruction_table[cpu->OPC](cpu, mem);
     }

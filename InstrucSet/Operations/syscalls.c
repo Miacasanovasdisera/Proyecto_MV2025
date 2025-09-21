@@ -84,15 +84,15 @@ void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
 
         // muestra segun el booleano
         if(hexa)
-            printf("[%x]: %x ",index,aux);
+            printf("[%.4x]: %x ",index,aux);
         if(octal)
-            printf("[%x]: %o ",index,aux);
+            printf("[%.4x]: %o ",index,aux);
         if(binary)
             print_binary(aux,ECXH,index);  //llama a la funcion que me muestra el numero en binario
         if(decimal)
-            printf("[%x]: %d ",index,aux);
+            printf("[%.4x]: %d ",index,aux);
         if(character)
-            printf("[%x]: %c ",index,aux);
+            printf("[%.4x]: %c ",index,aux);
 
         index = index + j;
 
@@ -133,7 +133,7 @@ void activate_booleans_syscall(int32_t EAX,int32_t *hexadecimal,int32_t *octal,i
 void print_binary(int32_t num,int32_t ECXH,int16_t index){
     int32_t i,bits = 8 * ECXH;
 
-    printf("[%x]: 0b",index);
+    printf("[%.4x]: 0b",index);
     for (i = bits - 1; i >= 0; i--)     //comienza mostrando de mas significativos a menos significativo y se va decrementando la cantidad de shifts
         printf("%d", (num >> i) & 1);
 
