@@ -22,19 +22,29 @@ void get_destination_address(cpu_t *cpu, int32_t OP, int32_t *dest_addrss) {
 }
 
 void get_value(cpu_t *cpu, mem_t *mem, int32_t OP, int32_t *content) {
-    int32_t dataOP,logic_addr;
-    int8_t typeOP;
+    int32_t dataOP;
+    uint32_t logic_addr;
+    uint8_t typeOP,verif = 0;
 
     dataOP = get_operand_value(OP);
     typeOP = get_operand_type(OP);
     
+    if (dataOP & 0x800000) {
+        verif = 1;
+        dataOP = abs(dataOP); //Extiende signo
+    }
+
     switch (typeOP) {
         case REGISTER_OPERAND: 
             *content = read_register(cpu, dataOP);      
         break;
 
-        case IMMEDIATE_OPERAND:
-            *content = dataOP;
+        case IMMEDIATE_OPERAND: {
+            if (dataOP < -32768 || dataOP > 32767)
+                error_Output(WRONG_SIZE);
+            
+            *content = verif ? (-1)*dataOP : dataOP;
+        }
         break;
         
         case MEMORY_OPERAND:{

@@ -49,17 +49,17 @@ void mem_load(mem_t *mem, char *archivo, cpu_t *cpu) {
     
     fclose(arch);
 
-    // Segmento de CODIGO
-    mem->segments[0].base = 0;
-    mem->segments[0].size = code_size;
-
-    // Segmento de DATOS
-    mem->segments[1].base = code_size;
-    mem->segments[1].size = MEM_SIZE - code_size;
-
     cpu->CS = 0x00000000;
     cpu->DS = 0x00010000;
     cpu->IP = cpu->CS;
+
+    // Segmento de CODIGO
+    mem->segments[cpu->CS >> 16].base = 0;
+    mem->segments[cpu->CS >> 16].size = code_size;
+
+    // Segmento de DATOS
+    mem->segments[cpu->DS>>16].base = code_size;   
+    mem->segments[cpu->DS>>16].size = MEM_SIZE - code_size;
 }
 
 void mem_read(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t *value, int size) {

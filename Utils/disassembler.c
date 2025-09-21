@@ -4,28 +4,34 @@
 
 // Esta funcion imprime un operando segun su tipo
 
-void print_operand(uint32_t op, int type) {
-
-
+void print_operand(uint32_t op) {
+    uint32_t typeOP = get_operand_type(op);
+    int32_t dataOP = get_operand_value(op);
+    int8_t reg;
+    int16_t offset;
     
-    switch (type) {
+    switch (typeOP) {
         case NO_OPERAND:  // sin operando
             break;
 
         case IMMEDIATE_OPERAND:  // inmediato en decimal
-            printf("%d", op);
+            printf("%d", dataOP);
             break;
 
         case REGISTER_OPERAND:  // registro
-            if (op < 32 && strcmp(register_name[op],"?")!=0) { //menos por ahora pero
-                printf("%s", register_name[op]);
+            if (dataOP < 32 && strcmp(register_name[dataOP],"?")!=0) { //menos por ahora pero
+                printf("%s", register_name[dataOP]);
             } else {
                 printf("R?");
             }
             break;
 
-        case MEMORY_OPERAND:  // memoria
-            printf("[DS+%d]", op); // considero que la base es ds
+        case MEMORY_OPERAND:{
+            reg = dataOP >> 16;
+            offset = dataOP & 0x0000FFFF;
+            printf("[%s+", register_name[reg]);
+            printf("%d]",offset);
+        }     // memoria
             break;
 
         default:
@@ -33,65 +39,17 @@ void print_operand(uint32_t op, int type) {
     }
 }
 
-// Decodifica la instruccion en OPC, OP1, OP2, typeOP1, typeOP2 y actualiza el IP
-void Decode(cpu_t *cpu, mem_t mem,int32_t *OP1, int32_t *OP2, int8_t *typeOP1, int8_t *typeOP2, int32_t *OPC) {
-    int8_t i, increment, firstByte = mem.data[cpu->IP];
-    int32_t dataOP1, dataOP2, a, b;
-
-    *OPC = firstByte & 0x1F;
-
-    *typeOP2 = (firstByte & 0xc0) >> 6;
-    *typeOP1 = (firstByte >> 4) & 0x03;
-
-    increment = cpu->IP + 1;
-    a = mem.data[increment];
-
-    for (i = 1; i < *typeOP2; i++) {
-        a = a << 8;
-        b = mem.data[increment + i];
-        a = a | b;
-    }
-    dataOP2 = a;
-    increment += i;
-
-    if (*typeOP1 == 0) {
-        *typeOP1 = *typeOP2;
-        *typeOP2 = 0;
-
-        dataOP1 = dataOP2;
-        dataOP2 = 0;
-    }
-
-    else {
-        a = mem.data[increment];
-        for (i = 1; i < *typeOP1; i++) {
-            a = a << 8;
-            b = mem.data[increment + i];
-            a = a | b;
-        }
-
-        dataOP1 = a;
-    }
-
-    *OP1 = (*typeOP1 << 24) | dataOP1;
-    *OP2 = (*typeOP2 << 24) | dataOP2;
-
-    cpu_update_IP(cpu, *typeOP1, *typeOP2);
-}
-
-// Desensambla el codigo desde la posicion actual del IP hasta el final del segmento de codigo
-void disassembler(cpu_t *cpu, mem_t mem) { //se va a implementar antes de la ejecucion de cada instruccion
-    
-    
-    uint32_t codsize =  mem.segments[0].size, increment = cpu->IP = cpu->CS;// tamaño del segmento de codigo
-    int8_t i, instrucSize, typeOP1, typeOP2; // inicio del segmento de codigo (preguntar si estaria bien volver a setear el ip)
-    int32_t OP1, OP2, OPC;
+void disassembler(cpu_t *cpu, mem_t mem) {
+    uint32_t codsize =  mem.segments[0].size, increment = cpu->IP = cpu->CS;
+    int8_t i, instrucSize, typeOP1, typeOP2;
     
     while (increment < codsize) {
-        // 1. direc fisica
         printf("[%04X] ", increment);        
 
-        Decode(cpu, mem, &OP1, &OP2, &typeOP1, &typeOP2, &OPC);
+        operators_registers_load(cpu, mem);
+         // carga OPC, OP1, OP2 y actualiza IP
+        typeOP1 = get_operand_type(cpu->OP1);
+        typeOP2 = get_operand_type(cpu->OP2);
         instrucSize = 1 + typeOP1 + typeOP2; //tamaño de la instruccion
         // 2. instruccion en hex
         for (i = 0; i < instrucSize; i++) {
@@ -106,18 +64,18 @@ void disassembler(cpu_t *cpu, mem_t mem) { //se va a implementar antes de la eje
         printf("| ");
 
         // 3 mnemonico
-        const char *mnemonic = opcode_name[OPC];
+        const char *mnemonic = opcode_name[cpu->OPC];
             printf("%s ", mnemonic);
 
         // 4. Operando 1
         if (typeOP1 != NO_OPERAND) {
-            print_operand(OP1, typeOP1);
+            print_operand(cpu->OP1);
         }
 
         // 5. Operando 2
         if (typeOP2 != NO_OPERAND) {
             printf(", ");
-            print_operand(OP2, typeOP2);
+            print_operand(cpu->OP2);
         }   
 
         printf("\n");

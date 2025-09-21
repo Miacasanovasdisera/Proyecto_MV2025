@@ -15,10 +15,10 @@ int error_Output(int error_code) {
             printf("Error %d: Fallo al cargar el programa.\n", error_code);
             break;
         case INVALID_INSTRUCTION:
-            printf("Error %d: Instrucción inválida.\n", error_code);
+            printf("Error %d: Instruccion invalida.\n", error_code);
             break;
         case DIVISION_BY_ZERO:
-            printf("Error %d: División por cero.\n", error_code);
+            printf("Error %d: Division por cero.\n", error_code);
             break;
         case MEMORY_ERROR:
             printf("Error %d: Fallo de segmento.\n", error_code);
@@ -27,12 +27,15 @@ int error_Output(int error_code) {
             printf("Error %d: Error de registro.\n", error_code);
             break;
         case WRONG_SIZE:
-            printf("Error %d: Tamaño de lectura o escritura inválido.\n", error_code);
+            printf("Error %d: Tamanio de lectura o escritura invalido.\n", error_code);
+            break;
+        case INVALID_OPERAND:
+            printf("Error %d: Operando invalido.\n", error_code);
             break;
         default:
             printf("Error de ejecucion.\n");
             break;
     }
-    printf("Se aborta la ejecución de la máquina virtual.\n");
+    printf("Se aborta la ejecucion de la maquina virtual.\n");
     exit(error_code);
 }

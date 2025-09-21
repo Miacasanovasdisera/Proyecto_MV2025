@@ -48,6 +48,6 @@ int execute_JN(cpu_t *cpu,mem_t *mem) {
 }
 
 int execute_STOP(cpu_t *cpu,mem_t *mem) {
-    cpu->IP = 0xFFFFFFFF; // Valor especial para indicar que la CPU está detenida
+    cpu->IP = mem->segments[cpu->CS >> 16].size; // Valor especial para indicar que la CPU está detenida
     return 0;
 }

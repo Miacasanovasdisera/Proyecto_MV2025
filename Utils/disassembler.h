@@ -5,16 +5,14 @@
 #include "../Memory/mem.h"
 #include "common.h"
 
-static const char *opcode_name[28] = { 
+static const char *opcode_name[] = { 
         "SYS", "JMP", "JZ", "JP", "JN", "JNZ", "JNP", "JNN",
-        "NOT", "UNK", "MOV", "ADD", "SUB", "MUL", "DIV", "STOP",
-        "UNK", "UNK", "UNK", "UNK", "UNK", "UNK", "UNK", "UNK",
-        "UNK", "UNK", "UNK", "UNK", "UNK", "UNK", "UNK", "UNK",
+        "NOT", "UNK","UNK","UNK","UNK","UNK","UNK","STOP", 
         "MOV", "ADD", "SUB", "MUL", "DIV", "CMP", "SHL", "SHR",
         "SAR", "AND", "OR",  "XOR","SWAP","LDL","LDH","RND"
 };  // solo declaración
 
-static const char *register_name[28] = {
+static const char *register_name[] = {
         "LAR", "MAR", "MBR", "IP", "OPC", "OP1", "OP2",
         "?", "?", "?",
         "EAX", "EBX", "ECX", "EDX", "EEX", "EFX",
@@ -23,8 +21,8 @@ static const char *register_name[28] = {
         "CS", "DS"
 };
 // Toda la lógica para imprimir el código desensamblado cuando se usa el flag -d.
-void print_operand(uint32_t, int);
+void print_operand(uint32_t);
 void Decode(cpu_t *, mem_t, int32_t *, int32_t *, int8_t *, int8_t *, int32_t *);
-void disassemble(cpu_t *, mem_t *);
+void disassembler(cpu_t *, mem_t);
 
 #endif
