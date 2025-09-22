@@ -40,32 +40,38 @@ int execute_SYS(cpu_t *cpu, mem_t *mem){
 
 void sys_read(mem_t *mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
     int32_t hexa,octal,binary,decimal,character,num;            // hexa,octal,binary,decimal y character son booleanos para saber que numero va a ingresar por teclado
-    int16_t i,j,k = 0;                                                 // num es el numero que se ingresa por teclado
+    int16_t i,j;                                                 // num es el numero que se ingresa por teclado
 
     activate_booleans_syscall(read_register(cpu,R_EAX),&hexa,&octal,&binary,&decimal,&character);  // activa un booleano declarado mas arriba
 
-    for(i=0; i <= ECXL ;i++){   // itera la cantidad de veces q tenga que leer por pantalla
+    for(i = 0; i < ECXL ;i++){   // itera la cantidad de veces q tenga que leer por pantalla
         
-        if(hexa)
+        if(hexa) {
+            printf("0x");
             scanf("%x",&num);
-        else if(octal)
-            scanf("%o",&num);
-        else if(binary)
-            read_binary(&num);
-        else if(decimal)
-            scanf("%d",&num);
-        else if(character)
-            scanf("%c",&num);
-
-        for(j = ECXH - 1; j>=0 ;j--){                             // itera hasta guardar el numero en la cantidad de celdas que me diga ECXH
-            mem->data[index+j] = (num >> k*8) & 0xFF;       // comienzo a guardar el numero en el segmento del final hacia el inicio y k me va moviendo el num para guardar los 8 bit menos significativos
-            k++;
         }
-        index = index + ECXH;
+        else if(octal){
+            printf("0o");
+            scanf("0o%o",&num);
+        }
+        else if(binary) {
+            printf("0b");
+            read_binary(&num);
+        }
+        else if(decimal) 
+            scanf("%d",&num);
+        
+        else if(character){
+            printf("car: ");
+            scanf("%c",&num);
+        }
 
+        // Guardar el número en memoria (big-endian)
+        for(j = 0; j < ECXH; j++)                            // itera hasta guardar el numero en la cantidad de celdas que me diga ECXH
+            mem->data[index + j] = (uint8_t)((num >> (8 * (ECXH - 1 - j))) & 0xFF);
+        
+        index += ECXH;
     }
-
-
 }
 
 void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
@@ -74,12 +80,16 @@ void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
 
     activate_booleans_syscall(read_register(cpu,R_EAX),&hexa,&octal,&binary,&decimal,&character);  // activa los booleanos declarados mas arriba
 
-    for(i=0; i<=ECXL-1 ;i++){     // itera la cantidad de veces que tengo que leer 'x' cantidad de bytes
+    for(i = 0; i < ECXL ;i++){     // itera la cantidad de veces que tengo que leer 'x' cantidad de bytes
         aux = 0;
         
-        for(j=0; j<=ECXH-1 ;j++){
-            aux = aux | mem.data[index+j];
-            aux = aux << 8;
+        for(j = 0; j < ECXH ;j++)
+            aux = (aux << 8) | (uint8_t)mem.data[index + j];
+        
+        switch (ECXH) {
+            case 1: aux &= 0xFF; break;
+            case 2: aux &= 0xFFFF; break;
+            case 4: aux &= 0xFFFFFFFF; break;
         }
 
         // muestra segun el booleano

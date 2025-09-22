@@ -7,6 +7,8 @@ División por cero: 3
 Fallo de segmento: 4
 Error de registro: 5
 Tamaño de lectura o escritura inválido: 6
+Operando inválido: 7
+Numero de argumentos invalido: 8
 */
 
 int error_Output(int error_code) {
