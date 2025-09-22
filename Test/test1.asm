@@ -1,22 +1,10 @@
-XOR AC,AC	
-MOV EAX, 0x01 
-XOR EBX, EBX 
-MOV EDX, DS 
-MOV EBX, [4] 
-LDL ECX, 1 
-LDH ECX, 4 
-SYS 1
-CMP EDX, 0 
-JN 0x0033
-ADD AC, 1 
-ADD [EBX], [EDX] 
-JMP 0x00A 
-CMP AC,0 
-JZ 0x0050 
-ADD EDX, 4 
-DIV EBX, AC 
-MOV [EDX], [EBX] 
-LDH ECX, 4 
-LDL ECX, 1 
-SYS 2 
-STOP 
+MOV   EDX,DS
+MOV   [EDX], 0x41 
+SHL   [EDX], 8 
+OR    [EDX], 'a' 
+MOV   EDX, DS 
+ADD   EDX, 12 
+LDL   ECX, 1 
+LDH   ECX, 2 
+MOV   EAX, 0x0F 
+SYS   0x2       

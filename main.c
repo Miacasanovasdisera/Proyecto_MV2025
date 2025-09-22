@@ -25,8 +25,8 @@ int main(int argc, char *argv[])
 
     do {
         operators_registers_load(&cpu,mem);
-        result = execute_instruction(&cpu,&mem); 
-    } while (cpu.IP < mem.segments[CS].size);
+        result = execute_instruction(&cpu,&mem);
+    } while ((uint32_t)cpu.IP < mem.segments[CS].size);
 
     return 0;
 }

@@ -57,7 +57,7 @@ void disassembler(cpu_t *cpu, mem_t mem) {
         }
 
         // Formato
-        for (i = instrucSize; i < 6; i++) {
+        for (i = instrucSize; i < 8; i++) {
             printf("   ");
         }
 
