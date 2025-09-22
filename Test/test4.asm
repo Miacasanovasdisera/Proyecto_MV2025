@@ -41,5 +41,3 @@ MUESTRA:MOV EAX 0x1F
 	LDL ECX,1
 	SYS 2
 	STOP
-//Suponiendo que no existe la instrucción MUL, crear un algoritmo que reciba en EBX y ECX los
-dos valores y retorne en EAX su producto.
