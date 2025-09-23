@@ -16,11 +16,13 @@ int main(int argc, char *argv[])
     mem_load(&mem, argv[1], &cpu);
     InstrucSet_init(); 
     
-    if (strcmp(disassemble, "-d") == 0)
-        disassembler(&cpu, mem);
+    printf("\n");
+
+    if (strcmp(disassemble, "-d") == 0) 
+        disassembler(cpu, mem);
     
     printf("\n");
-    cpu_init(&cpu);
+    
     int result,CS = cpu.CS >> 16;
 
     do {
