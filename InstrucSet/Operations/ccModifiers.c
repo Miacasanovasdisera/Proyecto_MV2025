@@ -15,11 +15,11 @@ int execute_ADD(cpu_t *cpu, mem_t *mem) {
     get_value(cpu, mem, cpu->OP2, &src_value);
     get_value(cpu, mem, cpu->OP1, &dest_value);
     get_destination_address(cpu, cpu->OP1, &dest_addr);
-    printf("dest value: %d\n",dest_value);
+
     result = alu_ADD(cpu, dest_value, src_value);
-    printf("data EBX: %d\n", cpu->EBX);
     
     write_dest(cpu, mem, dest_type, dest_addr, result);
+    
     return 0;
 }
 
@@ -88,8 +88,12 @@ int execute_OR(cpu_t *cpu, mem_t *mem) {
     get_value(cpu, mem, cpu->OP1, &dest_value);
     get_destination_address(cpu, cpu->OP1, &dest_addr);
     
+    
+    
     result = alu_OR(cpu, dest_value, src_value);
+   
     write_dest(cpu, mem, dest_type, dest_addr, result);
+    
     return 0;
 }
 
@@ -141,11 +145,8 @@ int execute_SHL(cpu_t *cpu, mem_t *mem) {
     get_value(cpu,mem,cpu->OP2, &valueOP2);
     get_destination_address(cpu, cpu->OP1, &dest_addr);
 
-    printf("src_value: %d\n", valueOP2);
-    printf("dest_value: %d\n", valueOP1);
-
     result = shift_SHL(cpu, valueOP1, valueOP2);
-    
+
     write_dest(cpu, mem, dest_type, dest_addr, result);
     return 0;
 }
