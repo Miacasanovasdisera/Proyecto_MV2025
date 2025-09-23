@@ -12,7 +12,7 @@ int execute_SYS(cpu_t *cpu, mem_t *mem){
     ECXH = read_register(cpu,R_ECX) & 0xFFFF0000;
     ECXH = ECXH >> 16;
     ECXL = read_register(cpu,R_ECX) & 0x0000FFFF;
-
+ 
 
     //leo la direccion logica del EDX y la paso a fisica para saber de donde arranco a leer (se lo asigno a la variable index que se va a ir moviendo por donde leo)
     physical_address = cpu_logic_to_physic(*mem,read_register(cpu,R_EDX),4);
@@ -79,13 +79,11 @@ void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
     int16_t i,j;                                            // el aux es donde voy a guardar los elementos que leo del segmento
 
     activate_booleans_syscall(read_register(cpu,R_EAX),&hexa,&octal,&binary,&decimal,&character);  // activa los booleanos declarados mas arriba
-
     for(i = 0; i < ECXL ;i++){     // itera la cantidad de veces que tengo que leer 'x' cantidad de bytes
         aux = 0;
-        
-        for(j = 0; j < ECXH ;j++)
+        for(j = 0; j <ECXH ;j++)
             aux = (aux << 8) | (uint8_t)mem.data[index + j];
-        
+            
         switch (ECXH) {
             case 1: aux &= 0xFF; break;
             case 2: aux &= 0xFFFF; break;
@@ -94,15 +92,15 @@ void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
 
         // muestra segun el booleano
         if(hexa)
-            printf("[%.4x]: %x ",index,aux);
+            printf("[%.4x]: 0x%x ",index,aux);
         if(octal)
-            printf("[%.4x]: %o ",index,aux);
+            printf("[%.4x]: 0o%o ",index,aux);
         if(binary)
             print_binary(aux,ECXH,index);  //llama a la funcion que me muestra el numero en binario
+        if(character)
+            print_characters(aux,ECXH,index);
         if(decimal)
             printf("[%.4x]: %d ",index,aux);
-        if(character)
-            printf("[%.4x]: %c ",index,aux);
 
         index = index + j;
 
@@ -160,4 +158,25 @@ void read_binary(int32_t *num){
         if(binary_number[i] == '1')
             *num += 1 << (length-1-i);
         
+}
+
+void print_characters(int32_t num,int32_t ECXH,int16_t index){
+    char characters[4];     //vector q contiene los caracteres a mostrar
+    int32_t i,j,aux;        // auxiliar contiene el numero a mostrar y j es el indice del vector 
+
+    j=0;
+    for(i=ECXH-1; i>=0; i--){
+        aux = num;
+        aux = (aux >> i*8) & 0x000000FF;
+        if(aux>=32 && aux<127)
+            characters[j]=aux;
+        else
+            characters[j]='.';
+        j+=1;
+    }
+    
+    printf("[%.4x]: ",index);
+    for(i=0;i<ECXH;i++)
+        printf("%c",characters[i]);
+    printf(" ");    
 }

@@ -4,11 +4,10 @@
 int execute_MOV(cpu_t *cpu, mem_t *mem) {
     int32_t src_value, dest_addr,result;
     int8_t dest_type = get_operand_type(cpu->OP1);
-    
 
     get_value(cpu, mem, cpu->OP2, &src_value);
     get_destination_address(cpu, cpu->OP1, &dest_addr);
-    
+
     result = src_value;
 
     write_dest(cpu, mem, dest_type, dest_addr, result);
@@ -37,6 +36,7 @@ int execute_LDL(cpu_t *cpu, mem_t *mem) {
         
     get_value(cpu, mem, cpu->OP2, &src_valueOP2);
     get_value(cpu, mem, cpu->OP1, &src_valueOP1);
+
 
     get_destination_address(cpu, cpu->OP1, &dest_addr);
 
