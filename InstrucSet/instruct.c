@@ -33,11 +33,9 @@ instruction_handler_t instruction_table[256] = {
 };
 
 void InstrucSet_init() {
-    for (int i = 0; i < 256; i++) {
-        if (instruction_table[i] == NULL) {
-            instruction_table[i] = execute_ILLEGAL;
-        }
-    }
+    for (int i = 0; i < 256; i++) 
+        if (instruction_table[i] == NULL) 
+            instruction_table[i] = execute_ILLEGAL;   
 }
 
 int execute_ILLEGAL(cpu_t *cpu, mem_t *mem) {
@@ -45,10 +43,8 @@ int execute_ILLEGAL(cpu_t *cpu, mem_t *mem) {
 }
 
 int execute_instruction(cpu_t *cpu, mem_t *mem) {
-    //printf("EJECUTANDO INSTRUCCION OPC: %02X\n", cpu->OPC);
-
-    if (cpu->OPC < 256) {
+    if (cpu->OPC < 256) 
         return instruction_table[cpu->OPC](cpu, mem);
-    }
+    
     return execute_ILLEGAL(cpu, mem);
 }
