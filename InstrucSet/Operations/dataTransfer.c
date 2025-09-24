@@ -9,7 +9,6 @@ int execute_MOV(cpu_t *cpu, mem_t *mem) {
     get_destination_address(cpu, cpu->OP1, &dest_addr);
 
     result = src_value;
-
     write_dest(cpu, mem, dest_type, dest_addr, result);
     return 0;
 }

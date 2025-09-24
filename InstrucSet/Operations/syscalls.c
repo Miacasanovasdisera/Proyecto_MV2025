@@ -9,19 +9,17 @@ int execute_SYS(cpu_t *cpu, mem_t *mem){
 
 
     //leo la informacion del ECX
-    ECXH = read_register(cpu,R_ECX) & 0xFFFF0000;
-    ECXH = ECXH >> 16;
+    ECXH = (read_register(cpu,R_ECX) & 0xFFFF0000) >> 16;
     ECXL = read_register(cpu,R_ECX) & 0x0000FFFF;
  
 
     //leo la direccion logica del EDX y la paso a fisica para saber de donde arranco a leer (se lo asigno a la variable index que se va a ir moviendo por donde leo)
     physical_address = cpu_logic_to_physic(*mem,read_register(cpu,R_EDX),4);
-    index = physical_address & 0xFFFF + mem->segments[cpu->DS >> 16].base;
+    index = physical_address;
 
     // verificar si el ecx y el edx sumados superan al tamaño del segmento
-
-    if(index+ECXH*ECXL<16384)
-
+    if(index+ECXH*ECXL <= MEM_SIZE)
+        
         if(get_operand_value(cpu->OP1) == 1)
             sys_read(mem,cpu,ECXH,ECXL,index);
         
@@ -45,10 +43,10 @@ void sys_read(mem_t *mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
 
     for(i = 0; i < ECXL ;i++){   // itera la cantidad de veces q tenga que leer por pantalla
         
-        printf("[%.4x]: ",index);
+        printf("[%.4X]: ",index);
         if(hexa) {
             printf("0x");
-            scanf("%x",&num);
+            scanf("%X",&num);
         }
         else if(octal){
             printf("0o");
@@ -79,8 +77,9 @@ void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
     activate_booleans_syscall(read_register(cpu,R_EAX),&hexa,&octal,&binary,&decimal,&character);  // activa los booleanos declarados mas arriba
     for(i = 0; i < ECXL ;i++){     // itera la cantidad de veces que tengo que leer 'x' cantidad de bytes
         aux = 0;
-        for(j = 0; j <ECXH ;j++)
+        for(j = 0; j < ECXH ;j++)
             aux = (aux << 8) | (uint8_t)mem.data[index + j];
+            
             
         switch (ECXH) {
             case 1: aux &= 0xFF; break;
@@ -89,9 +88,9 @@ void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
         }
 
         // muestra segun el booleano
-        printf("[%.4x]:   ",index);
+        printf("[%.4X]:   ",index);
         if(hexa)
-            printf("0x%x ",aux);
+            printf("0x%X ",aux);
         if(octal)
             printf("0o%o ",aux);
         if(binary)
@@ -101,7 +100,7 @@ void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
         if(decimal)
             printf("%d ",aux);
 
-        index = index + j;
+        index += ECXH;
 
         printf("\n") ;
         }
@@ -172,7 +171,7 @@ void print_characters(int32_t num,int32_t ECXH){
             characters[j]='.';
         j+=1;
     }
-    
+    printf("'");
     for(i=0;i<ECXH;i++)
         printf("%c",characters[i]);
     printf(" ");    

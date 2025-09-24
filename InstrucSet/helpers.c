@@ -34,6 +34,7 @@ void get_value(cpu_t *cpu, mem_t *mem, int32_t OP, int32_t *content) {
         dataOP = abs(dataOP); //Extiende signo
     }
 
+
     switch (typeOP) {
         case REGISTER_OPERAND: 
             *content = read_register(cpu, dataOP);      

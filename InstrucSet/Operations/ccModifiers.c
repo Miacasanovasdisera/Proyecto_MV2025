@@ -173,7 +173,7 @@ int execute_SAR(cpu_t *cpu, mem_t *mem) {
     get_value(cpu,mem,cpu->OP2, &valueOP2);
     get_destination_address(cpu, cpu->OP1, &dest_addr);
 
-    result = shift_SHL(cpu, valueOP1, valueOP2);
+    result = shift_SAR(cpu, valueOP1, valueOP2);
     
     write_dest(cpu, mem, dest_type, dest_addr, result);
     return 0;

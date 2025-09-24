@@ -12,7 +12,7 @@ int execute_JMP(cpu_t *cpu, mem_t *mem) {
 }
 
 int execute_JZ(cpu_t *cpu, mem_t *mem) {
-     if (cpu->CC & ZMask) 
+     if (cpu->CC & ZMask && !(cpu->CC & NMask)) 
         execute_JMP(cpu, mem);
     return 0;
 }
@@ -24,13 +24,13 @@ int execute_JNZ(cpu_t *cpu, mem_t *mem) {
 }
 
 int execute_JP(cpu_t *cpu, mem_t *mem) {
-    if (!(cpu->CC & NMask) && !(cpu->CC & ZMask)) 
+    if (!(cpu->CC & ZMask) && !(cpu->CC & NMask))
         execute_JMP(cpu, mem);
     return 0;
 }
 
 int execute_JNP(cpu_t *cpu, mem_t *mem) {
-    if (cpu->CC & NMask || (cpu->CC & ZMask)) 
+    if ((cpu->CC & ZMask) || (cpu->CC & NMask))
         execute_JMP(cpu, mem);
     return 0;
 }
@@ -42,7 +42,7 @@ int execute_JNN(cpu_t *cpu, mem_t *mem) {
 }
 
 int execute_JN(cpu_t *cpu,mem_t *mem) {
-    if (cpu->CC & NMask) 
+    if (cpu->CC & NMask && !(cpu->CC & ZMask)) 
         execute_JMP(cpu, mem);
     return 0;
 }

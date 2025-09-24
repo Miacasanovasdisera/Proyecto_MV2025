@@ -22,7 +22,7 @@ void print_operand(uint32_t op) {
             if (dataOP < 32 && strcmp(register_name[dataOP],"?")!=0) { //menos por ahora pero
                 printf("%s", register_name[dataOP]);
             } else {
-                printf("R?");
+                printf("?");
             }
             break;
 
