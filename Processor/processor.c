@@ -13,25 +13,40 @@ void cpu_update_IP(cpu_t *cpu, int8_t typeOP1, int8_t typeOP2) {
     cpu->IP = cpu->IP + typeOP1 + typeOP2 + 1;
 }
 
-uint32_t cpu_logic_to_physic(mem_t mem, uint32_t logic_address, int bytesToRead) {
-    uint16_t segment, offset, base;
-    uint32_t dir_physic;
+uint16_t cpu_logic_to_physic(mem_t mem, uint32_t logic_address, int bytesToRead) {
+    uint16_t segment = (uint16_t)(logic_address >> 16);
+    uint16_t offset = (uint16_t)(logic_address & 0xFFFF);
+    
+    // Verificar que el segmento sea válido (0-7)
+    if (segment >= 8) {
+        error_Output(MEMORY_ERROR);
+        return 0;
+    }
+    
+    uint16_t base = mem.segments[segment].base;
+    uint16_t size = mem.segments[segment].size;
 
-    segment = logic_address >> 16;
-    offset = logic_address & 0xFFFF;
-    base = mem.segments[segment].base;
-
-    dir_physic = (uint32_t)base + offset;
-
-    if (dir_physic + bytesToRead > mem.segments[segment].base && dir_physic < mem.segments[segment].size)
-        return dir_physic;
-
-    return error_Output(MEMORY_ERROR); //Fallo de segmento
+    // Verificar que el acceso completo esté dentro del segmento
+    if ((uint32_t)offset + bytesToRead > size) {
+        error_Output(MEMORY_ERROR);
+        return 0;
+    }
+    
+    // Calcular dirección física
+    uint16_t physical_addr = base + offset;
+    
+    // Verificar que no se salga de la memoria física (16KB = 0x4000)
+    if ((uint32_t)physical_addr + bytesToRead > MEM_SIZE) {
+        error_Output(MEMORY_ERROR);
+        return 0;
+    }
+    
+    return physical_addr;
 }
 
 void operators_registers_load(cpu_t *cpu, mem_t mem) {
-    int8_t i, increment,  typeOP1, typeOP2, firstByte = mem.data[cpu->IP];
-    int32_t dataOP1, dataOP2, a, b;
+    uint8_t i, increment,  typeOP1, typeOP2, firstByte = mem.data[cpu->IP];
+    uint32_t dataOP1, dataOP2, a, b;
 
     cpu->OPC = firstByte & 0x1F;
 
@@ -80,8 +95,8 @@ void operators_registers_load(cpu_t *cpu, mem_t mem) {
             dataOP2 = shift_SAR(cpu,dataOP2,8);            
         }
         
-    cpu->OP1 = (typeOP1 << 24) | dataOP1;
-    cpu->OP2 = (typeOP2 << 24) | dataOP2;
+    cpu->OP1 = (typeOP1 << 24) | (int32_t)dataOP1;
+    cpu->OP2 = (typeOP2 << 24) | (int32_t)dataOP2;
 
     cpu_update_IP(cpu, typeOP1, typeOP2);
 }
@@ -90,33 +105,22 @@ int8_t get_operand_type(uint32_t OP_register) {
     return (OP_register >> 24) & 0x03;
 }
 
-int32_t get_operand_value(int32_t OP_register) {
+int32_t get_operand_value(uint32_t OP_register) {
     return (int32_t)((OP_register & 0x00FFFFFF) << 8) >> 8;
 }
 
 uint32_t calculate_logical_address(cpu_t *cpu, uint8_t OP_type, uint32_t OP_value) {
-    uint16_t segment_selector;
-    uint16_t offset;
+    // Solo los operandos de memoria necesitan dirección lógica
+    if (OP_type != MEMORY_OPERAND) {
+        error_Output(INVALID_OPERAND);
+        return 0;
+    }
     
-    //Determina segmento
-    if (OP_type == MEMORY_OPERAND) 
-        segment_selector = (cpu->DS >> 16) & 0xFFFF;
+    // Para operandos de memoria: usar DS como segmento por defecto
+    uint16_t segment_selector = (cpu->DS >> 16) & 0xFFFF;
+    uint16_t offset = OP_value & 0xFFFF;
     
-    else 
-        segment_selector = (cpu->CS >> 16) & 0xFFFF;
-    
-    //Extrae EL OFFSET del valor del operando
-    if (OP_type == IMMEDIATE_OPERAND) 
-        offset = OP_value & 0xFFFF;
-
-    else if (OP_type == MEMORY_OPERAND) 
-        offset = OP_value & 0xFFFF;
-
-    else if (OP_type == REGISTER_OPERAND) 
-        offset = read_register(cpu, OP_value) & 0xFFFF;
-    
-    //Ensambla dir logica
-    return (segment_selector << 16) | offset;
+    return (uint32_t)(segment_selector << 16) | offset;
 }
 
 void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
@@ -164,8 +168,9 @@ int32_t read_register(cpu_t *cpu, uint8_t reg_code) {
         case R_MAR: return cpu->MAR;
         case R_MBR: return cpu->MBR;
         case R_LAR: return cpu->LAR;
-        default:
-            return error_Output(REGISTER_ERROR);
-        break; //Error de registro
+        case R_OPC: return cpu->OPC;
+        case R_OP1: return cpu->OP1;
+        case R_OP2: return cpu->OP2;
+        default: return error_Output(REGISTER_ERROR);
     }
 }

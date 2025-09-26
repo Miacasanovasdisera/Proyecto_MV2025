@@ -12,7 +12,11 @@ int execute_JMP(cpu_t *cpu, mem_t *mem) {
 }
 
 int execute_JZ(cpu_t *cpu, mem_t *mem) {
+<<<<<<< HEAD
      if ((cpu->CC & ZMask)==0) 
+=======
+     if (cpu->CC & ZMask && !(cpu->CC & NMask)) 
+>>>>>>> 6bcea427c010b10b33deaa89068aedcfdc13d464
         execute_JMP(cpu, mem);
     return 0;
 }
@@ -24,13 +28,21 @@ int execute_JNZ(cpu_t *cpu, mem_t *mem) {
 }
 
 int execute_JP(cpu_t *cpu, mem_t *mem) {
+<<<<<<< HEAD
     if ((cpu->CC & NMask)!=1 && !(cpu->CC & ZMask)!=0) 
+=======
+    if (!(cpu->CC & ZMask) && !(cpu->CC & NMask))
+>>>>>>> 6bcea427c010b10b33deaa89068aedcfdc13d464
         execute_JMP(cpu, mem);
     return 0;
 }
 
 int execute_JNP(cpu_t *cpu, mem_t *mem) {
+<<<<<<< HEAD
     if ((cpu->CC & NMask)==1 || (cpu->CC & ZMask)==0) 
+=======
+    if ((cpu->CC & ZMask) || (cpu->CC & NMask))
+>>>>>>> 6bcea427c010b10b33deaa89068aedcfdc13d464
         execute_JMP(cpu, mem);
     return 0;
 }
@@ -42,7 +54,11 @@ int execute_JNN(cpu_t *cpu, mem_t *mem) {
 }
 
 int execute_JN(cpu_t *cpu,mem_t *mem) {
+<<<<<<< HEAD
     if ((cpu->CC & NMask)==1) 
+=======
+    if (cpu->CC & NMask && !(cpu->CC & ZMask)) 
+>>>>>>> 6bcea427c010b10b33deaa89068aedcfdc13d464
         execute_JMP(cpu, mem);
     return 0;
 }

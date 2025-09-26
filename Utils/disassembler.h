@@ -18,11 +18,10 @@ static const char *register_name[] = {
         "EAX", "EBX", "ECX", "EDX", "EEX", "EFX",
         "AC", "CC",
         "?","?","?","?","?","?","?","?",
-        "CS", "DS"
+        "CS", "DS","?","?","?","?"
 };
 // Toda la lógica para imprimir el código desensamblado cuando se usa el flag -d.
 void print_operand(uint32_t);
-void Decode(cpu_t *, mem_t, int32_t *, int32_t *, int8_t *, int8_t *, int32_t *);
-void disassembler(cpu_t *, mem_t);
+void disassembler(cpu_t , mem_t);
 
 #endif

@@ -9,20 +9,17 @@ int execute_SYS(cpu_t *cpu, mem_t *mem){
 
 
     //leo la informacion del ECX
-    ECXH = read_register(cpu,R_ECX) & 0xFFFF0000;
-    ECXH = ECXH >> 16;
+    ECXH = (read_register(cpu,R_ECX) & 0xFFFF0000) >> 16;
     ECXL = read_register(cpu,R_ECX) & 0x0000FFFF;
  
 
     //leo la direccion logica del EDX y la paso a fisica para saber de donde arranco a leer (se lo asigno a la variable index que se va a ir moviendo por donde leo)
     physical_address = cpu_logic_to_physic(*mem,read_register(cpu,R_EDX),4);
-    index = physical_address & 0xFFFF;
-
+    index = physical_address;
 
     // verificar si el ecx y el edx sumados superan al tamaño del segmento
-
-    if(index+ECXH*ECXL<16384)
-
+    if(index+ECXH*ECXL <= MEM_SIZE)
+        
         if(get_operand_value(cpu->OP1) == 1)
             sys_read(mem,cpu,ECXH,ECXL,index);
         
@@ -46,9 +43,10 @@ void sys_read(mem_t *mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
 
     for(i = 0; i < ECXL ;i++){   // itera la cantidad de veces q tenga que leer por pantalla
         
+        printf("[%.4X]: ",index);
         if(hexa) {
             printf("0x");
-            scanf("%x",&num);
+            scanf("%X",&num);
         }
         else if(octal){
             printf("0o");
@@ -61,10 +59,8 @@ void sys_read(mem_t *mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
         else if(decimal) 
             scanf("%d",&num);
         
-        else if(character){
-            printf("car: ");
+        else if(character)
             scanf("%c",&num);
-        }
 
         // Guardar el número en memoria (big-endian)
         for(j = 0; j < ECXH; j++)                            // itera hasta guardar el numero en la cantidad de celdas que me diga ECXH
@@ -81,8 +77,9 @@ void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
     activate_booleans_syscall(read_register(cpu,R_EAX),&hexa,&octal,&binary,&decimal,&character);  // activa los booleanos declarados mas arriba
     for(i = 0; i < ECXL ;i++){     // itera la cantidad de veces que tengo que leer 'x' cantidad de bytes
         aux = 0;
-        for(j = 0; j <ECXH ;j++)
+        for(j = 0; j < ECXH ;j++)
             aux = (aux << 8) | (uint8_t)mem.data[index + j];
+            
             
         switch (ECXH) {
             case 1: aux &= 0xFF; break;
@@ -91,18 +88,19 @@ void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
         }
 
         // muestra segun el booleano
+        printf("[%.4X]:   ",index);
         if(hexa)
-            printf("[%.4x]: 0x%x ",index,aux);
+            printf("0x%X ",aux);
         if(octal)
-            printf("[%.4x]: 0o%o ",index,aux);
+            printf("0o%o ",aux);
         if(binary)
-            print_binary(aux,ECXH,index);  //llama a la funcion que me muestra el numero en binario
+            print_binary(aux,ECXH);  //llama a la funcion que me muestra el numero en binario
         if(character)
-            print_characters(aux,ECXH,index);
+            print_characters(aux,ECXH);
         if(decimal)
-            printf("[%.4x]: %d ",index,aux);
+            printf("%d ",aux);
 
-        index = index + j;
+        index += ECXH;
 
         printf("\n") ;
         }
@@ -138,10 +136,9 @@ void activate_booleans_syscall(int32_t EAX,int32_t *hexadecimal,int32_t *octal,i
 
 }
 
-void print_binary(int32_t num,int32_t ECXH,int16_t index){
+void print_binary(int32_t num,int32_t ECXH){
     int32_t i,bits = 8 * ECXH;
 
-    printf("[%.4x]: 0b",index);
     for (i = bits - 1; i >= 0; i--)     //comienza mostrando de mas significativos a menos significativo y se va decrementando la cantidad de shifts
         printf("%d", (num >> i) & 1);
 
@@ -160,7 +157,7 @@ void read_binary(int32_t *num){
         
 }
 
-void print_characters(int32_t num,int32_t ECXH,int16_t index){
+void print_characters(int32_t num,int32_t ECXH){
     char characters[4];     //vector q contiene los caracteres a mostrar
     int32_t i,j,aux;        // auxiliar contiene el numero a mostrar y j es el indice del vector 
 
@@ -174,8 +171,7 @@ void print_characters(int32_t num,int32_t ECXH,int16_t index){
             characters[j]='.';
         j+=1;
     }
-    
-    printf("[%.4x]: ",index);
+    printf("'");
     for(i=0;i<ECXH;i++)
         printf("%c",characters[i]);
     printf(" ");    
