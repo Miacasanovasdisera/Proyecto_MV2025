@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     mem_init(&mem);
     mem_load(&mem, argv[1], &cpu);
     InstrucSet_init(); 
-    
+
     printf("\n");
 
     if (strcmp(disassemble, "-d") == 0) 

@@ -15,4 +15,7 @@ int execute_JNP(cpu_t *,mem_t *);
 int execute_JNN(cpu_t *,mem_t *);
 int execute_STOP(cpu_t *,mem_t *);
 
+int isNegative(cpu_t);
+int isZero(cpu_t);
+
 #endif
