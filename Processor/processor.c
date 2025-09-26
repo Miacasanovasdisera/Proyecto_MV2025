@@ -33,7 +33,7 @@ uint16_t cpu_logic_to_physic(mem_t mem, uint32_t logic_address, int bytesToRead)
     }
     
     // Calcular dirección física
-    uint16_t physical_addr = base + offset;
+    uint32_t physical_addr = base + offset;
     
     // Verificar que no se salga de la memoria física (16KB = 0x4000)
     if ((uint32_t)physical_addr + bytesToRead > MEM_SIZE) {
@@ -41,6 +41,7 @@ uint16_t cpu_logic_to_physic(mem_t mem, uint32_t logic_address, int bytesToRead)
         return 0;
     }
     
+
     return physical_addr;
 }
 
@@ -116,11 +117,12 @@ uint32_t calculate_logical_address(cpu_t *cpu, uint8_t OP_type, uint32_t OP_valu
         return 0;
     }
     
-    // Para operandos de memoria: usar DS como segmento por defecto
-    uint16_t segment_selector = (cpu->DS >> 16) & 0xFFFF;
+    uint32_t value_reg, reg_code = OP_value & 0x00FF0000;
     uint16_t offset = OP_value & 0xFFFF;
+
+    value_reg = read_register(cpu, (uint8_t)(reg_code >> 16));
     
-    return (uint32_t)(segment_selector << 16) | offset;
+    return value_reg + offset;
 }
 
 void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {

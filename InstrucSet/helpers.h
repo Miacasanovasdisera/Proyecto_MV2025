@@ -22,8 +22,8 @@
 
 
 void get_value(cpu_t *, mem_t *,int32_t, int32_t *);
-void get_destination_address(cpu_t *, int32_t , int32_t *dest_addrss);
-void write_dest(cpu_t *, mem_t *, int8_t , int32_t , int32_t );
+void get_destination_address(cpu_t *, int32_t , uint32_t *dest_addrss);
+void write_dest(cpu_t *, mem_t *, uint8_t , uint32_t , int32_t );
 void update_CC(cpu_t *cpu,int32_t result);
 
 // Ejemplo:  mov edx,5  edx==destino 5==origen

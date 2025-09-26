@@ -102,11 +102,8 @@ void mem_write(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t value, int 
     cpu->MAR = ((uint32_t)size << 16) | physical_addr;
     
     uint32_t aux = (uint32_t)value;
-    printf("mem= ");
     for (int i = size - 1; i >= 0; i--) {
         mem->data[physical_addr + i] = (uint8_t)(aux & 0xFF);
-        printf("%x", (int8_t)aux & 0xFF);
         aux >>= 8;
     }
-    printf("\n");
 }

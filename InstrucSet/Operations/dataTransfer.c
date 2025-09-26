@@ -2,7 +2,8 @@
 #include "../helpers.h"
 
 int execute_MOV(cpu_t *cpu, mem_t *mem) {
-    int32_t src_value, dest_addr,result;
+    int32_t src_value, result;
+    uint32_t dest_addr;
     int8_t dest_type = get_operand_type(cpu->OP1);
 
     get_value(cpu, mem, cpu->OP2, &src_value);

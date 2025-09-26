@@ -15,7 +15,7 @@ void print_operand(uint32_t op) {
             break;
 
         case IMMEDIATE_OPERAND:  // inmediato en decimal
-            printf("%d", dataOP);
+            printf("%X", dataOP);
             break;
 
         case REGISTER_OPERAND:  // registro
