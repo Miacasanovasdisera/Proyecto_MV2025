@@ -12,9 +12,15 @@ Características principales
 - Instrucciones: 26 instrucciones implementadas
 - Llamadas al sistema: READ y WRITE para E/S
 
+# Compilacion
+```bash
+make
+```
+
 # Ejecucion basica
 ``` bash
-./vmx programa.vmx
+./vmx programa.vmx (Linux)
+./vmx.exe progrma.vmx (Windows)
 ```
 
 # Ejecucion con disassembler
@@ -27,11 +33,6 @@ Características principales
 - Compilador GCC
 - Sistema operativo Unix/Linux o Windows con herramientas de desarrollo
 - Herramienta 'make', para mas facilidad a la hora de compilar
-
-# Compilacion
-```bash
-make
-```
 
 # Arquitectura implementada
 Registros principales
@@ -77,4 +78,5 @@ La máquina virtual detecta y reporta los siguientes errores:
 
 
 Última actualización: Septiembre 2025
+
 
