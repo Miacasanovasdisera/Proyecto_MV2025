@@ -7,12 +7,10 @@ int execute_SYS(cpu_t *cpu, mem_t *mem){
     uint32_t ECXH,ECXL,physical_address;              // ECXH == me dice la cantidad de bytes que leo o escribo y ECXL == me dice la cantidad de veces que leo o escribo 'x' cantidad de bytes
     uint16_t index;                                  //el index me dice de donde empiezo a escribir o leer
 
-
     //leo la informacion del ECX
     ECXH = (read_register(cpu,R_ECX) & 0xFFFF0000) >> 16;
     ECXL = read_register(cpu,R_ECX) & 0x0000FFFF;
  
-
     //leo la direccion logica del EDX y la paso a fisica para saber de donde arranco a leer (se lo asigno a la variable index que se va a ir moviendo por donde leo)
     physical_address = cpu_logic_to_physic(*mem,read_register(cpu,R_EDX),4);
     index = physical_address;
@@ -80,13 +78,12 @@ void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
         for(j = 0; j < ECXH ;j++)
             aux = (aux << 8) | (uint8_t)mem.data[index + j];
             
-            
         switch (ECXH) {
             case 1: aux &= 0xFF; break;
             case 2: aux &= 0xFFFF; break;
             case 4: aux &= 0xFFFFFFFF; break;
         }
-
+        
         // muestra segun el booleano
         printf("[%.4X]:   ",index);
         if(hexa)
