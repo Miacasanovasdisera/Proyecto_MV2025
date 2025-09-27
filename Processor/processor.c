@@ -40,7 +40,6 @@ uint16_t cpu_logic_to_physic(mem_t mem, uint32_t logic_address, int bytesToRead)
         error_Output(MEMORY_ERROR);
         return 0;
     }
-    
 
     return physical_addr;
 }

@@ -94,8 +94,6 @@ int execute_OR(cpu_t *cpu, mem_t *mem) {
     get_value(cpu, mem, cpu->OP1, &dest_value);
     get_destination_address(cpu, cpu->OP1, &dest_addr);
     
-    
-    
     result = alu_OR(cpu, dest_value, src_value);
 
     write_dest(cpu, mem, dest_type, dest_addr, result);
@@ -156,24 +154,24 @@ int execute_SHL(cpu_t *cpu, mem_t *mem) {
     get_value(cpu,mem,cpu->OP2, &valueOP2);
     get_destination_address(cpu, cpu->OP1, &dest_addr);
 
-    result = shift_SHL(cpu, valueOP1, valueOP2);
+    result = valueOP1 << valueOP2;
 
     write_dest(cpu, mem, dest_type, dest_addr, result);
     return 0;
 }
 
 int execute_SHR(cpu_t *cpu, mem_t *mem) {
-    int32_t valueOP1,valueOP2,result;
-    uint32_t dest_addr;
+    int32_t valueOP1,valueOP2;
+    uint32_t dest_addr,result;
     int8_t dest_type = get_operand_type(cpu->OP1);
         
     get_value(cpu, mem, cpu->OP1, &valueOP1);
     get_value(cpu,mem,cpu->OP2, &valueOP2);
     get_destination_address(cpu, cpu->OP1, &dest_addr);
 
-    result = shift_SHR(cpu, valueOP1, valueOP2);
+    result = (uint32_t)valueOP1 >> (uint32_t)valueOP2;
     
-    write_dest(cpu, mem, dest_type, dest_addr, result);
+    write_dest(cpu, mem, dest_type, dest_addr, (int32_t)result);
     return 0;
 }
 
@@ -186,7 +184,7 @@ int execute_SAR(cpu_t *cpu, mem_t *mem) {
     get_value(cpu,mem,cpu->OP2, &valueOP2);
     get_destination_address(cpu, cpu->OP1, &dest_addr);
 
-    result = shift_SAR(cpu, valueOP1, valueOP2);
+    result = valueOP1 >> valueOP2;
     
     write_dest(cpu, mem, dest_type, dest_addr, result);
     return 0;
