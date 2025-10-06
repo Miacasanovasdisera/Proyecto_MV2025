@@ -8,6 +8,7 @@ MEM_DIR = Memory
 IS_DIR = InstrucSet
 UTILS_DIR = Utils
 OPERATIONS_DIR = InstrucSet/Operations
+STACK_DIR = Stack
 
 # Archivos fuente
 SRCS = $(SRC_DIR)/main.c \
@@ -23,7 +24,8 @@ SRCS = $(SRC_DIR)/main.c \
        $(OPERATIONS_DIR)/shiftModule.c \
        $(OPERATIONS_DIR)/syscalls.c \
        $(UTILS_DIR)/disassembler.c \
-       $(UTILS_DIR)/config.c
+       $(UTILS_DIR)/config.c \
+       $(STACK_DIR)/stack.c
 
 # Archivos objeto (reemplaza .c por .o)
 OBJS = $(SRCS:.c=.o)
