@@ -35,8 +35,8 @@ uint16_t cpu_logic_to_physic(mem_t mem, uint32_t logic_address, int bytesToRead)
     // Calcular dirección física
     uint32_t physical_addr = base + offset;
     
-    // Verificar que no se salga de la memoria física (16KB = 0x4000)
-    if ((uint32_t)physical_addr + bytesToRead > MEM_SIZE) {
+    // Verificar que no se salga de la memoria física
+    if ((uint32_t)physical_addr + bytesToRead > mem.size) {
         error_Output(MEMORY_ERROR);
         return 0;
     }
@@ -88,7 +88,7 @@ void operators_registers_load(cpu_t *cpu, mem_t mem) {
             dataOP1 = dataOP1 << 8;
             dataOP1 = shift_SAR(cpu,dataOP1,8);
         }
-                                                       // caso particular de inmediatos negativos      
+    // caso particular de inmediatos negativos      
     if(typeOP2 == IMMEDIATE_OPERAND)
         if(dataOP2 & 0x8000){
             dataOP2 <<= 8;
@@ -131,6 +131,8 @@ void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
         case R_MAR: cpu->MAR = value; break;
         case R_MBR: cpu->MBR = value; break;
         case R_IP:  cpu->IP  = value; break;
+        case R_SP:  cpu->SP  = value; break;
+        case R_BP:  cpu->BP  = value; break;
         case R_EAX: cpu->EAX = value; break;
         case R_EBX: cpu->EBX = value; break;
         case R_ECX: cpu->ECX = value; break;
@@ -145,6 +147,10 @@ void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
                 cpu->DS = value;
             }    
         break;
+        case R_ES:  cpu->ES  = value; break;
+        case R_SS:  cpu->SS  = value; break;
+        case R_KS:  cpu->KS  = value; break;
+        case R_PS:  cpu->PS  = value; break;
         default: {
             //Error de registro
             error_Output(REGISTER_ERROR); 
@@ -161,8 +167,14 @@ int32_t read_register(cpu_t *cpu, uint8_t reg_code) {
         case R_EDX: return cpu->EDX;
         case R_EEX: return cpu->EEX;
         case R_EFX: return cpu->EFX;
+        case R_SP:  return cpu->SP;
+        case R_BP:  return cpu->BP;
         case R_CS : return cpu->CS;
-        case R_DS : return cpu->DS;        
+        case R_DS : return cpu->DS;
+        case R_ES:  return cpu->ES;
+        case R_SS:  return cpu->SS;
+        case R_KS:  return cpu->KS;
+        case R_PS:  return cpu->PS;        
         case R_AC : return cpu->AC;
         case R_CC : return cpu->CC;        
         case R_IP : return cpu->IP;        

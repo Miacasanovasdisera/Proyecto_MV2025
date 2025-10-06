@@ -2,17 +2,22 @@
 #include "../Processor/processor.h"
 #include "../Utils/errors.h"
 
-void mem_init(mem_t *mem) {
-    // Limpia toda la RAM (16 KiB)
-    memset(mem->data, 0, MEM_SIZE);
+void mem_init(mem_t *mem, uint32_t mem_size_kib) {
+    mem->data = (uint8_t *)malloc(mem_size_kib * 1024);
+    mem->size = mem_size_kib * 1024;
+    if (!mem->data) {
+        error_Output(MEMORY_ERROR);
+        return;
+    }
+    memset(mem->data, 0, mem->size);
 
     // Inicializa tabla de segmentos (las 8 entradas)
     for (int i = 0; i < 8; i++) {
         mem->segments[i].base = 0;
         mem->segments[i].size = 0;
     }
+    mem->segment_count = 0;
 }
-// scoop install main/gcc
 
 void mem_load(mem_t *mem, char *archivo, cpu_t *cpu) {
     FILE *arch = fopen(archivo, "rb");
@@ -105,5 +110,12 @@ void mem_write(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t value, int 
     for (int i = size - 1; i >= 0; i--) {
         mem->data[physical_addr + i] = (uint8_t)(aux & 0xFF);
         aux >>= 8;
+    }
+}
+
+void mem_free(mem_t *mem) {
+    if (mem->data) {
+        free(mem->data);
+        mem->data = NULL;
     }
 }

@@ -23,6 +23,7 @@ SRCS = $(SRC_DIR)/main.c \
        $(OPERATIONS_DIR)/shiftModule.c \
        $(OPERATIONS_DIR)/syscalls.c \
        $(UTILS_DIR)/disassembler.c \
+       $(UTILS_DIR)/config.c
 
 # Archivos objeto (reemplaza .c por .o)
 OBJS = $(SRCS:.c=.o)

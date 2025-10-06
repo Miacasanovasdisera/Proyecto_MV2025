@@ -14,14 +14,18 @@ typedef struct {
 
 //Estructura memoria principal
 typedef struct {
-    uint8_t data[MEM_SIZE]; 
+    uint8_t *data;
+    uint32_t size;
+    uint8_t segment_count;
     segment_desc_t segments[8]; 
 } mem_t;
 
 // mem_init inicializa la memoria, limpiando toda la RAM y seteando a 0 la tabla de segmentos.
-void mem_init(mem_t *);
+void mem_init(mem_t *, uint32_t);
 // mem_load carga un programa desde el archivo cuyo nombre se pasa como parámetro en la memoria.
 void mem_load(mem_t *, char *,cpu_t *);
+
+void mem_free(mem_t *);
 
 // mem_read se encarga de leer una determinada cantidad de bytes (1,2 o 4) de una dirección lógica
 // y devolver el valor leído en el parámetro 5to parametro. También actualiza los registros MAR, LAR y MBR del CPU.

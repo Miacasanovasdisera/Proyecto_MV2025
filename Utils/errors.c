@@ -34,6 +34,8 @@ int error_Output(int error_code) {
         case INVALID_OPERAND:
             printf("Error %d: Operando invalido.\n", error_code);
             break;
+        case ARGUMENT_ERROR:
+            printf("Error %d: Numero de argumentos invalido.\n", error_code);
         default:
             printf("Error de ejecucion.\n");
             break;

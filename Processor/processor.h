@@ -17,6 +17,10 @@ typedef struct cpu_t {
     int32_t OP1;
     int32_t OP2;
 
+    // Registros de pila
+    int32_t SP;
+    int32_t BP;
+
     // Registros de proposito general
     int32_t EAX;
     int32_t EBX;
@@ -29,12 +33,16 @@ typedef struct cpu_t {
     int32_t AC;
     int32_t CC;
 
-    // Registros de segmentos
+    // Registros de segmentos (ahora son 6)
     int32_t CS;
     int32_t DS;
+    int32_t ES;
+    int32_t SS;
+    int32_t KS;
+    int32_t PS;
 
-    // Registros reservados (del 17 al 31)
-    int32_t reserved[15];
+    // Registros reservados
+    int32_t reserved[9];
 
 } cpu_t;
 
