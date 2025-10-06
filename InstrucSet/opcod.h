@@ -27,5 +27,9 @@
 #define OP_LDH 0x1E
 #define OP_RND 0x1F
 #define OP_STOP 0x0F
+#define OP_PUSH 0x0B
+#define OP_POP 0x0C
+#define OP_CALL 0x0D
+#define OP_RET 0x0E
 
 #endif

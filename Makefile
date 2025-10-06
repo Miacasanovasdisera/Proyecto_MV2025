@@ -23,6 +23,7 @@ SRCS = $(SRC_DIR)/main.c \
        $(OPERATIONS_DIR)/ccModifiers.c \
        $(OPERATIONS_DIR)/shiftModule.c \
        $(OPERATIONS_DIR)/syscalls.c \
+       $(OPERATIONS_DIR)/stackControl.c \
        $(UTILS_DIR)/disassembler.c \
        $(UTILS_DIR)/config.c \
        $(STACK_DIR)/stack.c
