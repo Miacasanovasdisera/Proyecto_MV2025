@@ -13,7 +13,8 @@
         "opcod.h": "c",
         "operands.h": "c",
         "executefunctions.h": "c",
-        "syscalls.h": "c"
+        "syscalls.h": "c",
+        "stackcontrol.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

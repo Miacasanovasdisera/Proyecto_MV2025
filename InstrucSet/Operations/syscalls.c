@@ -2,6 +2,9 @@
 #include "../registers.h"
 #include "../../Utils/errors.h"
 #include "../helpers.h"
+#include "../../Images/vmi.h"
+
+//! Para el breakpoint, usar save_vmi(cpu, mem, g_vmi_filename); g_vmi_filename (var global)
 
 int execute_SYS(cpu_t *cpu, mem_t *mem){
     uint32_t ECXH,ECXL,physical_address;              // ECXH == me dice la cantidad de bytes que leo o escribo y ECXL == me dice la cantidad de veces que leo o escribo 'x' cantidad de bytes

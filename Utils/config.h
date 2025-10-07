@@ -6,7 +6,7 @@
 
 #define MAX_PARAMS 100
 
-typedef struct {
+typedef struct vm_config_t {
     // Archivos
     char *vmx_file;         
     char *vmi_file;          

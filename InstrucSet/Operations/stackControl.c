@@ -1,5 +1,6 @@
 #include "stackControl.h"
 #include "../../Stack/stack.h"
+#include "../helpers.h"
 
 int execute_PUSH(cpu_t *cpu, mem_t *mem) {
     int32_t value;

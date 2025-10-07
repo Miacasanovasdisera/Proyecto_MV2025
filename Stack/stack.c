@@ -1,4 +1,5 @@
 #include "stack.h"
+#include "../Utils/errors.h"
 
 void init_main_stack(cpu_t *cpu, mem_t *mem, int argc, uint32_t ps_size) {
     // PUSH en orden inverso (último en entrar, primero en el tope)

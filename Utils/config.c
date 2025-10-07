@@ -92,8 +92,6 @@ void config_parse(vm_config_t *config, int argc, char *argv[]) {
             
         }
     }
-    
-    return 0;
 }
 
 void config_validate(vm_config_t *config) {
