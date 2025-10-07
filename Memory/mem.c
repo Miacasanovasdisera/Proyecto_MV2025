@@ -21,8 +21,8 @@ void mem_init(mem_t *mem, uint32_t mem_size_kib) {
     mem->segment_count = 0;
 }
 
-void mem_load(mem_t *mem, char *archivo, cpu_t *cpu, char **params, int argc) {
-    FILE *arch = fopen(archivo, "rb");
+void mem_load(mem_t *mem, char *filename, cpu_t *cpu, char **params, int argc) {
+    FILE *arch = fopen(filename, "rb");
     // el archivo no guarda el caracter nulo, por eso id[5]
     char id[5];
     uint8_t version,size_bytes[2];

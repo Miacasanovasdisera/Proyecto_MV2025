@@ -3,11 +3,12 @@ TARGET = vmx
 
 # Directorios
 SRC_DIR = .
-PROC_DIR = Processor
-MEM_DIR = Memory
+IMG_DIR = Images
 IS_DIR = InstrucSet
-UTILS_DIR = Utils
+MEM_DIR = Memory
 OPERATIONS_DIR = InstrucSet/Operations
+PROC_DIR = Processor
+UTILS_DIR = Utils
 STACK_DIR = Stack
 
 # Archivos fuente
@@ -26,7 +27,8 @@ SRCS = $(SRC_DIR)/main.c \
        $(OPERATIONS_DIR)/stackControl.c \
        $(UTILS_DIR)/disassembler.c \
        $(UTILS_DIR)/config.c \
-       $(STACK_DIR)/stack.c
+       $(STACK_DIR)/stack.c \
+       $(IMG_DIR)/vmi.c
 
 # Archivos objeto (reemplaza .c por .o)
 OBJS = $(SRCS:.c=.o)
