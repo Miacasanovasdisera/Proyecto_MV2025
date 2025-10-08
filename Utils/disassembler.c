@@ -42,7 +42,7 @@ void print_operand(uint32_t op) {
 void disassembler(cpu_t cpu, mem_t mem) {
     uint32_t codsize =  mem.segments[0].size, increment = cpu.IP = cpu.CS;
     int8_t i, instrucSize, typeOP1, typeOP2;
-    
+
     while (increment < codsize) {
         printf("[%04X] ", increment);        
 

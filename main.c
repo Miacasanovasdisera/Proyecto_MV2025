@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
     mem_init(&mem, config.memory_size_kib);
     InstrucSet_init();
 
-    printf("\n");
+    printf("=== CARGA ===\n");
 
     if (config.vmx_file != NULL && config.vmi_file == NULL) {
         // MODO A: Solo .vmx (ejecución normal)
@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
         printf("Memoria: %u KiB\n", config.memory_size_kib);
         
         if (config.param_count > 0) {
-            printf("Parámetros (%d): ", config.param_count);
+            printf("Parametros (%d): ", config.param_count);
             for (int i = 0; i < config.param_count; i++) {
                 printf("\"%s\" ", config.params[i]);
             }
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
             disassembler(cpu, mem);
         }
         
-        printf("\n=== EJECUCIÓN ===\n");
+        printf("\n=== EJECUCION ===\n");
         execute_program(&cpu, &mem);
     }
     else if (config.vmx_file != NULL && config.vmi_file != NULL) {
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
         printf("Memoria: %u KiB\n", config.memory_size_kib);
         
         if (config.param_count > 0) {
-            printf("Parámetros (%d): ", config.param_count);
+            printf("Parametros (%d): ", config.param_count);
             for (int i = 0; i < config.param_count; i++)
                 printf("\"%s\" ", config.params[i]);
             
@@ -74,8 +74,8 @@ int main(int argc, char *argv[]) {
             disassembler(cpu, mem);
         }
         
-        printf("\n=== EJECUCIÓN (modo debug) ===\n");
-        printf("Los breakpoints guardarán el estado en: %s\n", config.vmi_file);
+        printf("\n=== EJECUCION (modo debug) ===\n");
+        printf("Los breakpoints guardaran el estado en: %s\n", config.vmi_file);
         execute_program(&cpu, &mem);
     }
     else if (config.vmx_file == NULL && config.vmi_file != NULL) {
@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
         printf("Cargando imagen: %s\n", config.vmi_file);
         
         load_vmi(&cpu, &mem, config.vmi_file);
-        printf("\n=== EJECUCIÓN (desde imagen) ===\n");
+        printf("\n=== EJECUCION (desde imagen) ===\n");
         execute_program(&cpu, &mem);
     }
 
