@@ -16,8 +16,7 @@ void mem_init(mem_t *mem, uint32_t mem_size_kib)
     memset(mem->data, 0, mem->size);
 
     // Inicializa tabla de segmentos (las 8 entradas)
-    for (int i = 0; i < 8; i++)
-    {
+    for (int i = 0; i < 8; i++) {
         mem->segments[i].base = 0;
         mem->segments[i].size = 0;
     }
@@ -110,8 +109,7 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc)
     uint32_t offset = 0;
     uint8_t seg_index = 0;
 
-    if (ps_size > 0)
-    {
+    if (ps_size > 0) {
         mem->segments[seg_index].base = offset;
         mem->segments[seg_index].size = ps_size;
         cpu->PS = (seg_index << 16);
@@ -122,8 +120,7 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc)
         cpu->PS = 0xFFFFFFFF;
 
     // PASO 2: Const Segment
-    if (ks_size > 0)
-    {
+    if (ks_size > 0) {
         mem->segments[seg_index].base = offset;
         mem->segments[seg_index].size = ks_size;
         cpu->KS = (seg_index << 16);
@@ -137,16 +134,14 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc)
         cpu->KS = 0xFFFFFFFF;
 
     // PASO 3: Code Segment
-    if (cs_size > 0)
-    {
+    if (cs_size > 0) {
         mem->segments[seg_index].base = offset;
         mem->segments[seg_index].size = cs_size;
         cpu->CS = (seg_index << 16);
 
         // Leer código
-        if (fread(mem->data + offset, 1, cs_size, arch) != cs_size)
-        {
-            error_Output(LOAD_PROGRAM_ERROR);
+        if (fread(mem->data + offset, 1, cs_size, arch) != cs_size) {
+            error_Output(INSUFFICIENT_MEMORY);
             return;
         }
 
@@ -155,8 +150,7 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc)
     }
 
     // PASO 4: Data Segment
-    if (ds_size > 0)
-    {
+    if (ds_size > 0) {
         mem->segments[seg_index].base = offset;
         mem->segments[seg_index].size = ds_size;
         cpu->DS = (seg_index << 16);
@@ -167,8 +161,7 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc)
         cpu->DS = 0xFFFFFFFF;
 
     // PASO 5: Extra Segment
-    if (es_size > 0)
-    {
+    if (es_size > 0) {
         mem->segments[seg_index].base = offset;
         mem->segments[seg_index].size = es_size;
         cpu->ES = (seg_index << 16);
@@ -179,8 +172,7 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc)
         cpu->ES = 0xFFFFFFFF;
 
     // PASO 6: Stack Segment
-    if (ss_size > 0)
-    {
+    if (ss_size > 0) {
         mem->segments[seg_index].base = offset;
         mem->segments[seg_index].size = ss_size;
         cpu->SS = (seg_index << 16);
@@ -192,19 +184,16 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc)
         cpu->SS = 0xFFFFFFFF;
 
     // Verificar espacio suficiente
-    if (offset > mem->size)
-    {
-        error_Output(MEMORY_ERROR);
+    if (offset > mem->size) {
+        error_Output(INSUFFICIENT_MEMORY);
         return;
     }
 
     // Leer Const Segment (está después del código en el archivo)
-    if (ks_size > 0)
-    {
+    if (ks_size > 0) {
         uint32_t ks_base = mem->segments[1].base; // KS es el segundo segmento
-        if (fread(mem->data + ks_base, 1, ks_size, arch) != ks_size)
-        {
-            error_Output(LOAD_PROGRAM_ERROR);
+        if (fread(mem->data + ks_base, 1, ks_size, arch) != ks_size) {
+            error_Output(INSUFFICIENT_MEMORY);
             return;
         }
     }
@@ -221,8 +210,7 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc)
 void mem_read(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t *value, int size)
 {
     // Verificar tamaño
-    if (size != 1 && size != 2 && size != 4)
-    {
+    if (size != 1 && size != 2 && size != 4) {
         error_Output(WRONG_SIZE); // Tamaño inválido
         return;
     }
@@ -247,8 +235,7 @@ void mem_read(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t *value, int 
 void mem_write(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t value, int size)
 {
     // Verificar tamaño
-    if (size != 1 && size != 2 && size != 4)
-    {
+    if (size != 1 && size != 2 && size != 4) {
         error_Output(WRONG_SIZE);
         return; // Tamaño inválido
     }
@@ -261,8 +248,7 @@ void mem_write(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t value, int 
     cpu->MAR = ((uint32_t)size << 16) | physical_addr;
 
     uint32_t aux = (uint32_t)value;
-    for (int i = size - 1; i >= 0; i--)
-    {
+    for (int i = size - 1; i >= 0; i--) {
         mem->data[physical_addr + i] = (uint8_t)(aux & 0xFF);
         aux >>= 8;
     }
@@ -270,8 +256,7 @@ void mem_write(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t value, int 
 
 void mem_free(mem_t *mem)
 {
-    if (mem->data)
-    {
+    if (mem->data) {
         free(mem->data);
         mem->data = NULL;
     }
@@ -279,8 +264,7 @@ void mem_free(mem_t *mem)
 
 uint32_t create_param_segment(mem_t *mem, char **params, int argc)
 {
-    if (argc == 0 || params == NULL)
-    {
+    if (argc == 0 || params == NULL) {
         return 0; // No hay parámetros
     }
 
@@ -293,8 +277,7 @@ uint32_t create_param_segment(mem_t *mem, char **params, int argc)
     // Guardar donde empieza cada string para después
     uint32_t string_offsets[argc];
 
-    for (int i = 0; i < argc; i++)
-    {
+    for (int i = 0; i < argc; i++) {
         // Ejemplo: params[0] = "probando"
         string_offsets[i] = offset; // Guardamos que "probando" empieza en offset 0
 
@@ -313,8 +296,7 @@ uint32_t create_param_segment(mem_t *mem, char **params, int argc)
     // ===== PARTE 2: CREAR EL ARRAY DE PUNTEROS (argv) =====
     uint32_t argv_start = offset; // argv empieza donde terminan los strings
 
-    for (int i = 0; i < argc; i++)
-    {
+    for (int i = 0; i < argc; i++) {
         // Crear un puntero de 32 bits (4 bytes)
         // Formato: [16 bits: entrada tabla segmentos | 16 bits: offset]
 

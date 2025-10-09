@@ -1,7 +1,6 @@
 # ============================================================================
 # MAKEFILE - MÁQUINA VIRTUAL VMX
 # ============================================================================
-# Autor: Bckdo0r
 # Descripción: Sistema de compilación robusto con detección automática de
 #              dependencias, soporte multiplataforma y limpieza inteligente.
 # ============================================================================

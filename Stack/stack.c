@@ -26,7 +26,7 @@ void stack_push(cpu_t *cpu, mem_t *mem, int32_t value) {
     
     // Verificar desbordamiento de pila
     if (cpu->SP < cpu->SS) {
-        error_Output(MEMORY_ERROR);
+        error_Output(STACK_OVERFLOW);
         return;
     }
     
@@ -39,7 +39,7 @@ int32_t stack_pop(cpu_t *cpu, mem_t *mem) {
     
     // Verificar subdesbordamiento de pila
     if (cpu->SP >= cpu->SS + (mem->segments[(cpu->SS >> 16) & 0xFF].size)) {
-        error_Output(MEMORY_ERROR);
+        error_Output(STACK_UNDERFLOW);
         return 0; // Valor de retorno arbitrario en caso de error
     }
     
