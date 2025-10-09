@@ -15,6 +15,7 @@
 #define INVALID_INSTRUCTION 2
 #define LOAD_PROGRAM_ERROR 1
 #define ARGUMENT_ERROR 8
+#define IMAGE_ERROR 10
 
 // variable global para el nombre del archivo .vmi
 extern const char *g_vmi_filename;

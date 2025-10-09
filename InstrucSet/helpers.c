@@ -80,5 +80,4 @@ void update_CC(cpu_t *cpu,int32_t result) {
     
     else if(result < 0)
         cpu->CC |= NMask;
-
 }

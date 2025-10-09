@@ -8,7 +8,7 @@ void save_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
     
     FILE *arch = fopen(filename, "wb");
     if (!arch) {
-        error_Output(LOAD_PROGRAM_ERROR);
+        error_Output(IMAGE_ERROR);
         return;
     }
     
@@ -73,35 +73,35 @@ void save_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
 void load_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
     FILE *arch = fopen(filename, "rb");
     if (!arch) {
-        error_Output(LOAD_PROGRAM_ERROR);
+        error_Output(IMAGE_ERROR);
         return;
     }
     
     // ===== HEADER (8 bytes) =====
     char id[6] = {0};
     if (fread(id, 1, 5, arch) != 5) {
-        error_Output(LOAD_PROGRAM_ERROR);
         fclose(arch);
+        error_Output(IMAGE_ERROR);
         return;
     }
     
     if (strcmp(id, "VMI25") != 0) {
-        error_Output(LOAD_PROGRAM_ERROR);
         fclose(arch);
+        error_Output(IMAGE_ERROR);
         return;
     }
     
     uint8_t version;
     if (fread(&version, 1, 1, arch) != 1 || version != 1) {
-        error_Output(LOAD_PROGRAM_ERROR);
         fclose(arch);
+        error_Output(IMAGE_ERROR);
         return;
     }
     
     uint8_t size_bytes[2];
     if (fread(size_bytes, 1, 2, arch) != 2) {
-        error_Output(LOAD_PROGRAM_ERROR);
         fclose(arch);
+        error_Output(IMAGE_ERROR);
         return;
     }
     
@@ -109,10 +109,8 @@ void load_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
     
     // Verificar que la memoria actual tenga el tamaño correcto
     if (mem->size != mem_size_kib * 1024) {
-        printf("Error: Tamaño de memoria en .vmi (%u KiB) no coincide con memoria actual (%u KiB)\n",
-               mem_size_kib, mem->size / 1024);
-        error_Output(LOAD_PROGRAM_ERROR);
         fclose(arch);
+        error_Output(IMAGE_ERROR);
         return;
     }
     
@@ -121,8 +119,8 @@ void load_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
     for (int i = 0; i < 32; i++) {
         uint8_t reg_bytes[4];
         if (fread(reg_bytes, 1, 4, arch) != 4) {
-            error_Output(LOAD_PROGRAM_ERROR);
             fclose(arch);
+            error_Output(IMAGE_ERROR);
             return;
         }
         
@@ -162,8 +160,8 @@ void load_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
     for (int i = 0; i < 8; i++) {
         uint8_t seg_bytes[4];
         if (fread(seg_bytes, 1, 4, arch) != 4) {
-            error_Output(LOAD_PROGRAM_ERROR);
             fclose(arch);
+            error_Output(IMAGE_ERROR);
             return;
         }
         
@@ -173,8 +171,8 @@ void load_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
     
     // ===== MEMORIA COMPLETA (variable) =====
     if (fread(mem->data, 1, mem->size, arch) != mem->size) {
-        error_Output(LOAD_PROGRAM_ERROR);
         fclose(arch);
+        error_Output(IMAGE_ERROR);
         return;
     }
 

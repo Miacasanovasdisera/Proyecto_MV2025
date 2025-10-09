@@ -95,7 +95,6 @@ int main(int argc, char *argv[]) {
 
 void execute_program(cpu_t *cpu, mem_t *mem) {
     int result, CS = cpu->CS >> 16;
-
     do {
         operators_registers_load(cpu, *mem);
         result = execute_instruction(cpu, mem);

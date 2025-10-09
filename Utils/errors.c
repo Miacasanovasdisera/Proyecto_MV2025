@@ -9,6 +9,7 @@ Error de registro: 5
 Tamaño de lectura o escritura inválido: 6
 Operando inválido: 7
 Numero de argumentos invalido: 8
+Problema de carga de imagen: 9
 */
 
 int error_Output(int error_code) {
@@ -36,6 +37,10 @@ int error_Output(int error_code) {
             break;
         case ARGUMENT_ERROR:
             printf("Error %d: Numero de argumentos invalido.\n", error_code);
+            break;
+        case IMAGE_ERROR:
+            printf("Error %d: Problema de carga de imagen.\n", error_code);
+            break;
         default:
             printf("Error de ejecucion.\n");
             break;

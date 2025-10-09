@@ -57,7 +57,7 @@ void mem_load(mem_t *mem, char *filename, cpu_t *cpu, char **params, int argc)
 
 void mem_load_v1(mem_t *mem, FILE *arch, cpu_t *cpu)
 {
-    uint8_t version, size_bytes[2];
+    uint8_t size_bytes[2];
     uint16_t code_size;
 
     if (fread(size_bytes, 1, 2, arch) != 2)
@@ -82,6 +82,8 @@ void mem_load_v1(mem_t *mem, FILE *arch, cpu_t *cpu)
     // Segmento de DATOS
     mem->segments[cpu->DS >> 16].base = code_size;
     mem->segments[cpu->DS >> 16].size = MEM_SIZE - code_size;
+
+    mem->segment_count = 2;
 }
 
 void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc)
