@@ -42,8 +42,7 @@ int main(int argc, char *argv[]) {
             printf("\n");
         }
         
-        mem_load(&mem, config.vmx_file, &cpu, 
-                 config.params, config.param_count);
+        mem_load(&mem, config.vmx_file, &cpu, config.params, config.param_count);
         
         if (config.disassem_mode) {
             printf("\n=== DISASSEMBLER ===\n");

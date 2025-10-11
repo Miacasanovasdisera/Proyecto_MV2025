@@ -4,8 +4,7 @@
 #include "../Utils/errors.h"
 #include "../Stack/stack.h"
 
-void mem_init(mem_t *mem, uint32_t mem_size_kib)
-{
+void mem_init(mem_t *mem, uint32_t mem_size_kib) { //*modificacion
     mem->data = (uint8_t *)malloc(mem_size_kib * 1024);
     mem->size = mem_size_kib * 1024;
     if (!mem->data)
@@ -23,8 +22,7 @@ void mem_init(mem_t *mem, uint32_t mem_size_kib)
     mem->segment_count = 0;
 }
 
-void mem_load(mem_t *mem, char *filename, cpu_t *cpu, char **params, int argc)
-{
+void mem_load(mem_t *mem, char *filename, cpu_t *cpu, char **params, int argc) {
     FILE *arch = fopen(filename, "rb");
     // el archivo no guarda el caracter nulo, por eso id[5]
     char id[6];
@@ -54,8 +52,7 @@ void mem_load(mem_t *mem, char *filename, cpu_t *cpu, char **params, int argc)
     fclose(arch);
 }
 
-void mem_load_v1(mem_t *mem, FILE *arch, cpu_t *cpu)
-{
+void mem_load_v1(mem_t *mem, FILE *arch, cpu_t *cpu) {
     uint8_t size_bytes[2];
     uint16_t code_size;
 
@@ -85,8 +82,7 @@ void mem_load_v1(mem_t *mem, FILE *arch, cpu_t *cpu)
     mem->segment_count = 2;
 }
 
-void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc)
-{
+void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc) { //*modificacion
     uint8_t size_bytes[2];
     uint16_t cs_size, ds_size, es_size, ss_size, ks_size, entry_point;
 
@@ -207,8 +203,7 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc)
     init_main_stack(cpu, mem, argc, ps_size);
 }
 
-void mem_read(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t *value, int size)
-{
+void mem_read(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t *value, int size) {
     // Verificar tamaño
     if (size != 1 && size != 2 && size != 4) {
         error_Output(WRONG_SIZE); // Tamaño inválido
@@ -254,16 +249,14 @@ void mem_write(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t value, int 
     }
 }
 
-void mem_free(mem_t *mem)
-{
+void mem_free(mem_t *mem) { //*modificacion
     if (mem->data) {
         free(mem->data);
         mem->data = NULL;
     }
 }
 
-uint32_t create_param_segment(mem_t *mem, char **params, int argc)
-{
+uint32_t create_param_segment(mem_t *mem, char **params, int argc) { //*modificacion
     if (argc == 0 || params == NULL) {
         return 0; // No hay parámetros
     }

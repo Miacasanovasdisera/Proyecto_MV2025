@@ -44,7 +44,7 @@ uint16_t cpu_logic_to_physic(mem_t mem, uint32_t logic_address, int bytesToRead)
     return physical_addr;
 }
 
-void operators_registers_load(cpu_t *cpu, mem_t mem) {
+void operators_registers_load(cpu_t *cpu, mem_t mem) { //*modificacion
     uint8_t i, increment,  typeOP1, typeOP2, firstByte = mem.data[cpu->IP];
     uint32_t dataOP1, dataOP2, a, b;
 
@@ -95,8 +95,8 @@ void operators_registers_load(cpu_t *cpu, mem_t mem) {
             dataOP2 = shift_SAR(cpu,dataOP2,8);            
         }
         
-    cpu->OP1 = (typeOP1 << 24) | (int32_t)dataOP1;
-    cpu->OP2 = (typeOP2 << 24) | (int32_t)dataOP2;
+    cpu->OP1 = (typeOP1 << 24) | ((int32_t)dataOP1 & 0x00FFFFFF);
+    cpu->OP2 = (typeOP2 << 24) | ((int32_t)dataOP2 & 0x00FFFFFF);
 
     cpu_update_IP(cpu, typeOP1, typeOP2);
 }
@@ -124,8 +124,28 @@ uint32_t calculate_logical_address(cpu_t *cpu, uint8_t OP_type, uint32_t OP_valu
     return value_reg + offset;
 }
 
-void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
-    int verif = 0;
+void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) { //*modificacion
+    int8_t sector = (reg_code >> 6) & 0x03, base_reg = reg_code & 0x3F;
+    int32_t *reg_ptr; // se usa el puntero para modificar el registro de proposito general, solo los bits necesarios
+
+    if (base_reg >= R_EAX && base_reg <= R_EFX) {
+        switch (base_reg) {
+            case R_EAX: reg_ptr = &cpu->EAX; break;
+            case R_EBX: reg_ptr = &cpu->EBX; break;
+            case R_ECX: reg_ptr = &cpu->ECX; break;
+            case R_EDX: reg_ptr = &cpu->EDX; break;
+            case R_EEX: reg_ptr = &cpu->EEX; break;
+            case R_EFX: reg_ptr = &cpu->EFX; break;
+        }
+        switch (sector) {
+            case 0: *reg_ptr = value; break; // EAX
+            case 1: *reg_ptr = (*reg_ptr & 0xFFFFFF00) | (value & 0xFF); break; // AL
+            case 2: *reg_ptr = (*reg_ptr & 0xFFFF00FF) | (value << 8 & 0xFF00); break; // AH 
+            case 3: *reg_ptr = (*reg_ptr & 0xFFFF0000) | (value & 0xFFFF); break; // AX
+        }
+        return;
+    }
+
     switch (reg_code) {
         case R_LAR: cpu->LAR = value; break;
         case R_MAR: cpu->MAR = value; break;
@@ -133,12 +153,6 @@ void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
         case R_IP:  cpu->IP  = value; break;
         case R_SP:  cpu->SP  = value; break;
         case R_BP:  cpu->BP  = value; break;
-        case R_EAX: cpu->EAX = value; break;
-        case R_EBX: cpu->EBX = value; break;
-        case R_ECX: cpu->ECX = value; break;
-        case R_EDX: cpu->EDX = value; break;
-        case R_EEX: cpu->EEX = value; break;
-        case R_EFX: cpu->EFX = value; break;
         case R_CC:  cpu->CC  = value & 0xC0000000; break;
         case R_AC:  cpu->AC  = value; break;
         case R_CS:  cpu->CS  = value; break;
@@ -159,31 +173,44 @@ void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) {
     }
 }
 
-int32_t read_register(cpu_t *cpu, uint8_t reg_code) {
+int32_t read_register(cpu_t *cpu, uint8_t reg_code) { //*modificacion
+    int8_t sector = (reg_code >> 6) & 0x03, base_reg = reg_code & 0x3F;
+    int32_t value;
     switch (reg_code) {
-        case R_EAX: return cpu->EAX;
-        case R_EBX: return cpu->EBX;
-        case R_ECX: return cpu->ECX;
-        case R_EDX: return cpu->EDX;
-        case R_EEX: return cpu->EEX;
-        case R_EFX: return cpu->EFX;
-        case R_SP:  return cpu->SP;
-        case R_BP:  return cpu->BP;
-        case R_CS : return cpu->CS;
-        case R_DS : return cpu->DS;
-        case R_ES:  return cpu->ES;
-        case R_SS:  return cpu->SS;
-        case R_KS:  return cpu->KS;
-        case R_PS:  return cpu->PS;        
-        case R_AC : return cpu->AC;
-        case R_CC : return cpu->CC;        
-        case R_IP : return cpu->IP;        
-        case R_MAR: return cpu->MAR;
-        case R_MBR: return cpu->MBR;
-        case R_LAR: return cpu->LAR;
-        case R_OPC: return cpu->OPC;
-        case R_OP1: return cpu->OP1;
-        case R_OP2: return cpu->OP2;
+        case R_EAX: value = cpu->EAX;break;
+        case R_EBX: value = cpu->EBX;break;
+        case R_ECX: value = cpu->ECX;break;
+        case R_EDX: value = cpu->EDX;break;
+        case R_EEX: value = cpu->EEX;break;
+        case R_EFX: value = cpu->EFX;break;
+        case R_SP : value = cpu->SP; break;
+        case R_BP : value = cpu->BP; break;
+        case R_CS : value = cpu->CS; break;
+        case R_DS : value = cpu->DS; break;
+        case R_ES : value = cpu->ES; break;
+        case R_SS : value = cpu->SS; break;
+        case R_KS : value = cpu->KS; break;
+        case R_PS : value = cpu->PS; break;        
+        case R_AC : value = cpu->AC; break;
+        case R_CC : value = cpu->CC; break;        
+        case R_IP : value = cpu->IP; break;        
+        case R_MAR: value = cpu->MAR;break;
+        case R_MBR: value = cpu->MBR;break;
+        case R_LAR: value = cpu->LAR;break;
+        case R_OPC: value = cpu->OPC;break;
+        case R_OP1: value = cpu->OP1;break;
+        case R_OP2: value = cpu->OP2;break;
         default: return error_Output(REGISTER_ERROR);
     }
+
+    if (base_reg >= R_EAX && base_reg <= R_EFX) {
+        switch (sector) {
+            case 0: return value; // EAX
+            case 1: return value & 0xFF; // AL
+            case 2: return (value >> 8) & 0xFF; // AH 
+            case 3: return value & 0xFFFF; // AX
+        }
+    }
+
+    return value;
 }

@@ -15,7 +15,7 @@ int execute_POP(cpu_t *cpu, mem_t *mem) {
     int8_t type_dest = get_operand_type(cpu->OP1);
     uint32_t dest_addrss;
     get_destination_address(cpu, cpu->OP1, &dest_addrss);
-    write_dest(cpu, mem, type_dest, dest_addrss, value);
+    write_dest(cpu, mem, type_dest, dest_addrss, value, cpu->OP1);
     return 0;
 }
 

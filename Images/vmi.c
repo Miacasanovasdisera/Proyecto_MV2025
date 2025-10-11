@@ -78,7 +78,7 @@ void load_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
     }
     
     // ===== HEADER (8 bytes) =====
-    char id[6] = {0};
+    char id[6];
     if (fread(id, 1, 5, arch) != 5) {
         fclose(arch);
         error_Output(IMAGE_ERROR);
