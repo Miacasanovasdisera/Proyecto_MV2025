@@ -48,10 +48,22 @@ void get_value(cpu_t *cpu, mem_t *mem, int32_t OP, int32_t *content) {
         }
         break;
         
-        case MEMORY_OPERAND:{
-            logic_addr = calculate_logical_address(cpu,typeOP,dataOP);
-            mem_read(mem,cpu,logic_addr,content,4);
-        } break;
+        case MEMORY_OPERAND: { //*modificacion
+            logic_addr = calculate_logical_address(cpu, typeOP, dataOP);
+            
+            // ===== NUEVO: Obtener tamaño del modificador =====
+            int size = get_memory_size(OP);
+            
+            // Leer con el tamaño especificado
+            mem_read(mem, cpu, logic_addr, content, size);
+            
+            // Extensión de signo si es necesario
+            if (size == 1 && (*content & 0x80))
+                *content |= 0xFFFFFF00; // Extender signo de 8 bits
+            else if (size == 2 && (*content & 0x8000))
+                *content |= 0xFFFF0000; // Extender signo de 16 bits  
+        } 
+        break;
 
         default: {
             error_Output(INVALID_OPERAND);
@@ -60,9 +72,9 @@ void get_value(cpu_t *cpu, mem_t *mem, int32_t OP, int32_t *content) {
     }
 }
 
-void write_dest(cpu_t *cpu, mem_t *mem, uint8_t type, uint32_t dest_addrss, int32_t value) {
-    if (type == MEMORY_OPERAND) 
-        mem_write(mem, cpu, dest_addrss, value, 4);
+void write_dest(cpu_t *cpu, mem_t *mem, uint8_t type, uint32_t dest_addrss, int32_t value, int32_t OP) { //*modificacion
+    if (type == MEMORY_OPERAND)
+        mem_write(mem, cpu, dest_addrss, value, get_memory_size(OP));
     
     else if (type == REGISTER_OPERAND) 
         write_register(cpu, dest_addrss, value);
@@ -80,5 +92,15 @@ void update_CC(cpu_t *cpu,int32_t result) {
     
     else if(result < 0)
         cpu->CC |= NMask;
+}
 
+int get_memory_size(uint32_t OP_register) { //*modificacion
+    uint8_t size_code = (OP_register >> 30) & 0x03; // Bits 31-30
+    
+    switch (size_code) {
+        case 0: return 4; // 00 - long (4 bytes)
+        case 2: return 2; // 10 - word (2 bytes)
+        case 3: return 1; // 11 - byte (1 byte)
+        default: return 4; // Por defecto, 4 bytes
+    }
 }

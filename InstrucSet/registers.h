@@ -8,6 +8,8 @@
 #define R_OPC 4
 #define R_OP1 5
 #define R_OP2 6
+#define R_SP 7
+#define R_BP 8
 #define R_EAX 10
 #define R_EBX 11
 #define R_ECX 12
@@ -18,5 +20,9 @@
 #define R_CC 17
 #define R_CS 26
 #define R_DS 27
+#define R_ES 28
+#define R_SS 29
+#define R_KS 30
+#define R_PS 31
 
 #endif

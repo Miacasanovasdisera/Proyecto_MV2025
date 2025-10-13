@@ -1,16 +1,5 @@
 #include "errors.h"
 
-/*
-Fallo de carga de programa: 1
-Instrucción inválida: 2
-División por cero: 3
-Fallo de segmento: 4
-Error de registro: 5
-Tamaño de lectura o escritura inválido: 6
-Operando inválido: 7
-Numero de argumentos invalido: 8
-*/
-
 int error_Output(int error_code) {
     switch (error_code) {
         case LOAD_PROGRAM_ERROR:
@@ -34,6 +23,21 @@ int error_Output(int error_code) {
         case INVALID_OPERAND:
             printf("Error %d: Operando invalido.\n", error_code);
             break;
+        case ARGUMENT_ERROR:
+            printf("Error %d: Numero de argumentos invalido.\n", error_code);
+            break;
+        case IMAGE_ERROR:
+            printf("Error %d: Problema de carga de imagen.\n", error_code);
+            break;
+        case STACK_OVERFLOW:
+            printf("Error %d: Desbordamiento de pila.\n", error_code);
+            break;
+        case STACK_UNDERFLOW:
+            printf("Error %d: Subdesbordamiento de pila.\n", error_code);
+            break;
+        case INSUFFICIENT_MEMORY:
+            printf("Error %d: Memoria insuficiente.\n", error_code);
+        break;
         default:
             printf("Error de ejecucion.\n");
             break;

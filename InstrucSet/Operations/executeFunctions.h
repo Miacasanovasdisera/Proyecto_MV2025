@@ -7,5 +7,6 @@
 #include "ccModifiers.h"
 #include "dataTransfer.h"
 #include "fluxControl.h"
+#include "stackControl.h"
 
 #endif

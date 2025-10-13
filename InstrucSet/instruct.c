@@ -29,7 +29,11 @@ instruction_handler_t instruction_table[256] = {
     [OP_LDL]  = execute_LDL,
     [OP_LDH]  = execute_LDH,
     [OP_RND]  = execute_RND,
-    [OP_STOP] = execute_STOP
+    [OP_STOP] = execute_STOP,
+    [OP_PUSH] = execute_PUSH,
+    [OP_POP]  = execute_POP,
+    [OP_CALL] = execute_CALL,
+    [OP_RET]  = execute_RET
 };
 
 void InstrucSet_init() {
