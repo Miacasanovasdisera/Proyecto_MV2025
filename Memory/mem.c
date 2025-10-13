@@ -108,7 +108,7 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc) { 
     if (ps_size > 0) {
         mem->segments[seg_index].base = offset;
         mem->segments[seg_index].size = ps_size;
-        cpu->PS = (seg_index << 16);
+        cpu->PS = (seg_index << 16); //Este shift es para que se forme la entrada a la tabla de segmentos -> 0x000X0000
         offset += ps_size;
         seg_index++;
     }
@@ -172,7 +172,7 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc) { 
         mem->segments[seg_index].base = offset;
         mem->segments[seg_index].size = ss_size;
         cpu->SS = (seg_index << 16);
-        cpu->SP = cpu->SS + ss_size; // Pila vacía (apunta fuera)
+        cpu->SP = cpu->SS + ss_size; // Pila vacía (apunta fuera) -> segun documentacion
         offset += ss_size;
         seg_index++;
     }
@@ -187,7 +187,7 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc) { 
 
     // Leer Const Segment (está después del código en el archivo)
     if (ks_size > 0) {
-        uint32_t ks_base = mem->segments[1].base; // KS es el segundo segmento
+        uint32_t ks_base = mem->segments[cpu->KS >> 16].base;
         if (fread(mem->data + ks_base, 1, ks_size, arch) != ks_size) {
             error_Output(INSUFFICIENT_MEMORY);
             return;
@@ -227,8 +227,7 @@ void mem_read(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t *value, int 
     cpu->MBR = *value;
 }
 
-void mem_write(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t value, int size)
-{
+void mem_write(mem_t *mem, cpu_t *cpu, int32_t logical_addr, int32_t value, int size) {
     // Verificar tamaño
     if (size != 1 && size != 2 && size != 4) {
         error_Output(WRONG_SIZE);
@@ -293,6 +292,7 @@ uint32_t create_param_segment(mem_t *mem, char **params, int argc) { //*modifica
         // Crear un puntero de 32 bits (4 bytes)
         // Formato: [16 bits: entrada tabla segmentos | 16 bits: offset]
 
+        // El shift es para dejar claro que es un puntero logico con segmento 0.
         uint32_t pointer = (0x0000 << 16) | string_offsets[i];
 
         // Ejemplo para params[0]:

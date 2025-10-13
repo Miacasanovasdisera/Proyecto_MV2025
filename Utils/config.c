@@ -31,7 +31,7 @@ void config_parse(vm_config_t *config, int argc, char *argv[]) {
             continue;
         }
         
-        // Detectar flags y opciones
+        // Detectar flags
         if (arg[0] == '-') {
             // Flag -d
             if (strcmp(arg, "-d") == 0) {
@@ -43,23 +43,24 @@ void config_parse(vm_config_t *config, int argc, char *argv[]) {
                 reading_params = 1;
                 i++;
             }
-            // Opción m=M
-            else if (strncmp(arg, "m=", 2) == 0 || strncmp(arg, "M=", 2) == 0) {
-                char *size_str = arg + 2;
-                int size = atoi(size_str);
-                if (size <= 0 || size > 65535) {
-                    error_Output(ARGUMENT_ERROR);
-                    return;
-                }
-
-                config->memory_size_kib = size;
-                i++;
-            }
+            
             else {
                 error_Output(ARGUMENT_ERROR);
                 return;
             }
             
+        }
+        // Opción m=M
+        else if (strncmp(arg, "m=", 2) == 0 || strncmp(arg, "M=", 2) == 0) {
+            char *size_str = arg + 2;
+            int size = atoi(size_str);
+            if (size <= 0 || size > 65535) {
+                error_Output(ARGUMENT_ERROR);
+                return;
+            }
+
+            config->memory_size_kib = size;
+            i++;
         }
         // Archivos (terminan en .vmx o .vmi)
         else {

@@ -67,6 +67,7 @@ int main(int argc, char *argv[]) {
         }
         
         mem_load(&mem, config.vmx_file, &cpu, config.params, config.param_count);
+        g_vmi_filename = config.vmi_file;
         
         if (config.disassem_mode) {
             printf("\n=== DISASSEMBLER ===\n");

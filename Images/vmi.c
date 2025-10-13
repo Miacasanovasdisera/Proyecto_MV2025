@@ -39,7 +39,7 @@ void save_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
         cpu->CS, cpu->DS, cpu->ES, cpu->SS, cpu->KS, cpu->PS
     };
     
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < 32; i++) { //Esto se hace para escribir en big endian (seguro)
         uint32_t reg = (uint32_t)registers[i];
         uint8_t reg_bytes[4];
         reg_bytes[0] = (reg >> 24) & 0xFF;
@@ -116,7 +116,7 @@ void load_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
     
     // ===== REGISTROS (32 × 4 = 128 bytes) =====
     int32_t registers[32];
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < 32; i++) { //Esto se hace para leer en big endian (seguro)
         uint8_t reg_bytes[4];
         if (fread(reg_bytes, 1, 4, arch) != 4) {
             fclose(arch);
