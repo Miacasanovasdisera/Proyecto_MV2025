@@ -14,5 +14,9 @@ void activate_booleans_syscall(int32_t ,int32_t *,int32_t *,int32_t *,int32_t *,
 void print_binary(int32_t ,int32_t);
 void read_binary(int32_t *);
 void print_characters(int32_t ,int32_t);
+void sys_string_read(mem_t *mem,cpu_t *cpu,int32_t CX,int16_t index,int16_t segment);
+void sys_string_write(mem_t *mem,cpu_t *cpu,int16_t index,int16_t segment);
+void sys_clear();
+void sys_breackpoint();
 
 #endif
