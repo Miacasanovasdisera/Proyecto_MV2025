@@ -219,13 +219,13 @@ void dissasembler(cpu_t cpu, mem_t mem){
 
             // 4. Operando 1
             if (typeOP1 != NO_OPERAND) {
-                print_operand(cpu.OP1);
+                print_operand(cpu.OP1, mem.segment_count);
             }
 
             // 5. Operando 2
             if (typeOP2 != NO_OPERAND) {
                 printf(", ");
-                print_operand(cpu.OP2);
+                print_operand(cpu.OP2, mem.segment_count);
             }   
 
             printf("\n");
