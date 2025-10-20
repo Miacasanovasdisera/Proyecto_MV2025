@@ -14,32 +14,33 @@ int execute_SYS(cpu_t *cpu, mem_t *mem){
     //leo la informacion del ECX y EDX
     ECXH = (read_register(cpu,R_ECX) & 0xFFFF0000) >> 16;
     ECXL = read_register(cpu,R_ECX) & 0x0000FFFF;
-    EDX= read_register(cpu,R_EDX);
+    
     //leo la direccion logica del EDX y la paso a fisica para saber de donde arranco a leer (se lo asigno a la variable index que se va a ir moviendo por donde leo)
     physical_address = cpu_logic_to_physic(*mem,EDX,4);
     index = physical_address;
         
     if(  ==2){            // verifica en que version esta
-     switch(get_operand_value){
-        case 1:sys_read(mem,cpu,ECXH,ECXL,index);
-                break;
-        case 2:sys_write(mem,cpu,ECXH,ECXL,index);
-                break;
-        case 3:sys_string_read(mem,CPU,ECXL,index);
-                break;
-        case 4:sys_string_write(mem,CPU,index,EDX >> 16);
-                break;
-        case 7:sys_clear();
-                break;
-        case 15:sys_breackpoint();
-                break;
+        EDX= read_register(cpu,R_EDX);      //a las funciones nuevas las invoco con el numero del segmento,para saber en cual estoy
+        switch(get_operand_value(cpu->OP1)){
+            case 1:sys_read(mem,cpu,ECXH,ECXL,index);
+                    break;
+            case 2:sys_write(mem,cpu,ECXH,ECXL,index);
+                    break;
+            case 3:sys_string_read(mem,CPU,ECXL,index,EDX >> 16);
+                    break;
+            case 4:sys_string_write(mem,CPU,index,EDX >> 16);
+                    break;
+            case 7:sys_clear();
+                    break;
+            case 15:sys_breackpoint();
+                    break;
 
-        default:error_Output(INVALID_OPERAND); //no es ninguno de las opciones 
-                break;
-        } 
+            default:error_Output(INVALID_OPERAND); //no es ninguno de las opciones 
+                    break;
+            } 
        }
     else{
-        switch(get_operand_value){
+        switch(get_operand_value(cpu->OP1)){
             case 1:sys_read(mem,cpu,ECXH,ECXL,index);
                     break;
             case 2:sys_write(mem,cpu,ECXH,ECXL,index);
@@ -210,20 +211,25 @@ void print_characters(int32_t num,int32_t ECXH){
 
 
 
-void sys_string_read(mem_t *mem,cpu_t *cpu,int32_t CX,int16_t index){
+void sys_string_read(mem_t *mem,cpu_t *cpu,int32_t CX,int16_t index,int16_t segment){
     char characters[];      //cadena ingresada por teclado
-    int32_t i;
+    int32_t i=0,segment_end;
 
-    if(index+ECXH*ECXL>=mem->segments[read_register(cpu,R_EDX) >> 16].base && index+ECXH*ECXL<=mem->segments[read_register(cpu,R_EDX); >> 16].size){
+    segment_end=mem->segments[segment].size+mem->segments[segment].base     //me dice donde esta el final del segmento que es apuntado por EDX
+    
     scanf("%s",cad);
-    if(CX==-1)
-        for(i=0;i<strlen(cad);i++)
+    if(CX==-1){         //tengo que leer hasta el final o no
+        while(index+i<=segment_end && i<=strlen(characters))          //recorre hasta que la palabra termine o  hasta que me caiga del segmento
             mem.data[index+i]=characters[i];
-
+        }
     else
-        for(i=0;i<=CX;i++)
-            mem.data[index+i]=characters[i];
-
+        if(index+CX>=mem->segments[read_register(cpu,R_EDX) >> 16].base && index+CX<=mem->segments[read_register(cpu,R_EDX); >> 16].size)       //verifica si lo que leo de la palabra indicado por 'CX' supero el segmento apuntado por 'EDX'
+            for(i=0;i<CX;i++)                   //leo la cantidad de veces indicada por 'CX'
+                mem.data[index+i]=characters[i];
+        else   //no se puede leer pq supero el tamaño del segmento
+            error_Output(MEMORY_ERROR);
+    
+    
 
 }
 
@@ -235,19 +241,24 @@ void sys_string_write(mem_t *mem,cpu_t *cpu,int16_t index,int16_t segment){     
     segment_end=mem->segments[segment].size+mem->segments[segment].base // me dice la posicion del final del segmento asi no la supero leyendo
 
     while(index+i <= segment_end && mem.data[index+i] != 0x00){   //me fijo si hay un '\o' o un me cai del segmento
-        print("%c",mem.data[index+i])
-        i++
+        print("%c",mem.data[index+i]);
+        i++;
     }
+
+    if(mem.data[index+i] != 0x00)
+        error_Output(MEMORY_ERROR);
 
 }
 
 
 void sys_clear(){
-
-
+    system("cls");
 }
 
-void sys_breackpoint(){
+
+void sys_breackpoint(cpu_t *cpu,mem_t *mem,char *filename){
+
+    save_vmi(cpu,mem,filename);
 
 
 
