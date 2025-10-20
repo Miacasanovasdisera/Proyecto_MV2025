@@ -55,14 +55,13 @@ void print_operand(uint32_t op, uint8_t segment_count) {
                     case 0b01: name_array = register_name_16; break; 
                     case 0b10: name_array = register_name_8L; break;
                     case 0b11: name_array = register_name_8H; break;
-                    case 0b00:
                     default:   name_array = register_name_32; break;
                 }
 
                 if (reg_index < 32 && strcmp(name_array[reg_index],"?") != 0) {
                     printf("%s", name_array[reg_index]);
                 } else {
-                    printf("?");
+                    error_Output(INVALID_OPERAND);
                 }
                 break;
             }
