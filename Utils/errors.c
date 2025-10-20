@@ -38,6 +38,8 @@ int error_Output(int error_code) {
         case INSUFFICIENT_MEMORY:
             printf("Error %d: Memoria insuficiente.\n", error_code);
         break;
+        case SEGMENT_NOT_FOUND:
+            printf("Error %d: Segmento no encontrado.\n", error_code);
         default:
             printf("Error de ejecucion.\n");
             break;
