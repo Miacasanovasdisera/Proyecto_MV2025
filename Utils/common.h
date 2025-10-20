@@ -19,6 +19,7 @@
 #define STACK_OVERFLOW 11
 #define STACK_UNDERFLOW 12
 #define INSUFFICIENT_MEMORY 13
+#define SEGMENT_NOT_FOUND 14
 
 // variable global para el nombre del archivo .vmi
 extern const char *g_vmi_filename;

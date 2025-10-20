@@ -54,7 +54,7 @@ static const char *size_prefix[] = { "b", "w", "d", "?" };
 static const char *segment_name[] = { "CS", "DS", "ES", "SS", "KS", "PS","" }; // 6 = Default
 
 // Toda la lógica para imprimir el código desensamblado cuando se usa el flag -d.
-void print_operand(uint32_t);
+void print_operand(uint32_t, uint8_t);
 void disassembler(cpu_t , mem_t);
 
 #endif

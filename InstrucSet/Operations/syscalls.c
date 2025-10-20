@@ -4,63 +4,51 @@
 #include "../helpers.h"
 #include "../../Images/vmi.h"
 
-//! Para el breakpoint, usar save_vmi(cpu, mem, g_vmi_filename); g_vmi_filename (var global)
-// porque a execute_SYS no le paso el nombre del archivo y en main tengo el nombre del archivo .vmi
+int execute_SYS(cpu_t *cpu, mem_t *mem) {
+    uint32_t ECXH,ECXL,physical_address,EDX;
+    uint16_t index;                                  
+    // ECXH me dice la cantidad de bytes que leo o escribo y ECXL me dice la cantidad de veces que leo o escribo 'x' cantidad de bytes
+    // index me dice de donde empiezo a escribir o leer
 
-int execute_SYS(cpu_t *cpu, mem_t *mem){
-    uint32_t ECXH,ECXL,physical_address,EDX;              // ECXH == me dice la cantidad de bytes que leo o escribo y ECXL == me dice la cantidad de veces que leo o escribo 'x' cantidad de bytes
-    uint16_t index;                                  //el index me dice de donde empiezo a escribir o leer
-
-    //leo la informacion del ECX y EDX
     ECXH = (read_register(cpu,R_ECX) & 0xFFFF0000) >> 16;
     ECXL = read_register(cpu,R_ECX) & 0x0000FFFF;
     
     //leo la direccion logica del EDX y la paso a fisica para saber de donde arranco a leer (se lo asigno a la variable index que se va a ir moviendo por donde leo)
     physical_address = cpu_logic_to_physic(*mem,EDX,4);
     index = physical_address;
-        
-    if(  ==2){            // verifica en que version esta
-        EDX= read_register(cpu,R_EDX);      //a las funciones nuevas las invoco con el numero del segmento,para saber en cual estoy
-        switch(get_operand_value(cpu->OP1)){
-            case 1:sys_read(mem,cpu,ECXH,ECXL,index);
-                    break;
-            case 2:sys_write(mem,cpu,ECXH,ECXL,index);
-                    break;
-            case 3:sys_string_read(mem,CPU,ECXL,index,EDX >> 16);
-                    break;
-            case 4:sys_string_write(mem,CPU,index,EDX >> 16);
-                    break;
-            case 7:sys_clear();
-                    break;
-            case 15:sys_breackpoint();
-                    break;
 
-            default:error_Output(INVALID_OPERAND); //no es ninguno de las opciones 
-                    break;
-            } 
-       }
-    else{
-        switch(get_operand_value(cpu->OP1)){
-            case 1:sys_read(mem,cpu,ECXH,ECXL,index);
-                    break;
-            case 2:sys_write(mem,cpu,ECXH,ECXL,index);
-                    break;
-            default:error_Output(INVALID_OPERAND); //no es ninguno de las opciones
-                break;  
-            }
+    if(EDX == 2){            // verifica en que version esta
+        EDX = read_register(cpu,R_EDX);      //a las funciones nuevas las invoco con el numero del segmento,para saber en cual estoy
+        switch(get_operand_value(cpu->OP1)) {
+            case 1:sys_read(mem,cpu,ECXH,ECXL,index); break;
+            case 2:sys_write(*mem,cpu,ECXH,ECXL,index); break;
+            case 3:sys_string_read(mem,cpu,ECXL,index,EDX >> 16); break;
+            case 4:sys_string_write(*mem,index,EDX >> 16); break;
+            case 7:sys_clear(); break;
+            case 15:sys_breakpoint(cpu,mem); break;
+            default:error_Output(INVALID_OPERAND); break;
+        } 
+    }
+    else
+        switch(get_operand_value(cpu->OP1)) {
+            case 1:sys_read(mem,cpu,ECXH,ECXL,index); break;
+            case 2:sys_write(*mem,cpu,ECXH,ECXL,index); break;
+            default:error_Output(INVALID_OPERAND); break;
         }
-
-
+    
     return 0;
 }
 
-void sys_read(mem_t *mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
-    int32_t hexa,octal,binary,decimal,character,num;            // hexa,octal,binary,decimal y character son booleanos para saber que numero va a ingresar por teclado
-    int16_t i,j;                                                 // num es el numero que se ingresa por teclado
-    
+void sys_read(mem_t *mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index) {
+    int32_t hexa,octal,binary,decimal,character,num;
+    int16_t i,j;                                                 
+    // hexa,octal,binary,decimal y character son booleanos para saber que numero va a ingresar por teclado
+    // num es el numero que se ingresa por teclado
+
     //chequeo si lo voy a leer a partir de 'EDX' supera el segmento donde estoy
-    if(index+ECXH*ECXL>=mem->segments[read_register(cpu,R_EDX) >> 16].base && index+ECXH*ECXL<=mem->segments[read_register(cpu,R_EDX); >> 16].size){
-        activate_booleans_syscall(read_register(cpu,R_EAX),&hexa,&octal,&binary,&decimal,&character);  // activa un booleano declarado mas arriba
+    if(index + ECXH * ECXL >= mem->segments[read_register(cpu,R_EDX) >> 16].base && index + ECXH * ECXL <= mem->segments[read_register(cpu,R_EDX) >> 16].size){
+        // activa un booleano declarado mas arriba
+        activate_booleans_syscall(read_register(cpu,R_EAX),&hexa,&octal,&binary,&decimal,&character);
 
         for(i = 0; i < ECXL ;i++){   // itera la cantidad de veces q tenga que leer por pantalla
             
@@ -95,13 +83,18 @@ void sys_read(mem_t *mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
 
 }
 
-void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
-    int32_t hexa,octal,binary,decimal,character,aux;        // hexa,octal,binary,decimal y character son booleanos para saber que mostrar en pantalla
-    int16_t i,j;                                            // el aux es donde voy a guardar los elementos que leo del segmento
+void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index) {
+    int32_t hexa,octal,binary,decimal,character,aux;
+    int16_t i,j;
+    // hexa,octal,binary,decimal y character son booleanos para saber que mostrar en pantalla
+    // el aux es donde voy a guardar los elementos que leo del segmento
 
-    if(index+ECXH*ECXL>=mem->segments[read_register(cpu,R_EDX) >> 16].base && index+ECXH*ECXL<=mem->segments[read_register(cpu,R_EDX); >> 16].size){
-        activate_booleans_syscall(read_register(cpu,R_EAX),&hexa,&octal,&binary,&decimal,&character);  // activa los booleanos declarados mas arriba
-        for(i = 0; i < ECXL ;i++){     // itera la cantidad de veces que tengo que leer 'x' cantidad de bytes
+    if(index + ECXH * ECXL >= mem.segments[read_register(cpu,R_EDX) >> 16].base && index + ECXH * ECXL <= mem.segments[read_register(cpu,R_EDX) >> 16].size){
+        // activa los booleanos declarados mas arriba
+        activate_booleans_syscall(read_register(cpu,R_EAX),&hexa,&octal,&binary,&decimal,&character);
+
+        // itera la cantidad de veces que tengo que leer 'x' cantidad de bytes
+        for(i = 0; i < ECXL ;i++){     
             aux = 0;
             for(j = 0; j < ECXH ;j++)
                 aux = (aux << 8) | (uint8_t)mem.data[index + j];
@@ -119,7 +112,7 @@ void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
             if(octal)
                 printf("0o%o ",aux);
             if(binary)
-                print_binary(aux,ECXH);  //llama a la funcion que me muestra el numero en binario
+                print_binary(aux,ECXH);
             if(character)
                 print_characters(aux,ECXH);
             if(decimal)
@@ -127,17 +120,14 @@ void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index){
     
             index += ECXH;
     
-            printf("\n") ;
-            }
+            printf("\n");
+        }
     }
     else   //no se puede excribir pq supero el tamaño del segmento
         error_Output(MEMORY_ERROR);
-
-    
-
 }
 
-void activate_booleans_syscall(int32_t EAX,int32_t *hexadecimal,int32_t *octal,int32_t *binary,int32_t *decimal,int32_t *character){
+void activate_booleans_syscall(int32_t EAX,int32_t *hexadecimal,int32_t *octal,int32_t *binary,int32_t *decimal,int32_t *character) {
 
     if(EAX & 0x00000010)
         *binary = 1;
@@ -166,7 +156,7 @@ void activate_booleans_syscall(int32_t EAX,int32_t *hexadecimal,int32_t *octal,i
 
 }
 
-void print_binary(int32_t num,int32_t ECXH){
+void print_binary(int32_t num,int32_t ECXH) {
     int32_t i,bits = 8 * ECXH;
 
     for (i = bits - 1; i >= 0; i--)     //comienza mostrando de mas significativos a menos significativo y se va decrementando la cantidad de shifts
@@ -175,92 +165,87 @@ void print_binary(int32_t num,int32_t ECXH){
     printf(" ");
 }
 
-void read_binary(int32_t *num){
+void read_binary(int32_t *num) {
     char binary_number[32],length,i;
+    
     scanf("%s",binary_number);
     *num = 0;
     length = strlen(binary_number);
     
     for(i=0; i<length ;i++)
         if(binary_number[i] == '1')
-            *num += 1 << (length-1-i);
-        
+            *num += 1 << (length-1-i);      
 }
 
-void print_characters(int32_t num,int32_t ECXH){
-    char characters[4];     //vector q contiene los caracteres a mostrar
-    int32_t i,j,aux;        // auxiliar contiene el numero a mostrar y j es el indice del vector 
+void print_characters(int32_t num,int32_t ECXH) {
+    char characters[4];     // characters contiene los caracteres a mostrar
+    int32_t i,j,aux;        // aux contiene el numero a mostrar y j es el indice del vector 
 
-    j=0;
-    for(i=ECXH-1; i>=0; i--){
+    j = 0;
+    for(i = ECXH - 1; i>=0; i--){
         aux = num;
         aux = (aux >> i*8) & 0x000000FF;
-        if(aux>=32 && aux<127)
-            characters[j]=aux;
+        if(aux >= 32 && aux < 127)
+            characters[j] = aux;
         else
             characters[j]='.';
         j+=1;
     }
+    
     printf("'");
-    for(i=0;i<ECXH;i++)
+    for(i = 0; i < ECXH; i++)
         printf("%c",characters[i]);
+    
     printf(" ");    
 }
 
+void sys_string_read(mem_t *mem,cpu_t *cpu,int32_t CX,int16_t index,int16_t segment) {
+    char characters[256];
+    int32_t i = 0, segment_end;
 
+    //obtengo el final del segmento para no superarlo
+    segment_end = mem->segments[segment].size + mem->segments[segment].base;
 
-
-
-void sys_string_read(mem_t *mem,cpu_t *cpu,int32_t CX,int16_t index,int16_t segment){
-    char characters[];      //cadena ingresada por teclado
-    int32_t i=0,segment_end;
-
-    segment_end=mem->segments[segment].size+mem->segments[segment].base     //me dice donde esta el final del segmento que es apuntado por EDX
+    scanf("%s", characters);
     
-    scanf("%s",cad);
-    if(CX==-1){         //tengo que leer hasta el final o no
-        while(index+i<=segment_end && i<=strlen(characters))          //recorre hasta que la palabra termine o  hasta que me caiga del segmento
-            mem.data[index+i]=characters[i];
-        }
+    //tengo que leer hasta el final o no
+    if(CX == -1)
+        //recorre hasta que la palabra termine o  hasta que me caiga del segmento
+        while(index + i <= segment_end && i <= strlen(characters))
+            mem->data[index + i] = characters[i];
+    
+    //verifica si lo que leo de la palabra indicado por 'CX' supero el segmento apuntado por 'EDX'
+    else if(index + CX >= mem->segments[read_register(cpu,R_EDX) >> 16].base && index + CX <= mem->segments[read_register(cpu,R_EDX) >> 16].size)
+        //leo la cantidad de veces indicada por 'CX'
+        for(i = 0; i < CX; i++)
+            mem->data[index + i] = characters[i];
+
+    //no se puede leer pq supero el tamaño del segmento
     else
-        if(index+CX>=mem->segments[read_register(cpu,R_EDX) >> 16].base && index+CX<=mem->segments[read_register(cpu,R_EDX); >> 16].size)       //verifica si lo que leo de la palabra indicado por 'CX' supero el segmento apuntado por 'EDX'
-            for(i=0;i<CX;i++)                   //leo la cantidad de veces indicada por 'CX'
-                mem.data[index+i]=characters[i];
-        else   //no se puede leer pq supero el tamaño del segmento
-            error_Output(MEMORY_ERROR);
-    
-    
-
+        error_Output(MEMORY_ERROR);
 }
 
-
-void sys_string_write(mem_t *mem,cpu_t *cpu,int16_t index,int16_t segment){     //la variable segment me dice en que segmento estoy parando, para no superarlo luego ya que leo hasta encontrar un \0
-    int i=0;
+void sys_string_write(mem_t mem,int16_t index,int16_t segment) {
+    int i = 0;
     int32_t segment_end;
 
-    segment_end=mem->segments[segment].size+mem->segments[segment].base // me dice la posicion del final del segmento asi no la supero leyendo
+    // me dice la posicion del final del segmento asi no la supero leyendo
+    segment_end = mem.segments[segment].size + mem.segments[segment].base;
 
-    while(index+i <= segment_end && mem.data[index+i] != 0x00){   //me fijo si hay un '\o' o un me cai del segmento
-        print("%c",mem.data[index+i]);
+    //me fijo si hay un '\0' o un me cai del segmento
+    while(index + i <= segment_end && mem.data[index + i] != 0x00) {
+        printf("%c",mem.data[index + i]);
         i++;
     }
 
-    if(mem.data[index+i] != 0x00)
+    if(mem.data[index + i] != 0x00)
         error_Output(MEMORY_ERROR);
-
 }
-
 
 void sys_clear(){
     system("cls");
 }
 
-
-void sys_breackpoint(cpu_t *cpu,mem_t *mem,char *filename){
-
-    save_vmi(cpu,mem,filename);
-
-
-
-
+void sys_breakpoint(cpu_t *cpu,mem_t *mem) {
+    save_vmi(cpu,mem,g_vmi_filename);
 }
