@@ -139,11 +139,11 @@ void disassembler(cpu_t cpu, mem_t mem){
                 printf("%s ", mnemonic);
 
                 if (typeOP1 != NO_OPERAND) 
-                    print_operand(cpu.OP1, mem.segment_count);
+                    print_operand(cpu.OP1);
                 
                     if (typeOP2 != NO_OPERAND) {
                     printf(", ");
-                    print_operand(cpu.OP2, mem.segment_count);
+                    print_operand(cpu.OP2);
                 }   
 
                 printf("\n");
