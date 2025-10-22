@@ -14,39 +14,40 @@ int execute_SYS(cpu_t *cpu, mem_t *mem) {
     ECXL = read_register(cpu,R_ECX) & 0x0000FFFF;
     
     //leo la direccion logica del EDX y la paso a fisica para saber de donde arranco a leer (se lo asigno a la variable index que se va a ir moviendo por donde leo)
-    physical_address = cpu_logic_to_physic(*mem,EDX,4);
+    physical_address = cpu_logic_to_physic(*mem,read_register(cpu,R_EDX),4);
     index = physical_address;
 
-    if(EDX == 2){            // verifica en que version esta
-        EDX = read_register(cpu,R_EDX);      //a las funciones nuevas las invoco con el numero del segmento,para saber en cual estoy
-        switch(get_operand_value(cpu->OP1)) {
-            case 1:sys_read(mem,cpu,ECXH,ECXL,index); break;
-            case 2:sys_write(*mem,cpu,ECXH,ECXL,index); break;
-            case 3:sys_string_read(mem,cpu,ECXL,index,EDX >> 16); break;
-            case 4:sys_string_write(*mem,index,EDX >> 16); break;
-            case 7:sys_clear(); break;
-            case 15:sys_breakpoint(cpu,mem); break;
-            default:error_Output(INVALID_OPERAND); break;
-        } 
+    switch(get_operand_value(cpu->OP1)) {
+        case 1:sys_read(mem,cpu,ECXH,ECXL,index); break;
+        case 2:sys_write(*mem,cpu,ECXH,ECXL,index); break;
+        case 3: { 
+            EDX = read_register(cpu,R_EDX);      //a las funciones nuevas las invoco con el numero del segmento,para saber en cual estoy
+            sys_string_read(mem,cpu,ECXL,index,EDX >> 16); 
+        } break;
+        case 4:{ 
+            EDX = read_register(cpu,R_EDX);      //a las funciones nuevas las invoco con el numero del segmento,para saber en cual estoy
+            sys_string_write(*mem,index,EDX >> 16); 
+        } break;
+        case 7:sys_clear(); break;
+        case 15:sys_breakpoint(cpu,mem); break;
+        default:error_Output(INVALID_OPERAND); break;
     }
-    else
-        switch(get_operand_value(cpu->OP1)) {
-            case 1:sys_read(mem,cpu,ECXH,ECXL,index); break;
-            case 2:sys_write(*mem,cpu,ECXH,ECXL,index); break;
-            default:error_Output(INVALID_OPERAND); break;
-        }
     
     return 0;
 }
 
 void sys_read(mem_t *mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index) {
-    int32_t hexa,octal,binary,decimal,character,num;
+    int32_t hexa,octal,binary,decimal,character,num,segment_end,segment;
     int16_t i,j;                                                 
     // hexa,octal,binary,decimal y character son booleanos para saber que numero va a ingresar por teclado
     // num es el numero que se ingresa por teclado
-
+    
+    segment = read_register(cpu,R_EDX) >> 16;
+    
+    segment_end = mem->segments[segment].base +  mem->segments[segment].size;
+    
     //chequeo si lo voy a leer a partir de 'EDX' supera el segmento donde estoy
-    if(index + ECXH * ECXL >= mem->segments[read_register(cpu,R_EDX) >> 16].base && index + ECXH * ECXL <= mem->segments[read_register(cpu,R_EDX) >> 16].size){
+    if(index + ECXH * ECXL <= segment_end){
         // activa un booleano declarado mas arriba
         activate_booleans_syscall(read_register(cpu,R_EAX),&hexa,&octal,&binary,&decimal,&character);
 
@@ -84,12 +85,15 @@ void sys_read(mem_t *mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index) {
 }
 
 void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index) {
-    int32_t hexa,octal,binary,decimal,character,aux;
-    int16_t i,j;
+    int32_t hexa, octal, binary, decimal,character, aux, segment_end,segment;
+    int16_t i, j;
     // hexa,octal,binary,decimal y character son booleanos para saber que mostrar en pantalla
     // el aux es donde voy a guardar los elementos que leo del segmento
 
-    if(index + ECXH * ECXL >= mem.segments[read_register(cpu,R_EDX) >> 16].base && index + ECXH * ECXL <= mem.segments[read_register(cpu,R_EDX) >> 16].size){
+    segment = read_register(cpu,R_EDX) >> 16;
+    segment_end = mem.segments[segment].base +  mem.segments[segment].size;
+
+    if(index + ECXH * ECXL <=segment_end){
         // activa los booleanos declarados mas arriba
         activate_booleans_syscall(read_register(cpu,R_EAX),&hexa,&octal,&binary,&decimal,&character);
 
@@ -215,7 +219,7 @@ void sys_string_read(mem_t *mem,cpu_t *cpu,int32_t CX,int16_t index,int16_t segm
             mem->data[index + i] = characters[i];
     
     //verifica si lo que leo de la palabra indicado por 'CX' supero el segmento apuntado por 'EDX'
-    else if(index + CX >= mem->segments[read_register(cpu,R_EDX) >> 16].base && index + CX <= mem->segments[read_register(cpu,R_EDX) >> 16].size)
+    else if( index + CX <= segment_end)
         //leo la cantidad de veces indicada por 'CX'
         for(i = 0; i < CX; i++)
             mem->data[index + i] = characters[i];

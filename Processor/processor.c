@@ -174,7 +174,7 @@ void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) { //*modificac
 }
 
 int32_t read_register(cpu_t *cpu, uint8_t reg_code) { //*modificacion
-    int8_t sector = (reg_code >> 6) & 0x03, base_reg = reg_code & 0x3F;
+    int8_t sector = (reg_code >> 6) & 0x03, base_reg = reg_code & 0x3F;     
     int32_t value;
     switch (reg_code) {
         case R_EAX: value = cpu->EAX;break;
