@@ -4,14 +4,13 @@
 
 // Esta funcion imprime un operando segun su tipo
 
-void print_operand(uint32_t op, uint8_t segment_count) {
+void print_operand(uint32_t op) {
     uint32_t typeOP = get_operand_type(op);
     int32_t dataOP = get_operand_value(op);
     int8_t reg;
     int16_t offset;
 
-    if (segment_count == 1)
-        switch (typeOP) {
+    switch (typeOP) {
             case NO_OPERAND:  // sin operando
             break;
 
@@ -19,34 +18,7 @@ void print_operand(uint32_t op, uint8_t segment_count) {
                 printf("%X", dataOP);
             break;
 
-            case REGISTER_OPERAND:  // registro
-                if (dataOP < 32 && strcmp(register_name_32[dataOP],"?") != 0) //menos por ahora pero
-                    printf("%s", register_name_32[dataOP]);
-                else
-                    printf("?");
-                
-            break;
-
-            case MEMORY_OPERAND:{ // memoria
-                reg = dataOP >> 16;
-                offset = dataOP & 0x0000FFFF;
-                
-                printf("[%s+", register_name_32[reg]);
-                printf("%d]",offset);
-            }    
-            break;
-
-            default:
-                error_Output(INVALID_OPERAND);
-        }
-
-   else //logica de V2
-        switch (typeOP) {
-            case NO_OPERAND: break;
-            
-            case IMMEDIATE_OPERAND: printf("%d", dataOP); break;
-            
-            case REGISTER_OPERAND: {
+            case REGISTER_OPERAND:{  // registro 
                 uint8_t reg_index = dataOP & 0x1F;      // bits 0-4 
                 uint8_t pseudonimo = (dataOP >> 5) & 0x03; // bits 5-6 
                 
@@ -61,12 +33,11 @@ void print_operand(uint32_t op, uint8_t segment_count) {
                 if (reg_index < 32 && strcmp(name_array[reg_index],"?") != 0) 
                     printf("%s", name_array[reg_index]);
                 else
-                    printf("?");
-                
+                    printf("?"); 
             }
             break;
-            
-            case MEMORY_OPERAND: {
+
+            case MEMORY_OPERAND:{
                 int16_t offset = dataOP & 0x0000FFFF;
                 uint8_t reg_idx = (dataOP >> 16) & 0xFF; 
                 uint8_t modifiers = (dataOP >> 24) & 0x3F;
@@ -90,17 +61,15 @@ void print_operand(uint32_t op, uint8_t segment_count) {
                 
             }
             break;
-            
+
             default:
-                error_Output(INVALID_OPERAND);
-        }  
+                printf("?");
+            break;
+        }             
 }
 
 void disassembler(cpu_t cpu, mem_t mem){
     int8_t i, instrucSize, typeOP1, typeOP2; // declaro lo que se que va a ser usado en ambas versiones
-    
-    //logica de V2
-    if (mem.segment_count > 1) {
         //segmento de constantes
         if (cpu.KS != 0xFFFFFFFF){
             uint32_t ks_base = mem.segments[cpu.KS >> 16].base;
@@ -108,7 +77,7 @@ void disassembler(cpu_t cpu, mem_t mem){
             uint32_t len,offset = 0;
 
             while (offset < ks_size) {
-                printf("[%04X] ", offset);
+                printf("[%04X]", offset);
                 uint32_t str_phys_addr = ks_base + offset;
                 
                 len = 0;
@@ -137,22 +106,18 @@ void disassembler(cpu_t cpu, mem_t mem){
 
                 offset += len;
             }
-
-
         }
         //segmento de codigo
-        //siendo que el segmento de codigo no puede no existir lanzo excepcion si no existe (??)
-        if (cpu.CS != 0xFFFFFFFF) {
             uint32_t cs_base = mem.segments[cpu.CS >> 16].base;
             uint32_t cs_size = mem.segments[cpu.CS >> 16].size;
-            uint32_t offset, entry_point_offset = offset = cpu.IP; // IP lógico V2, esta bien q el offset arranque aca no?
+            uint32_t offset, entry_point_offset = offset = cs_base; // cs_base; // offset logico
 
             while (offset < cs_size) {
-                printf("%c", (offset == entry_point_offset) ? '>' : ' '); // Entry point
+                printf("%c", (offset == entry_point_offset) ? '>' : ' '); // Entry point (se va a mostrar en la version 1 tambien )
                 printf("[%04X] ", offset);
 
                 uint32_t physical_addr = cs_base + offset;
-                cpu.IP = physical_addr; // operators_registers_load` lee desde cpu.IP
+                cpu.IP = physical_addr; // operators_registers_load lee desde cpu.IP
 
                 operators_registers_load(&cpu, mem);
                 // carga OPC, OP1, OP2 y actualiza IP
@@ -183,52 +148,5 @@ void disassembler(cpu_t cpu, mem_t mem){
 
                 printf("\n");
                 offset += instrucSize; // Avanzar offset lógico
-            }
-        }  
-        else
-            error_Output(SEGMENT_NOT_FOUND);
-    }
-    else {
-        //logica de V1
-        uint32_t codsize =  mem.segments[0].size, increment = cpu.IP = cpu.CS;
-
-        while (increment < codsize) {
-            printf("[%04X] ", increment);        
-
-            // Carga OPC, OP1, OP2 y actualiza IP
-            operators_registers_load(&cpu, mem);
-            
-            typeOP1 = get_operand_type(cpu.OP1);
-            typeOP2 = get_operand_type(cpu.OP2);
-            instrucSize = 1 + typeOP1 + typeOP2;
-            
-            // 2. instruccion en hex
-            for (i = 0; i < instrucSize; i++) 
-                printf("%02X ", mem.data[increment + i]);
-
-            // Formato
-            for (i = instrucSize; i < 8; i++)
-                printf("   ");
-
-            printf("| ");
-
-            // 3 mnemonico
-            const char *mnemonic = opcode_name[cpu.OPC];
-                printf("%s ", mnemonic);
-
-            // 4. Operando 1
-            if (typeOP1 != NO_OPERAND)
-                print_operand(cpu.OP1, mem.segment_count);
-
-            // 5. Operando 2
-            if (typeOP2 != NO_OPERAND) {
-                printf(", ");
-                print_operand(cpu.OP2, mem.segment_count);
-            }   
-
-            printf("\n");
-            // Actualizo el incrementador
-            increment += 1 + typeOP1 + typeOP2;
+            } 
         }
-    }
-}
