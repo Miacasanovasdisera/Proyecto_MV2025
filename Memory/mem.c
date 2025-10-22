@@ -4,11 +4,12 @@
 #include "../Utils/errors.h"
 #include "../Stack/stack.h"
 
+int g_version;
+
 void mem_init(mem_t *mem, uint32_t mem_size_kib) { //*modificacion
     mem->data = (uint8_t *)malloc(mem_size_kib * 1024);
     mem->size = mem_size_kib * 1024;
-    if (!mem->data)
-    {
+    if (!mem->data) {
         error_Output(MEMORY_ERROR);
         return;
     }
@@ -55,6 +56,7 @@ void mem_load(mem_t *mem, char *filename, cpu_t *cpu, char **params, int argc) {
 void mem_load_v1(mem_t *mem, FILE *arch, cpu_t *cpu) {
     uint8_t size_bytes[2];
     uint16_t code_size;
+    g_version = 1;
 
     if (fread(size_bytes, 1, 2, arch) != 2)
         error_Output(LOAD_PROGRAM_ERROR);
@@ -85,6 +87,7 @@ void mem_load_v1(mem_t *mem, FILE *arch, cpu_t *cpu) {
 void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc) { //*modificacion
     uint8_t size_bytes[2];
     uint16_t cs_size, ds_size, es_size, ss_size, ks_size, entry_point;
+    g_version = 2;
 
     // Leer tamaños de segmentos
     fread(size_bytes, 1, 2, arch);

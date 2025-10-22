@@ -23,3 +23,4 @@
 
 // variable global para el nombre del archivo .vmi
 extern const char *g_vmi_filename;
+extern int g_version;
