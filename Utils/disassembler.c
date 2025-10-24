@@ -39,17 +39,13 @@ void print_operand(uint32_t op) {
 
             case MEMORY_OPERAND:{
                 int16_t offset = dataOP & 0x0000FFFF;
-                uint8_t reg_idx = (dataOP >> 16) & 0xFF; 
-                uint8_t modifiers = (dataOP >> 24) & 0x3F;
+                uint8_t modifiers = (dataOP >> 16) ;
+                uint8_t reg_idx = dataOP >> 16;
+             
 
-                uint8_t size = modifiers & 0x03;          // bits 0-1
-                uint8_t seg_override = (modifiers >> 2) & 0x07; // bits 2-4  extrae los 3 bits que rep el prefijo de segmento 0=CS, 1=DS, 2=ES, etc
+                uint8_t size = (modifiers & 0xC0) >> 6;          // bits 8-7 
                 
-                printf("%s", size_prefix[size]); // Prefijo de tamaño (b, w, d)
-
-                if (seg_override != 6) // Prefijo de segmento (si no es default) (default==6 =="")
-                    printf("%s:", segment_name[seg_override]);
-                
+                printf("%s", size_prefix[size]); // Prefijo de tamaño (l , w , b)
                 printf("[%s", register_name[reg_idx]);
                 
                 if (offset > 0) 
@@ -90,7 +86,9 @@ void print_operand(uint32_t op) {
             break;
             
             default: error_Output(INVALID_OPERAND);    
-        } 
+    
+        }
+    
 }
 
 void disassembler(cpu_t cpu, mem_t mem){
@@ -175,6 +173,7 @@ void disassembler(cpu_t cpu, mem_t mem){
         printf("\n ");
         offset += instrucSize; // Avanzar offset lógico
     } 
+
 }
 
 /*

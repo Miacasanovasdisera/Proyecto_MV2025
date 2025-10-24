@@ -46,21 +46,21 @@ MOV SP, BP
 POP BP
 RET
 
-main: MOV EAX, 1
-MOV EDX, DS
-LDL ECX, 1
-LDH ECX, 4
-SYS 1
+main:   MOV EAX, 1
+        MOV EDX, DS
+        LDL ECX, 1
+        LDH ECX, 4
+        SYS 1
 
-MOV EBX, DS
-ADD EBX, 100
+        MOV EBX, DS
+        ADD EBX, 100
 
-PUSH EBX ; puntero a donde va el string 
-PUSH [EDX] ; numero a convertirlo en string
-CALL toString
-ADD SP, 8
-; en EBX esta el puntero al numero pasado a string 
+        PUSH EBX ; puntero a donde va el string 
+        PUSH [EDX] ; numero a convertirlo en string
+        CALL toString
+        ADD SP, 8
+        ; en EBX esta el puntero al numero pasado a string 
 
-MOV EDX, EBX
-SYS 4
-RET
+        MOV EDX, EBX
+        SYS 4
+        RET

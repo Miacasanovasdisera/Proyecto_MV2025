@@ -50,9 +50,6 @@ static const char *register_name[] = {
         "CS", "DS","ES","SS","KS","PS"
 };
 
-//nombres de segmentos
-static const char *segment_name[] = { "PS","KS", "CS", "DS", "ES", "SS","" }; // 6 = Default
-
 // Toda la lógica para imprimir el código desensamblado cuando se usa el flag -d.
 void print_operand(uint32_t);
 void disassembler(cpu_t , mem_t);
