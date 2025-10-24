@@ -37,7 +37,7 @@ void get_value(cpu_t *cpu, mem_t *mem, int32_t OP, int32_t *content) {
 
     switch (typeOP) {
         case REGISTER_OPERAND: 
-            *content = read_register(cpu, dataOP);      
+            *content = read_register(cpu, dataOP);    
         break;
 
         case IMMEDIATE_OPERAND: {

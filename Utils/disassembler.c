@@ -132,7 +132,7 @@ void disassembler(cpu_t cpu, mem_t mem){
     //segmento de codigo
     uint32_t cs_base = mem.segments[cpu.CS >> 16].base;
     uint32_t cs_size = mem.segments[cpu.CS >> 16].size;
-    uint32_t offset = cpu.IP;  // offset logico 
+    uint32_t offset = 0;  // offset logico 
     
     printf(">");
 

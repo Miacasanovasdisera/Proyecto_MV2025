@@ -8,6 +8,11 @@ int execute_MOV(cpu_t *cpu, mem_t *mem) {
 
     get_value(cpu, mem, cpu->OP2, &src_value);
     get_destination_address(cpu, cpu->OP1, &dest_addr);
+   
+    printf("OP1: %X /n",cpu->OP1);
+    printf("OP2: %X /n",cpu->OP1);
+
+    printf("EBX: %X /n",cpu->EBX);
 
     result = src_value;
     write_dest(cpu, mem, dest_type, dest_addr, result, cpu->OP1);

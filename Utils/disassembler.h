@@ -39,7 +39,7 @@ static const char *register_name_8H[] = {
         "CS", "DS","ES","SS","KS","PS"
 };
 // prefijos de tamaño de operando
-static const char *size_prefix[] = { "b", "w", "d", "?" };
+static const char *size_prefix[] = { "l", "?", "w","b" };
 
 static const char *register_name[] = {
         "LAR", "MAR", "MBR", "IP", "OPC", "OP1", "OP2",
