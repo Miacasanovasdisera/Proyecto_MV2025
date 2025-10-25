@@ -1,0 +1,47 @@
+FACT:   PUSH BP
+        MOV BP,SP
+        SUB SP,4
+        PUSH EDX
+        PUSH ECX
+        MOV [BP-4],1
+        MOV EDX, [BP+8]
+        CMP EDX, 1
+        JNP FIN
+        SUB EDX, 1
+        PUSH EDX
+        CALL FACT
+        ADD SP,4
+        MOV ECX, EAX
+        MUL ECX, [BP+8]
+        MOV [BP-4], ECX
+FIN:    MOV EAX, [BP-4]
+        POP ECX
+        POP EDX
+        ADD SP,4
+        MOV SP,BP
+        POP BP
+        RET
+
+MAIN:   PUSH BP
+        MOV BP, SP
+        PUSH EAX
+        PUSH ECX
+        PUSH EDX
+        MOV EAX, [BP+12]
+        MOV EAX, [EAX]
+        MOV EAX, b[EAX]
+        SUB EAX, '0'
+        PUSH EAX
+        CALL FACT
+        ADD SP, 4
+        MOV EDX, DS
+        LDH ECX, 4
+        LDL ECX, 1
+        MOV EAX, 1
+        SYS 2
+        POP EDX
+        POP ECX
+        POP EAX
+        MOV SP, BP
+        POP BP
+        RET

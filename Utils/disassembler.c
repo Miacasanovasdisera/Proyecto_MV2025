@@ -46,7 +46,7 @@ void print_operand(uint32_t op) {
                 uint8_t size = (modifiers & 0xC0) >> 6;          // bits 8-7 
                 
                 printf("%s", size_prefix[size]); // Prefijo de tamaño (l , w , b)
-                printf("[%s", register_name[reg_idx]);
+                printf("[%s", register_name[reg_idx & 0x1F]); // bits 0-4
                 
                 if (offset > 0) 
                     printf("+%d", offset);
@@ -133,11 +133,18 @@ void disassembler(cpu_t cpu, mem_t mem){
     uint32_t cs_base = mem.segments[cpu.CS >> 16].base;
     uint32_t cs_size = mem.segments[cpu.CS >> 16].size;
     uint32_t offset = 0;  // offset logico 
-    
-    printf(">");
+    uint32_t entry_point;
+     
+    if (g_version == 2)
+        entry_point = cpu.IP & 0x0000FFFF;
 
     while (offset < cs_size) { 
-        printf("[%04X] ", offset);
+        if (g_version == 2 && offset == (entry_point))
+            printf(">");
+        else
+            printf(" ");
+
+        printf("[%04X]", offset);
 
         uint32_t physical_addr = cs_base + offset;
         cpu.IP = physical_addr; // operators_registers_load lee desde cpu.IP
@@ -170,7 +177,7 @@ void disassembler(cpu_t cpu, mem_t mem){
             print_operand(cpu.OP2);
         }   
 
-        printf("\n ");
+        printf("\n");
         offset += instrucSize; // Avanzar offset lógico
     } 
 

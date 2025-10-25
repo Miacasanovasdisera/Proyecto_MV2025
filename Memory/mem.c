@@ -201,7 +201,6 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc) { 
 
     // Inicializar IP con entry point
     cpu->IP = cpu->CS | entry_point;
-
     // Inicializar pila principal
     init_main_stack(cpu, mem, argc, ps_size);
 }

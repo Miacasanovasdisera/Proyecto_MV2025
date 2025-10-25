@@ -230,7 +230,7 @@ void sys_string_read(mem_t *mem,cpu_t *cpu,int32_t CX,int16_t index,int16_t segm
 }
 
 void sys_string_write(mem_t mem,int16_t index,int16_t segment) {
-    int i = 0;
+    int i = 0,aux;
     int32_t segment_end;
 
     // me dice la posicion del final del segmento asi no la supero leyendo
@@ -238,7 +238,11 @@ void sys_string_write(mem_t mem,int16_t index,int16_t segment) {
 
     //me fijo si hay un '\0' o un me cai del segmento
     while(index + i <= segment_end && mem.data[index + i] != 0x00) {
-        printf("%c",mem.data[index + i]);
+        aux = mem.data[index + i];
+        if (aux>32 && aux<=127)
+            printf("%c",mem.data[index + i]);
+        else
+            printf(".");
         i++;
     }
 
