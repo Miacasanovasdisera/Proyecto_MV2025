@@ -96,9 +96,7 @@ int main(int argc, char *argv[]) {
 void execute_program(cpu_t *cpu, mem_t *mem) {
     int result, CS = cpu->CS >> 16;
     do {
-        printf("IP = 0x%08X", cpu->IP); // DEBUG: mostrar IP y OPC en cada ciclo
         operators_registers_load(cpu, *mem);
-        printf(" OPC = 0x%02X\n", cpu->OPC); // DEBUG
         result = execute_instruction(cpu, mem);
     } while ((cpu->IP & 0xFFFF) < mem->segments[CS].size);
 }
