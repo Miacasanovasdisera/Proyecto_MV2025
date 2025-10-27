@@ -13,6 +13,11 @@ void cpu_update_IP(cpu_t *cpu, int8_t typeOP1, int8_t typeOP2) {
     cpu->IP = cpu->IP + typeOP1 + typeOP2 + 1;
 }
 
+uint32_t make_logical_in_cs(uint32_t cs, uint32_t val) {
+    // Si val ya parece lógica (16 bits altos no cero), respétalo, de lo contrario, combinar con CS
+    return (val & 0xFFFF0000) != 0 ? val : (cs & 0xFFFF0000) | (val & 0xFFFF);
+}
+
 uint16_t cpu_logic_to_physic(mem_t mem, uint32_t logic_address, int bytesToRead) {
     uint16_t segment = (uint16_t)(logic_address >> 16);
     uint16_t offset = (uint16_t)(logic_address & 0xFFFF);
@@ -106,7 +111,8 @@ void operators_registers_load(cpu_t *cpu, mem_t mem) {
 
     // Actualizar IP lógico (segmento se mantiene, avanza offset)
     // Suma 1 + typeOP1 + typeOP2 bytes al offset
-    cpu->IP = (cpu->IP & 0xFFFF0000) | (uint16_t)(ip_off + 1 + typeOP1 + typeOP2);
+    uint16_t new_off = (uint16_t)(ip_off + 1 + typeOP1 + typeOP2);
+    cpu->IP = (cpu->IP & 0xFFFF0000) | new_off;
 }
 
 int8_t get_operand_type(uint32_t OP_register) {

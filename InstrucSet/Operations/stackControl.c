@@ -22,16 +22,14 @@ int execute_POP(cpu_t *cpu, mem_t *mem) {
 
 int execute_CALL(cpu_t *cpu, mem_t *mem) {
     // Guardar la dirección de retorno en la pila
-    printf("CALL Instruction Operand: %08X\n", cpu->OP1); // DEBUG
     stack_push(cpu, mem, cpu->IP);
 
     // Saltar a la dirección de la subrutina
     int32_t target_address;
     get_value(cpu, mem, cpu->OP1, &target_address);
-    target_address |= cpu->CS;
+    uint32_t new_ip = (cpu->CS & 0xFFFF0000) | (target_address & 0xFFFF);
     
-    printf("CALL to address: %08X\n", target_address); // DEBUG
-    cpu->IP = cpu_logic_to_physic(*mem,target_address,4);
+    cpu->IP = new_ip;
 
     return 0;
 }
