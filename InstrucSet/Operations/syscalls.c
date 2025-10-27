@@ -210,7 +210,7 @@ void sys_string_read(mem_t *mem,cpu_t *cpu,int32_t CX,int16_t index,int16_t segm
 
     //obtengo el final del segmento para no superarlo
     segment_end = mem->segments[segment].size + mem->segments[segment].base;
-
+    printf("[%.4X]:   ",index);
     scanf("%s", characters);
     
     //tengo que leer hasta el final o no
@@ -240,6 +240,8 @@ void sys_string_write(mem_t mem,int16_t index,int16_t segment) {
     //me fijo si hay un '\0' o un me cai del segmento
     while(index + i <= segment_end && mem.data[index + i] != 0x00) {
         aux = mem.data[index + i];
+        printf("[%.4X]:   ",index + i);
+
         if (aux>32 && aux<=127)
             printf("%c",mem.data[index + i]);
         else

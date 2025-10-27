@@ -31,7 +31,7 @@ recur:          MOV ECX, EAX
                 ; Recuperar el resto guardado
                 POP EDX              ; EDX = n%10
 
-emit:           ADD EDX, 30          ; '0'
+emit:           SUB EDX, 30          ; '0'
                 MOV b[EBX], EDX
                 MOV b[EBX+1], 0      ; mantener terminación
                 ADD EBX, 1           ; avanzar cursor
@@ -64,7 +64,7 @@ fin:            POP EDX
                 MOV EDX, DS          ; leer un entero en DS:0
                 LDL ECX, 1
                 LDH ECX, 4
-                SYS 1
+                SYS 3
 
                 MOV EBX, DS
                 ADD EBX, 100         ; buffer destino de string
@@ -78,5 +78,5 @@ fin:            POP EDX
                 ; Imprimir desde el INICIO del buffer (no usar EBX tras la llamada)
                 MOV EDX, DS
                 ADD EDX, 100
-                SYS 4
+                SYS 2
                 RET
