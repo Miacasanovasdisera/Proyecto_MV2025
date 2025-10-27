@@ -6,6 +6,7 @@
 #include <limits.h>
 #include <stdint.h>
 #include <time.h>
+#include <ctype.h>
 
 #define INVALID_OPERAND 9
 #define WRONG_SIZE 6

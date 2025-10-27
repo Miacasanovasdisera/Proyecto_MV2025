@@ -3,39 +3,55 @@ toString:       PUSH BP
                 PUSH EAX
                 PUSH ECX
                 PUSH EDX
-                MOV EAX, [BP+8] ; Guardo el numero
-                MOV EBX, [BP+12] ; Puntero a string
-                CMP EAX, 10
-                JN finrecu
+                ; EBX no se preserva a propósito: lo usamos como cursor que avanza
 
-otro:           MOV ECX, EAX
-                DIV ECX, 10
+                MOV EAX, [BP+8]      ; n
+                MOV EBX, [BP+12]     ; ptr
+
+                ; ¿n < 0?
+                CMP EAX, 0
+                JN  negativo
+
+                ; ¿n < 10?  (EAX - 10 < 0)
+                CMP EAX, 10
+                JN  base
+
+recur:          MOV ECX, EAX
+                DIV ECX, 10          ; ECX = n/10, AC = n%10
+
+                ; Guardar resto antes del llamado recursivo (porque AC se pisa)
+                PUSH AC
+
+                ; Llamada recursiva con (n/10, ptr)
                 PUSH EBX
                 PUSH ECX
                 CALL toString
                 ADD SP, 8
-                DIV EAX, 10
-                MOV EDX, AC
 
-sigue:          ADD EDX, 30
+                ; Recuperar el resto guardado
+                POP EDX              ; EDX = n%10
+
+emit:           ADD EDX, 30          ; '0'
                 MOV b[EBX], EDX
-                MOV b[EBX+1], 0
-                ADD EBX,1
+                MOV b[EBX+1], 0      ; mantener terminación
+                ADD EBX, 1           ; avanzar cursor
                 JMP fin
 
-finrecu:        CMP EAX, -10
-                JNP otro
-                CMP EAX, 0
-                JN negativo
-                MOV EDX, EAX
-                JMP sigue
-
-negativo:       MOV b[EBX], 45
+base:           MOV EDX, EAX
+                ADD EDX, 30
+                MOV b[EBX], EDX
+                MOV b[EBX+1], 0
                 ADD EBX, 1
-                MOV EDX, EAX
-                NOT EDX
-                ADD EDX, 1
-                JMP sigue
+                JMP fin
+
+negativo:       MOV b[EBX], 45       ; '-'
+                ADD EBX, 1
+                NOT EAX
+                ADD EAX, 1           ; EAX = -EAX
+                ; ahora tratar igual que arriba
+                CMP EAX, 10
+                JN  base
+                JMP recur
 
 fin:            POP EDX
                 POP ECX
@@ -44,17 +60,23 @@ fin:            POP EDX
                 POP BP
                 RET
 
- main:          MOV EAX, 1
-                MOV EDX, DS
+ main:          MOV EAX, 1           ; formato decimal para read
+                MOV EDX, DS          ; leer un entero en DS:0
                 LDL ECX, 1
                 LDH ECX, 4
                 SYS 1
+
                 MOV EBX, DS
-                ADD EBX, 100
-                PUSH EBX ; puntero a donde va el string 
-                PUSH [EDX] ; numero a convertirlo en string
+                ADD EBX, 100         ; buffer destino de string
+
+                ; Llamada: toString(n, ptr)
+                PUSH EBX             ; ptr
+                PUSH [EDX]           ; n (en DS:0)
                 CALL toString
-                ADD SP, 8 ; en EBX esta el puntero al numero pasado a string 
-                MOV EDX, EBX
+                ADD SP, 8
+
+                ; Imprimir desde el INICIO del buffer (no usar EBX tras la llamada)
+                MOV EDX, DS
+                ADD EDX, 100
                 SYS 4
                 RET

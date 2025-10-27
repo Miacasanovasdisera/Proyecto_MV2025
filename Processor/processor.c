@@ -146,7 +146,7 @@ uint32_t calculate_logical_address(cpu_t *cpu, uint8_t OP_type, uint32_t OP_valu
 }
 
 void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) { //*modificacion
-    int8_t sector = (reg_code >> 6) & 0x03, base_reg = reg_code & 0x1F;
+    int8_t sector = (reg_code >> 6) & 0x03, base_reg = reg_code & 0x3F;
     int32_t *reg_ptr; // se usa el puntero para modificar el registro de proposito general, solo los bits necesarios
     
     if (base_reg >= R_EAX && base_reg <= R_EFX) {
@@ -167,7 +167,7 @@ void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) { //*modificac
         return;
     }
 
-    switch (reg_code) {
+    switch (base_reg) {
         case R_LAR: cpu->LAR = value; break;
         case R_MAR: cpu->MAR = value; break;
         case R_MBR: cpu->MBR = value; break;
@@ -195,7 +195,7 @@ void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) { //*modificac
 }
 
 int32_t read_register(cpu_t *cpu, uint8_t reg_code) { //*modificacion
-    int8_t sector = (reg_code >> 6) & 0x03, base_reg = reg_code & 0x1F;     
+    int8_t sector = (reg_code >> 6) & 0x03, base_reg = reg_code & 0x3F;     
     int32_t value;
 
     switch (base_reg) {
