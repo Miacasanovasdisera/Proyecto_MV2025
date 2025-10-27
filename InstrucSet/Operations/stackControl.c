@@ -5,6 +5,7 @@
 int execute_PUSH(cpu_t *cpu, mem_t *mem) {
     int32_t value;
     get_value(cpu, mem, cpu->OP1, &value);
+    
     stack_push(cpu, mem, value);
     return 0;
 }
@@ -26,7 +27,9 @@ int execute_CALL(cpu_t *cpu, mem_t *mem) {
     // Saltar a la dirección de la subrutina
     int32_t target_address;
     get_value(cpu, mem, cpu->OP1, &target_address);
-    cpu->IP = target_address;
+    uint32_t new_ip = (cpu->CS & 0xFFFF0000) | (target_address & 0xFFFF);
+    
+    cpu->IP = new_ip;
 
     return 0;
 }

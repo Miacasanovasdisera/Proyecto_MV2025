@@ -48,8 +48,9 @@ typedef struct cpu_t {
 
 // cpu_init inicializa el CPU, seteando todos sus registros a 0.
 // cpu_update_IP actualiza el registro IP según los tipos de operandos de la instrucción actual.
+// make_logical_in_cs crea una dirección lógica combinando el segmento CS, si es necesario, y un valor dado.
 // cpu_logic_to_physic convierte una dirección lógica a física, verificando los límites del segmento.
-// Operators_Registers_Load carga los operandos de la instrucción actual en los registros OP1 y OP2.
+// operators_registers_load carga los operandos de la instrucción actual en los registros OP1 y OP2.
 // get_operand_type devuelve el tipo de operando (2 bits más significativos) del registro OP.
 // get_operand_value devuelve el valor del operando (30 bits menos significativos) del registro OP.
 // read_register lee el valor de un registro dado su código.
@@ -58,6 +59,7 @@ typedef struct cpu_t {
 
 void cpu_init(cpu_t *);
 void cpu_update_IP(cpu_t *, int8_t, int8_t);
+uint32_t make_logical_in_cs(uint32_t, uint32_t);
 uint16_t cpu_logic_to_physic(mem_t ,uint32_t, int);
 void operators_registers_load(cpu_t *, mem_t);
 int8_t get_operand_type(uint32_t);

@@ -13,6 +13,11 @@ void cpu_update_IP(cpu_t *cpu, int8_t typeOP1, int8_t typeOP2) {
     cpu->IP = cpu->IP + typeOP1 + typeOP2 + 1;
 }
 
+uint32_t make_logical_in_cs(uint32_t cs, uint32_t val) {
+    // Si val ya parece lógica (16 bits altos no cero), respétalo, de lo contrario, combinar con CS
+    return (val & 0xFFFF0000) != 0 ? val : (cs & 0xFFFF0000) | (val & 0xFFFF);
+}
+
 uint16_t cpu_logic_to_physic(mem_t mem, uint32_t logic_address, int bytesToRead) {
     uint16_t segment = (uint16_t)(logic_address >> 16);
     uint16_t offset = (uint16_t)(logic_address & 0xFFFF);
@@ -44,61 +49,70 @@ uint16_t cpu_logic_to_physic(mem_t mem, uint32_t logic_address, int bytesToRead)
     return physical_addr;
 }
 
-void operators_registers_load(cpu_t *cpu, mem_t mem) { //*modificacion
-    uint8_t i, increment,  typeOP1, typeOP2, firstByte = mem.data[cpu->IP];
-    uint32_t dataOP1, dataOP2, a, b;
+void operators_registers_load(cpu_t *cpu, mem_t mem) {
+    // Obtener índice del Code Segment y su base física
+    uint16_t cs_index = (uint16_t)(cpu->IP >> 16);
+    uint32_t cs_base  = mem.segments[cs_index].base;
+    uint16_t ip_off   = (uint16_t)(cpu->IP & 0xFFFF);
 
+    // Leer primer byte de la instrucción desde memoria física
+    uint8_t firstByte = mem.data[cs_base + ip_off];
     cpu->OPC = firstByte & 0x1F;
 
-    typeOP2 = (firstByte & 0xc0) >> 6;
-    typeOP1 = (firstByte >> 4) & 0x03;
+    uint8_t typeOP2 = (firstByte & 0xC0) >> 6;
+    uint8_t typeOP1 = (firstByte >> 4) & 0x03;
 
-    increment = cpu->IP + 1;
-    a = mem.data[increment];
+    // Avanzar el offset (lógico) 1 byte dentro del CS
+    uint32_t increment_off = ip_off + 1;
 
-    for (i = 1; i < typeOP2; i++) {
-        a = a << 8;
-        b = mem.data[increment + i];
-        a = a | b;
+    // Armar OP2 (typeOP2 bytes)
+    uint32_t a = 0, b = 0;
+    if (typeOP2 > 0) {
+        a = mem.data[cs_base + increment_off];
+        for (uint8_t i = 1; i < typeOP2; i++) {
+            a <<= 8;
+            b = mem.data[cs_base + increment_off + i];
+            a |= b;
+        }
     }
-    dataOP2 = a;
-    increment += i;
+    uint32_t dataOP2 = a;
+    increment_off += typeOP2;
 
+    // Armar OP1: si no viene, se copia OP2 como OP1 (codificación compacta)
+    uint32_t dataOP1;
     if (typeOP1 == 0) {
         typeOP1 = typeOP2;
         typeOP2 = 0;
-
         dataOP1 = dataOP2;
         dataOP2 = 0;
-    }
-
-    else {
-        a = mem.data[increment];
-        for (i = 1; i < typeOP1; i++) {
-            a = a << 8;
-            b = mem.data[increment + i];
-            a = a | b;
+    } else {
+        a = mem.data[cs_base + increment_off];
+        for (uint8_t i = 1; i < typeOP1; i++) {
+            a <<= 8;
+            b = mem.data[cs_base + increment_off + i];
+            a |= b;
         }
-
         dataOP1 = a;
     }
-    
-    if(typeOP1 == IMMEDIATE_OPERAND)
-        if(dataOP1 & 0x8000){
-            dataOP1 = dataOP1 << 8;
-            dataOP1 = shift_SAR(cpu,dataOP1,8);
-        }
-    // caso particular de inmediatos negativos      
-    if(typeOP2 == IMMEDIATE_OPERAND)
-        if(dataOP2 & 0x8000){
-            dataOP2 <<= 8;
-            dataOP2 = shift_SAR(cpu,dataOP2,8);            
-        }
-        
+
+    // Extensión de signo para inmediatos de 16 bits (como ya tenías)
+    if (typeOP1 == IMMEDIATE_OPERAND && (dataOP1 & 0x8000)) {
+        dataOP1 <<= 8;
+        dataOP1 = shift_SAR(cpu, dataOP1, 8);
+    }
+    if (typeOP2 == IMMEDIATE_OPERAND && (dataOP2 & 0x8000)) {
+        dataOP2 <<= 8;
+        dataOP2 = shift_SAR(cpu, dataOP2, 8);
+    }
+
+    // Guardar operandos (preservando 24 bits de dato)
     cpu->OP1 = (typeOP1 << 24) | ((int32_t)dataOP1 & 0x00FFFFFF);
     cpu->OP2 = (typeOP2 << 24) | ((int32_t)dataOP2 & 0x00FFFFFF);
 
-    cpu_update_IP(cpu, typeOP1, typeOP2);
+    // Actualizar IP lógico (segmento se mantiene, avanza offset)
+    // Suma 1 + typeOP1 + typeOP2 bytes al offset
+    uint16_t new_off = (uint16_t)(ip_off + 1 + typeOP1 + typeOP2);
+    cpu->IP = (cpu->IP & 0xFFFF0000) | new_off;
 }
 
 int8_t get_operand_type(uint32_t OP_register) {
@@ -106,7 +120,13 @@ int8_t get_operand_type(uint32_t OP_register) {
 }
 
 int32_t get_operand_value(uint32_t OP_register) {
-    return (int32_t)((OP_register & 0x00FFFFFF) << 8) >> 8;
+    uint8_t OP_type= (OP_register >> 24) & 0x03;
+    
+    if(OP_type == 0x02)
+        return (int32_t)((OP_register & 0x00FFFFFF) << 8) >> 8;
+    else
+        return (int32_t)(OP_register & 0x00FFFFFF);
+      
 }
 
 uint32_t calculate_logical_address(cpu_t *cpu, uint8_t OP_type, uint32_t OP_value) {
@@ -116,18 +136,19 @@ uint32_t calculate_logical_address(cpu_t *cpu, uint8_t OP_type, uint32_t OP_valu
         return 0;
     }
     
-    uint32_t value_reg, reg_code = OP_value & 0x00FF0000;
-    uint16_t offset = OP_value & 0xFFFF;
-
-    value_reg = read_register(cpu, (uint8_t)(reg_code >> 16));
+    // Extraer código de registro (byte alto) y desplazamiento (16 bits bajos)
+    uint8_t reg_code = (OP_value >> 16) & 0xFF;
+    int16_t offset = (int16_t)(OP_value & 0xFFFF); 
     
-    return value_reg + offset;
+    uint32_t base_value = read_register(cpu, reg_code);
+    
+    return base_value + offset;
 }
 
 void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) { //*modificacion
-    int8_t sector = (reg_code >> 6) & 0x03, base_reg = reg_code & 0x3F;
+    int8_t sector = (reg_code >> 6) & 0x03, base_reg = reg_code & 0x1F;
     int32_t *reg_ptr; // se usa el puntero para modificar el registro de proposito general, solo los bits necesarios
-
+    
     if (base_reg >= R_EAX && base_reg <= R_EFX) {
         switch (base_reg) {
             case R_EAX: reg_ptr = &cpu->EAX; break;
@@ -176,7 +197,7 @@ void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) { //*modificac
 int32_t read_register(cpu_t *cpu, uint8_t reg_code) { //*modificacion
     int8_t sector = (reg_code >> 6) & 0x03, base_reg = reg_code & 0x1F;     
     int32_t value;
-    
+
     switch (base_reg) {
         case R_EAX: value = cpu->EAX;break;
         case R_EBX: value = cpu->EBX;break;

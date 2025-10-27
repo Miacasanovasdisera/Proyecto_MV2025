@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
         }
         
         mem_load(&mem, config.vmx_file, &cpu, config.params, config.param_count);
-        
+
         if (config.disassem_mode) {
             printf("\n=== DISASSEMBLER ===\n");
             disassembler(cpu, mem);
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
         
         mem_load(&mem, config.vmx_file, &cpu, config.params, config.param_count);
         g_vmi_filename = config.vmi_file;
-        
+
         if (config.disassem_mode) {
             printf("\n=== DISASSEMBLER ===\n");
             disassembler(cpu, mem);
@@ -98,5 +98,5 @@ void execute_program(cpu_t *cpu, mem_t *mem) {
     do {
         operators_registers_load(cpu, *mem);
         result = execute_instruction(cpu, mem);
-    } while ((uint32_t)cpu->IP < mem->segments[CS].size);
+    } while ((cpu->IP & 0xFFFF) < mem->segments[CS].size);
 }

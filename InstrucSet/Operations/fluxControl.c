@@ -15,7 +15,9 @@ int isZero(cpu_t cpu) {
 int execute_JMP(cpu_t *cpu, mem_t *mem){
     int32_t src_value;
     get_value(cpu, mem, cpu->OP1, &src_value);
-    cpu->IP = src_value;
+    
+    uint32_t next_ip = make_logical_in_cs(cpu->CS, (uint32_t)src_value);
+    cpu->IP = next_ip;
     return 0;
 }
 
