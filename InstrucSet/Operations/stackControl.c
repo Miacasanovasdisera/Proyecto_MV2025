@@ -5,6 +5,7 @@
 int execute_PUSH(cpu_t *cpu, mem_t *mem) {
     int32_t value;
     get_value(cpu, mem, cpu->OP1, &value);
+    
     stack_push(cpu, mem, value);
     return 0;
 }
@@ -21,12 +22,16 @@ int execute_POP(cpu_t *cpu, mem_t *mem) {
 
 int execute_CALL(cpu_t *cpu, mem_t *mem) {
     // Guardar la dirección de retorno en la pila
+    printf("CALL Instruction Operand: %08X\n", cpu->OP1); // DEBUG
     stack_push(cpu, mem, cpu->IP);
 
     // Saltar a la dirección de la subrutina
     int32_t target_address;
     get_value(cpu, mem, cpu->OP1, &target_address);
-    cpu->IP = target_address;
+    target_address |= cpu->CS;
+    
+    printf("CALL to address: %08X\n", target_address); // DEBUG
+    cpu->IP = cpu_logic_to_physic(*mem,target_address,4);
 
     return 0;
 }
