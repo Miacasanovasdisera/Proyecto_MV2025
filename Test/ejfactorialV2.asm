@@ -1,3 +1,5 @@
+\\EXTRA 3000
+
 FACT:   PUSH BP
         MOV BP,SP
         SUB SP,4
@@ -44,6 +46,7 @@ MAIN:   PUSH BP
         LDH ECX, 4
         LDL ECX, 1
         MOV EAX, 1           ; decimal
+        SYS 15
         SYS 2                ; imprime el entero almacenado en [EDX]
 
         POP EDX

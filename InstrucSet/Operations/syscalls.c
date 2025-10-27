@@ -3,6 +3,7 @@
 #include "../../Utils/errors.h"
 #include "../helpers.h"
 #include "../../Images/vmi.h"
+#include "../instruct.h"
 
 int execute_SYS(cpu_t *cpu, mem_t *mem) {
     uint32_t ECXH,ECXL,physical_address,EDX;
@@ -252,8 +253,31 @@ void sys_string_write(mem_t mem,int16_t index,int16_t segment) {
 
 void sys_clear(){
     system("cls");
+    
 }
 
 void sys_breakpoint(cpu_t *cpu,mem_t *mem) {
+    char character;
+    int result;
+    
     save_vmi(cpu,mem,g_vmi_filename);
+    
+    do {
+        printf("Breakpoint: ingrese accion para continuar... [g(go) / q(quit) / -Enter-]: ");
+        scanf("%c", &character);
+        character = tolower(character);
+        
+        if (character == 'q')
+            cpu->IP = -1;
+        
+        else if (character == 10)
+            do{
+                operators_registers_load(cpu, *mem);
+                result = execute_instruction(cpu, mem);
+                sys_breakpoint(cpu,mem);
+            } while(character == 10);
+
+        else if (character != 'g')
+            printf("Comando no reconocido, ingrese nuevamente.\n");
+    } while(character != 'g' && character != 'q' && character != 10);
 }
