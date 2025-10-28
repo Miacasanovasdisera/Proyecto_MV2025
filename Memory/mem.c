@@ -30,9 +30,10 @@ void mem_load(mem_t *mem, char *filename, cpu_t *cpu, char **params, int argc) {
     uint8_t version, size_bytes[2];
     uint16_t code_size;
 
+    
     if (!arch)
         error_Output(LOAD_PROGRAM_ERROR);
-
+    
     if (fread(id, 1, 5, arch) != 5)
         error_Output(LOAD_PROGRAM_ERROR);
     id[5] = '\0';
@@ -47,7 +48,7 @@ void mem_load(mem_t *mem, char *filename, cpu_t *cpu, char **params, int argc) {
         mem_load_v1(mem, arch, cpu);
     else if (version == 2)
         mem_load_v2(mem, arch, cpu, params, argc);
-    else
+    else 
         error_Output(LOAD_PROGRAM_ERROR);
 
     fclose(arch);
@@ -89,6 +90,7 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc) { 
     uint16_t cs_size, ds_size, es_size, ss_size, ks_size, entry_point;
     g_version = 2;
 
+    
     // Leer tamaños de segmentos
     fread(size_bytes, 1, 2, arch);
     cs_size = (size_bytes[0] << 8) | size_bytes[1];

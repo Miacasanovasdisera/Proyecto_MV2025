@@ -93,7 +93,7 @@ void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index) {
 
     segment = read_register(cpu,R_EDX) >> 16;
     segment_end = mem.segments[segment].base +  mem.segments[segment].size;
-
+    
     if(index + ECXH * ECXL <=segment_end){
         // activa los booleanos declarados mas arriba
         activate_booleans_syscall(read_register(cpu,R_EAX),&hexa,&octal,&binary,&decimal,&character);
@@ -208,26 +208,33 @@ void sys_string_read(mem_t *mem,cpu_t *cpu,int32_t CX,int16_t index,int16_t segm
     char characters[256];
     int32_t i = 0, segment_end;
 
+
     //obtengo el final del segmento para no superarlo
     segment_end = mem->segments[segment].size + mem->segments[segment].base;
     printf("[%.4X]:   ",index);
     scanf("%s", characters);
-    
     //tengo que leer hasta el final o no
-    if(CX == -1)
+    if(CX == 0xFFFF){
         //recorre hasta que la palabra termine o  hasta que me caiga del segmento
-        while(index + i <= segment_end && i <= strlen(characters))
+        while(index + i <= segment_end && i <= strlen(characters)){
             mem->data[index + i] = characters[i];
-    
+            i++;
+        }
+            
+    }
     //verifica si lo que leo de la palabra indicado por 'CX' supero el segmento apuntado por 'EDX'
-    else if( index + CX <= segment_end)
+    else {
+        if( index + CX <= segment_end){
         //leo la cantidad de veces indicada por 'CX'
         for(i = 0; i < CX; i++)
             mem->data[index + i] = characters[i];
+        }
+        else
+            error_Output(MEMORY_ERROR);
+    }
 
     //no se puede leer pq supero el tamaño del segmento
-    else
-        error_Output(MEMORY_ERROR);
+    
 }
 
 void sys_string_write(mem_t mem,int16_t index,int16_t segment) {
@@ -236,7 +243,6 @@ void sys_string_write(mem_t mem,int16_t index,int16_t segment) {
 
     // me dice la posicion del final del segmento asi no la supero leyendo
     segment_end = mem.segments[segment].size + mem.segments[segment].base;
-
     //me fijo si hay un '\0' o un me cai del segmento
     while(index + i <= segment_end && mem.data[index + i] != 0x00) {
         aux = mem.data[index + i];
@@ -246,7 +252,8 @@ void sys_string_write(mem_t mem,int16_t index,int16_t segment) {
             printf("%c",mem.data[index + i]);
         else
             printf(".");
-        i++;
+        
+            i++;
     }
 
     if(mem.data[index + i] != 0x00)
@@ -265,19 +272,20 @@ void sys_breakpoint(cpu_t *cpu,mem_t *mem) {
     save_vmi(cpu,mem,g_vmi_filename);
     
     do {
-        printf("Breakpoint: ingrese accion para continuar... [g(go) / q(quit) / -Enter-]: ");
-        scanf("%c", &character);
+        character = 0;
+
+        printf("\nBreakpoint: ingrese accion para continuar... [g(go) / q(quit) / -Enter-]: ");
+        scanf(" %c", &character);
         character = tolower(character);
-        
         if (character == 'q')
             cpu->IP = -1;
         
         else if (character == 10)
-            do{
+            do {
                 operators_registers_load(cpu, *mem);
                 result = execute_instruction(cpu, mem);
                 sys_breakpoint(cpu,mem);
-            } while(character == 10);
+            } while(character == 10);    
 
         else if (character != 'g')
             printf("Comando no reconocido, ingrese nuevamente.\n");

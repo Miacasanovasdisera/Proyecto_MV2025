@@ -1,9 +1,10 @@
 \\DATA 2000
+\\EXTRA 10
 
 SLEN:       PUSH BP
             MOV BP,SP
             MOV EAX,[BP+8]
-BUCLE:      CMP b[EAX],0
+BUCLE:      CMP [EAX],0
             JZ SLEN_FIN
             ADD EAX,1
             JMP BUCLE

@@ -46,7 +46,6 @@ MAIN:   PUSH BP
         LDH ECX, 4
         LDL ECX, 1
         MOV EAX, 1           ; decimal
-        SYS 15
         SYS 2                ; imprime el entero almacenado en [EDX]
 
         POP EDX
@@ -55,3 +54,4 @@ MAIN:   PUSH BP
         MOV SP, BP
         POP BP
         RET
+

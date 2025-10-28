@@ -23,7 +23,7 @@ int execute_POP(cpu_t *cpu, mem_t *mem) {
 int execute_CALL(cpu_t *cpu, mem_t *mem) {
     // Guardar la dirección de retorno en la pila
     stack_push(cpu, mem, cpu->IP);
-
+    
     // Saltar a la dirección de la subrutina
     int32_t target_address;
     get_value(cpu, mem, cpu->OP1, &target_address);

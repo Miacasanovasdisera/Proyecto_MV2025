@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
         }
         
         mem_load(&mem, config.vmx_file, &cpu, config.params, config.param_count);
-        printf("Extra Segment: %d\n", mem.segments[cpu.ES >> 16].base);
+
         if (config.disassem_mode) {
             printf("\n=== DISASSEMBLER ===\n");
             disassembler(cpu, mem);
