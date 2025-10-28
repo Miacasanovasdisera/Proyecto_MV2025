@@ -1,82 +1,212 @@
-﻿# Máquina Virtual MV1 2025
+﻿# Máquina Virtual MVX 2025 — Versión 2
 
-Implementación de una máquina virtual que ejecuta programas en lenguaje ensamblador según las especificaciones de la cátedra de Arquitectura de Computadoras - UNMDP.
+Implementación de una máquina virtual de 32 bits que ejecuta programas en lenguaje ensamblador según las especificaciones de la cátedra de Arquitectura de Computadoras (UNMDP).
 
-# Descripción
-Esta máquina virtual emula un procesador de 32 bits que puede ejecutar programas compilados en lenguaje máquina (archivos .vmx). El proyecto implementa una arquitectura segmentada con registros especializados y un conjunto completo de instrucciones aritméticas, lógicas y de control.
-Características principales
+Esta segunda versión incorpora soporte de segmentos múltiples (incluido Param Segment y Const Segment), direccionamiento lógico estable, subregistros (AL/AH/AX), tamaños de acceso a memoria por operando (b/w/l), pila y llamadas/retornos (CALL/RET), y herramientas de traducción de .asm a .vmx para Windows y Linux.
 
-# Memoria principal: 16 KiB (16,384 bytes)
-- Registros: 32 registros de 4 bytes (17 utilizados en esta versión)
-- Segmentación: Código y datos en segmentos separados
-- Instrucciones: 26 instrucciones implementadas
-- Llamadas al sistema: READ y WRITE para E/S
+---
 
-# Compilacion
-```bash
-make
-```
-
-# Ejecucion basica
-``` bash
-./vmx programa.vmx (Linux)
-./vmx.exe progrma.vmx (Windows)
-```
-
-# Ejecucion con disassembler
-``` bash
-./vmx programa.vmx -d
-```
-
-# Requisitos
+## Requisitos
 
 - Compilador GCC
-- Sistema operativo Unix/Linux o Windows con herramientas de desarrollo
-- Herramienta 'make', para mas facilidad a la hora de compilar
+- make
+- Windows o Linux. En Linux, para usar el traductor de .asm a .vmx provisto (versión .exe), se necesita Wine.
 
-# Arquitectura implementada
-Registros principales
-- LAR, MAR, MBR -> Acceso a memoria
-- IP, OPC, OP1, OP2 -> Control de instrucciones
-- EAX-EFX -> Propósito general
-- AC, CC -> Acumulador y códigos de condición
-- CS, DS -> Segmentos de código y datos
+---
 
-# Instrucciones implementadas
+## Compilación
+
+```bash
+make              # Compilación estándar (Release)
+make DEBUG=1      # Compilación con símbolos de depuración
+make clean        # Limpia objetos y ejecutables
+```
+
+---
+
+## Ejecución
+
+La VM soporta tres modos:
+
+- Modo A (solo .vmx): ejecución normal.
+- Modo B (.vmx + .vmi): modo debug con breakpoints; `SYS 15` guarda un snapshot VMI.
+- Modo C (solo .vmi): reanuda ejecución desde una imagen guardada.
+
+Ejemplos:
+
+```bash
+# Linux
+./vmx programa.vmx
+./vmx programa.vmx -d                # con disassembler
+./vmx programa.vmx m=64              # memoria de 64 KiB
+./vmx programa.vmx -p arg1 arg2      # con parámetros para Param Segment
+./vmx programa.vmx debug.vmi         # modo debug: SYS 15 guarda en debug.vmi
+./vmx debug.vmi                      # reanudar desde imagen
+
+# Windows (PowerShell/CMD)
+vmx.exe programa.vmx
+vmx.exe programa.vmx -d
+vmx.exe programa.vmx m=64
+vmx.exe programa.vmx -p arg1 arg2
+vmx.exe programa.vmx debug.vmi
+vmx.exe debug.vmi
+```
+
+Parámetros de línea de comandos:
+
+- `-d`: imprime el desensamblado antes de ejecutar.
+- `-p`: a partir de aquí, cada token se trata como parámetro del programa (se cargarán en el Param Segment).
+- `m=NNNN`: tamaño de memoria en KiB (1..65535).
+- Si se pasa un `.vmi` junto a un `.vmx`, `SYS 15` (breakpoint) guardará el estado en ese archivo. Si se pasa únicamente un `.vmi`, se reanuda desde esa imagen.
+
+---
+
+## Traducción de .asm a .vmx
+
+Se incluyen dos utilidades en la raíz del repo que ejecutan el traductor ubicado en la carpeta `Test/`:
+
+- Windows:
+  ```bash
+  .\translate nombre_base
+  # Traduce Test\nombre_base.asm → Test\nombre_base.vmx
+  ```
+- Linux (requiere Wine):
+  ```bash
+  bash translate.sh nombre_base
+  # Traduce Test/nombre_base.asm → Test/nombre_base.vmx usando wine vmtV2.exe
+  ```
+
+Notas:
+- Ambos scripts cambian al directorio `./Test` de forma relativa y ejecutan el traductor (`vmtV2.exe`).
+- Asegurate de ubicar tus `.asm` dentro de `Test/`.
+
+---
+
+## Arquitectura y Segmentación
+
+- Segmentos:
+  - `PS` (Param): guarda los parametros de la subrutina principal (punteros lógicos a los strings).
+  - `KS` (Const): reservado para el uso de constantes (definidos en ensamblador).
+  - `CS` (Code): contiene el codigo fuente.
+  - `DS` (Data): se utiliza para los datos del proceso. 
+  - `ES` (Extra): reservado para el uso de memoria dinamica.
+  - `SS` (Stack): dedicado exclusivamente para la pila del proceso.
+- La VM verifica límites al traducir lógico→físico para cada acceso.
+
+Inicialización típica:
+- `IP = CS | entry_point`
+- `SP = SS + size` (pila vacía; crece hacia abajo)
+- Si hay parámetros: la VM crea `PS` y coloca en la pila:
+  - Dirección de retorno ficticia (0xFFFFFFFF)
+  - `argc`
+  - `argv` (puntero lógico al array dentro de PS)
+
+---
+
+## Registros
+
+- Acceso a memoria: `LAR`, `MAR`, `MBR`
+- Control de instrucciones: `IP`, `OPC`, `OP1`, `OP2`
+- Generales: `EAX`, `EBX`, `ECX`, `EDX`, `EEX`, `EFX`
+  - Subregistros mediante modificador de sector en el byte del registro:
+    - `00`: entero (EAX)
+    - `01`: AL
+    - `10`: AH
+    - `11`: AX
+- Especiales: `AC` (acumulador de división), `CC` (condición: Z=0x40000000, N=0x80000000)
+- Segmentos: `CS`, `DS`, `ES`, `SS`, `KS`, `PS`
+- Punteros/otros: `SP`, `BP`
+
+---
+
+## Instrucciones implementadas
 
 Dos operandos
-
-- Aritméticas: MOV, ADD, SUB, MUL, DIV, CMP
-- Lógicas: AND, OR, XOR
-- Desplazamiento: SHL, SHR, SAR
-- Especiales: SWAP, LDL, LDH, RND
+- Aritméticas: `MOV`, `ADD`, `SUB`, `MUL`, `DIV`, `CMP`
+- Lógicas: `AND`, `OR`, `XOR`
+- Desplazamiento: `SHL`, `SHR`, `SAR`
+- Especiales: `SWAP`, `LDL`, `LDH`, `RND`
 
 Un operando
+- Flujo: `JMP`, `JZ`, `JP`, `JN`, `JNZ`, `JNP`, `JNN`, `JN`
+- Sistema: `SYS`
+- Lógicas: `NOT`
 
-- Control: JMP, JZ, JP, JN, JNZ, JNP, JNN
-- Sistema: SYS
-- Lógicas: NOT
+Pila / Llamadas
+- `PUSH`, `POP`, `CALL`, `RET`, `STOP`
 
-Sin operandos
+Modificadores de operando
+- Registro (GPR): sector en bits 7–6 del código de registro:
+  - `00`=entero, `01`=AL, `10`=AH, `11`=AX
+- Memoria: tamaño embebido:
+  - `l[...]`=4 bytes, `w[...]`=2 bytes, `b[...]`=1 byte
 
-- Control: STOP
+---
 
-Llamadas al sistema
+## Llamadas al sistema (SYS)
 
-- SYS 1 (READ): Lectura desde teclado
-- SYS 2 (WRITE): Escritura a pantalla
+- `SYS 1` (READ): lee desde teclado
+  - `EAX`: flags de formato (bitfield)
+    - `0x10` binario, `0x08` hexadecimal, `0x04` octal, `0x02` caracteres, `0x01` decimal
+  - `ECX`: `ECXH` (alto 16 bits)=tamaño por elemento (1/2/4), `ECXL` (bajo 16 bits)=cantidad
+  - `EDX`: dirección lógica de destino (inicio)
+- `SYS 2` (WRITE): escribe a pantalla
+  - Misma interpretación de `EAX`, `ECX`, `EDX` que READ; lee de memoria y muestra.
+- `SYS 3` (STRING_READ): lee string a memoria (segmento tomado de `EDX>>16`)
+- `SYS 4` (STRING_WRITE): imprime string hasta `'\0'` (segmento tomado de `EDX>>16`)
+- `SYS 7` (CLEAR): limpiar pantalla (Windows)
+- `SYS 15` (BREAKPOINT): guarda snapshot `.vmi` si se ejecuta en modo debug (.vmx + .vmi)
 
-# Manejo de errores
-La máquina virtual detecta y reporta los siguientes errores:
+Notas:
+- Los accesos se realizan en big-endian dentro de la VM (consistentemente al leer/escribir elementos de 1/2/4 bytes).
 
-- Instrucción inválida: Código de operación no reconocido
-- División por cero: División o módulo por cero
-- Fallo de segmento: Acceso fuera de límites de memoria
-- Fallo de carga del programa
-- Error de registro: registro invalido
-- Tamaño de lectura o escritura inválido
+---
 
+## Desensamblador y Snapshots
 
-Última actualización: Septiembre 2025
+- `-d`: imprime el desensamblado del `.vmx` (códigos, operandos y comentarios).
+- Snapshots `.vmi`:
+  - `save_vmi`: guarda registros, tabla de segmentos y memoria completa.
+  - `load_vmi`: restaura el estado para reanudar ejecución.
+  - Se activa con `.vmx + .vmi` en la línea de comandos; `SYS 15` realiza el guardado.
 
+---
 
+## Errores reportados por la VM
+
+- Instrucción inválida
+- División por cero
+- Error de segmento (acceso fuera de límites)
+- Error de carga del programa
+- Error de registro (código de registro inválido)
+- Tamaño de lectura/escritura inválido
+
+---
+
+## Ejemplos rápidos
+
+```bash
+# Traducir y ejecutar (Windows)
+.\translate ej3btp5
+vmx.exe Test\ej3btp5.vmx
+
+# Traducir y ejecutar (Linux, con Wine)
+bash translate.sh ej3btp5
+./vmx Test/ej3btp5.vmx -d
+
+# Ejecutar con parámetros
+./vmx Test/ejfactorialV2.vmx -p 5
+
+# Modo debug (breakpoints con SYS 15)
+./vmx Test/miProg.vmx debug.vmi
+```
+
+---
+
+# Integrantes
+
+- Octavio Laz
+- Mia Casanovas Di Sera
+- Agustin Zalazar
+
+Última actualización: Octubre 2025

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # --- Configura el nombre del ejecutable (relativo a la carpeta Test) ---
-EXECUTABLE_NAME="./vmtV2"
-# EXECUTABLE_NAME="wine vmtV2.exe" # Si usas Wine
+# EXECUTABLE_NAME="./vmtV2"
+EXECUTABLE_NAME="vmtV2.exe" # Si usas Wine
 
 # Verifica si se pasó un argumento (ej: "ejercicioX")
 if [ -z "$1" ]; then
@@ -21,7 +21,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Ejecuta tu comando usando el primer argumento ($1)
-"$EXECUTABLE_NAME" "$1.asm" "$1.vmx" -o
+wine "$EXECUTABLE_NAME" "$1.asm" "$1.vmx" -o
 
 # Regresa al directorio original (modo silencioso)
 popd > /dev/null
