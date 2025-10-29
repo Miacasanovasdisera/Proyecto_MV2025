@@ -7,9 +7,7 @@
 
 void clsBuffer(){
     char c;
-    //getchar agarra un caracter del buffer de entrada, agarro todos para vaciarlo
     while((c = getchar()) != '\n' && c != EOF){}
-    //fflush limpia el buffer de salida
     fflush(stdout);
 }
 
@@ -23,9 +21,9 @@ int execute_SYS(cpu_t *cpu, mem_t *mem) {
     ECXL = read_register(cpu,R_ECX) & 0x0000FFFF;
     
     //leo la direccion logica del EDX y la paso a fisica para saber de donde arranco a leer (se lo asigno a la variable index que se va a ir moviendo por donde leo)
-    physical_address = cpu_logic_to_physic(*mem,read_register(cpu,R_EDX),4);
+    physical_address = cpu_logic_to_physic(*mem,read_register(cpu,R_EDX),0);
     index = physical_address;
-
+    
     switch(get_operand_value(cpu->OP1)) {
         case 1:sys_read(mem,cpu,ECXH,ECXL,index); break;
         case 2:sys_write(*mem,cpu,ECXH,ECXL,index); break;
@@ -136,8 +134,9 @@ void sys_write(mem_t mem,cpu_t *cpu,int32_t ECXH,int32_t ECXL,int16_t index) {
             printf("\n");
         }
     }
-    else   //no se puede excribir pq supero el tamaño del segmento
+    else       //no se puede excribir pq supero el tamaño del segmento
         error_Output(MEMORY_ERROR);
+    
 }
 
 void activate_booleans_syscall(int32_t EAX,int32_t *hexadecimal,int32_t *octal,int32_t *binary,int32_t *decimal,int32_t *character) {
@@ -252,13 +251,12 @@ void sys_string_write(mem_t mem,int16_t index,int16_t segment) {
     // me dice la posicion del final del segmento asi no la supero leyendo
     segment_end = mem.segments[segment].size + mem.segments[segment].base;
     //me fijo si hay un '\0' o un me cai del segmento
-    while(index + i <= segment_end && mem.data[index + i] != 0x00) {
+    while(index + i <= segment_end && mem.data[index + i] != 0x00) {        
         aux = mem.data[index + i];
-        // ? printf("[%.4X]:   ",index + i);
 
-        if (aux >= 32 && aux < 127) //? el espacio se imprime, y el 127 no (es el DELETE)
+        if (aux >= 32 && aux < 127)
             printf("%c",mem.data[index + i]);
-        else if (aux == 10) //? salto de linea o escribo punto
+        else if (aux == 10)
             printf("\n");
         else
             printf(".");
@@ -266,7 +264,7 @@ void sys_string_write(mem_t mem,int16_t index,int16_t segment) {
     }
 
     if(mem.data[index + i] != 0x00)
-        error_Output(MEMORY_ERROR);
+        error_Output(MEMORY_ERROR);      
 }
 
 void sys_clear(){

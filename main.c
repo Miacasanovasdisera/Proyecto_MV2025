@@ -83,6 +83,12 @@ int main(int argc, char *argv[]) {
         printf("Cargando imagen: %s\n", config.vmi_file);
         
         load_vmi(&cpu, &mem, config.vmi_file);
+        
+        if (config.disassem_mode) {
+            printf("\n=== DISASSEMBLER ===\n");
+            disassembler(cpu, mem);
+        }
+
         printf("\n=== EJECUCION (desde imagen) ===\n");
         execute_program(&cpu, &mem);
     }
