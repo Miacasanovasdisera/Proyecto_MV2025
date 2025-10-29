@@ -53,7 +53,7 @@ void get_value(cpu_t *cpu, mem_t *mem, int32_t OP, int32_t *content) {
             
             // ===== NUEVO: Obtener tamaño del modificador =====
             int size = get_memory_size(OP);
-            
+           
             // Leer con el tamaño especificado
             mem_read(mem, cpu, logic_addr, content, size);
             
@@ -96,7 +96,7 @@ void update_CC(cpu_t *cpu,int32_t result) {
 
 int get_memory_size(uint32_t OP_register) { //*modificacion
     uint8_t size_code = (OP_register >> 22) & 0x03; // Bits 23-24
-    
+
     switch (size_code) {
         case 0: return 4; // 00 - long (4 bytes)
         case 2: return 2; // 10 - word (2 bytes)

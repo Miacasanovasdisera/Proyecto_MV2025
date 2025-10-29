@@ -33,6 +33,7 @@ uint16_t cpu_logic_to_physic(mem_t mem, uint32_t logic_address, int bytesToRead)
 
     // Verificar que el acceso completo esté dentro del segmento
     if ((uint32_t)offset + bytesToRead > size) {
+
         error_Output(MEMORY_ERROR);
         return 0;
     }
@@ -137,7 +138,7 @@ uint32_t calculate_logical_address(cpu_t *cpu, uint8_t OP_type, uint32_t OP_valu
     }
     
     // Extraer código de registro (byte alto) y desplazamiento (16 bits bajos)
-    uint8_t reg_code = (OP_value >> 16) & 0xFF;
+    uint8_t reg_code = (OP_value >> 16) & 0x1F;
     int16_t offset = (int16_t)(OP_value & 0xFFFF); 
     
     uint32_t base_value = read_register(cpu, reg_code);
@@ -195,7 +196,7 @@ void write_register(cpu_t *cpu, uint8_t reg_code, uint32_t value) { //*modificac
 }
 
 int32_t read_register(cpu_t *cpu, uint8_t reg_code) { //*modificacion
-    int8_t sector = (reg_code >> 6) & 0x03, base_reg = reg_code & 0x3F;     
+    int8_t sector = (reg_code >> 6) & 0x03, base_reg = reg_code & 0x1F;     
     int32_t value;
 
     switch (base_reg) {
@@ -225,6 +226,7 @@ int32_t read_register(cpu_t *cpu, uint8_t reg_code) { //*modificacion
         default: return error_Output(REGISTER_ERROR);
     }
 
+    //printf("valor: %x  | sector: %d \n",value,sector);
     if (base_reg >= R_EAX && base_reg <= R_EFX) {
         switch (sector) {
             case 0: return value; // EAX
