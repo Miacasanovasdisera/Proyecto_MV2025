@@ -1,6 +1,7 @@
 #include "errors.h"
 
 int error_Output(int error_code) {
+    printf("\n");
     switch (error_code) {
         case LOAD_PROGRAM_ERROR:
             printf("Error %d: Fallo al cargar el programa.\n", error_code);

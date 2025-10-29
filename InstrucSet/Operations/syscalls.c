@@ -5,6 +5,14 @@
 #include "../../Images/vmi.h"
 #include "../instruct.h"
 
+void clsBuffer(){
+    char c;
+    //getchar agarra un caracter del buffer de entrada, agarro todos para vaciarlo
+    while((c = getchar()) != '\n' && c != EOF){}
+    //fflush limpia el buffer de salida
+    fflush(stdout);
+}
+
 int execute_SYS(cpu_t *cpu, mem_t *mem) {
     uint32_t ECXH,ECXL,physical_address,EDX;
     uint16_t index;                                  
@@ -211,8 +219,9 @@ void sys_string_read(mem_t *mem,cpu_t *cpu,int32_t CX,int16_t index,int16_t segm
 
     //obtengo el final del segmento para no superarlo
     segment_end = mem->segments[segment].size + mem->segments[segment].base;
-    printf("[%.4X]:   ",index);
+    //? printf("[%.4X]:   ",index);
     scanf("%s", characters);
+    clsBuffer();
     //tengo que leer hasta el final o no
     if(CX == 0xFFFF){
         //recorre hasta que la palabra termine o  hasta que me caiga del segmento
@@ -240,20 +249,20 @@ void sys_string_read(mem_t *mem,cpu_t *cpu,int32_t CX,int16_t index,int16_t segm
 void sys_string_write(mem_t mem,int16_t index,int16_t segment) {
     int i = 0,aux;
     int32_t segment_end;
-
     // me dice la posicion del final del segmento asi no la supero leyendo
     segment_end = mem.segments[segment].size + mem.segments[segment].base;
     //me fijo si hay un '\0' o un me cai del segmento
     while(index + i <= segment_end && mem.data[index + i] != 0x00) {
         aux = mem.data[index + i];
-        printf("[%.4X]:   ",index + i);
+        // ? printf("[%.4X]:   ",index + i);
 
-        if (aux>32 && aux<=127)
+        if (aux >= 32 && aux < 127) //? el espacio se imprime, y el 127 no (es el DELETE)
             printf("%c",mem.data[index + i]);
+        else if (aux == 10) //? salto de linea o escribo punto
+            printf("\n");
         else
             printf(".");
-        
-            i++;
+        i++;
     }
 
     if(mem.data[index + i] != 0x00)
