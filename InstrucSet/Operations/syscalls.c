@@ -218,9 +218,9 @@ void sys_string_read(mem_t *mem,cpu_t *cpu,int32_t CX,int16_t index,int16_t segm
 
     //obtengo el final del segmento para no superarlo
     segment_end = mem->segments[segment].size + mem->segments[segment].base;
-    //? printf("[%.4X]:   ",index);
     scanf("%s", characters);
     clsBuffer();
+
     //tengo que leer hasta el final o no
     if(CX == 0xFFFF){
         //recorre hasta que la palabra termine o  hasta que me caiga del segmento
@@ -268,8 +268,7 @@ void sys_string_write(mem_t mem,int16_t index,int16_t segment) {
 }
 
 void sys_clear(){
-    system("cls");
-    
+    system("cls");   
 }
 
 void sys_breakpoint(cpu_t *cpu,mem_t *mem) {

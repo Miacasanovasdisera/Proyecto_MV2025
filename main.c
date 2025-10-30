@@ -102,9 +102,7 @@ int main(int argc, char *argv[]) {
 void execute_program(cpu_t *cpu, mem_t *mem) {
     int result, CS = cpu->CS >> 16;
     do {
-        //printf("IP: %08X | ", cpu->IP);
         operators_registers_load(cpu, *mem);
-        //printf("OPC: %02X | OP1: %08X | OP2: %08X\n",cpu->OPC, cpu->OP1, cpu->OP2);
         result = execute_instruction(cpu, mem);
     } while ((cpu->IP & 0xFFFF) < mem->segments[CS].size);
 }

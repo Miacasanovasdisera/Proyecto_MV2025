@@ -3,7 +3,7 @@
 #include "registers.h"
 #include "operands.h"
 #include "../Utils/errors.h"
-#include "../InstrucSet/Operations/shiftModule.h"
+#include "../InstrucSet/helpers.h"
 
 void cpu_init(cpu_t *cpu) {
     memset(cpu, 0, sizeof(cpu_t));
@@ -33,7 +33,6 @@ uint16_t cpu_logic_to_physic(mem_t mem, uint32_t logic_address, int bytesToRead)
 
     // Verificar que el acceso completo esté dentro del segmento
     if ((uint32_t)offset + bytesToRead > size) {
-
         error_Output(MEMORY_ERROR);
         return 0;
     }
@@ -96,14 +95,14 @@ void operators_registers_load(cpu_t *cpu, mem_t mem) {
         dataOP1 = a;
     }
 
-    // Extensión de signo para inmediatos de 16 bits (como ya tenías)
+    // Extensión de signo para inmediatos de 16 bits
     if (typeOP1 == IMMEDIATE_OPERAND && (dataOP1 & 0x8000)) {
         dataOP1 <<= 8;
-        dataOP1 = shift_SAR(cpu, dataOP1, 8);
+        dataOP1 = auxiliar_SAR(cpu, dataOP1, 8);
     }
     if (typeOP2 == IMMEDIATE_OPERAND && (dataOP2 & 0x8000)) {
         dataOP2 <<= 8;
-        dataOP2 = shift_SAR(cpu, dataOP2, 8);
+        dataOP2 = auxiliar_SAR(cpu, dataOP2, 8);
     }
 
     // Guardar operandos (preservando 24 bits de dato)
@@ -226,7 +225,6 @@ int32_t read_register(cpu_t *cpu, uint8_t reg_code) { //*modificacion
         default: return error_Output(REGISTER_ERROR);
     }
 
-    //printf("valor: %x  | sector: %d \n",value,sector);
     if (base_reg >= R_EAX && base_reg <= R_EFX) {
         switch (sector) {
             case 0: return value; // EAX

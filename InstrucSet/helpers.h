@@ -25,6 +25,7 @@ void get_destination_address(cpu_t *, int32_t , uint32_t *dest_addrss);
 void write_dest(cpu_t *, mem_t *, uint8_t , uint32_t, int32_t, int32_t);
 void update_CC(cpu_t *cpu,int32_t result);
 int get_memory_size(uint32_t OP_register);
+int auxiliar_SAR(cpu_t *cpu, int32_t value, int32_t num_bits);
 
 // Ejemplo:  mov edx,5  edx==destino 5==origen
 // SUB ECX, EDX        ; ECX = ECX - EDX    (destino=ECX, origen=EDX)
