@@ -12,7 +12,7 @@ void save_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
         return;
     }
     
-    // ===== HEADER (8 bytes) =====
+    // HEADER (8 bytes)
     // ID: "VMI25" (5 bytes)
     fwrite("VMI25", 1, 5, arch);
     
@@ -27,7 +27,7 @@ void save_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
     size_bytes[1] = mem_size_kib & 0xFF;
     fwrite(size_bytes, 1, 2, arch);
     
-    // ===== REGISTROS (32 × 4 = 128 bytes) =====
+    // REGISTROS (32 × 4 = 128 bytes)
     // Escribir todos los registros en big endian
     int32_t registers[32] = {
         cpu->LAR, cpu->MAR, cpu->MBR, cpu->IP,
@@ -49,7 +49,7 @@ void save_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
         fwrite(reg_bytes, 1, 4, arch);
     }
     
-    // ===== TABLA DE SEGMENTOS (8 × 4 = 32 bytes) =====
+    // TABLA DE SEGMENTOS (8 × 4 = 32 bytes)
     // Cada entrada: base (2 bytes) + size (2 bytes)
     for (int i = 0; i < 8; i++) {
         uint16_t base = mem->segments[i].base;
@@ -64,7 +64,7 @@ void save_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
         fwrite(seg_bytes, 1, 4, arch);
     }
     
-    // ===== MEMORIA COMPLETA (variable) =====
+    // MEMORIA COMPLETA (variable)
     fwrite(mem->data, 1, mem->size, arch);
 
     fclose(arch);
@@ -77,7 +77,7 @@ void load_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
         return;
     }
     
-    // ===== HEADER (8 bytes) =====
+    // HEADER (8 bytes)
     char id[6];
     if (fread(id, 1, 5, arch) != 5) {
         fclose(arch);
@@ -114,7 +114,7 @@ void load_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
         return;
     }
     
-    // ===== REGISTROS (32 × 4 = 128 bytes) =====
+    //  REGISTROS (32 × 4 = 128 bytes)
     int32_t registers[32];
     for (int i = 0; i < 32; i++) { //Esto se hace para leer en big endian (seguro)
         uint8_t reg_bytes[4];
@@ -156,7 +156,7 @@ void load_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
     cpu->KS  = registers[30];
     cpu->PS  = registers[31];
     
-    // ===== TABLA DE SEGMENTOS (8 × 4 = 32 bytes) =====
+    // TABLA DE SEGMENTOS (8 × 4 = 32 bytes)
     for (int i = 0; i < 8; i++) {
         uint8_t seg_bytes[4];
         if (fread(seg_bytes, 1, 4, arch) != 4) {
@@ -169,7 +169,7 @@ void load_vmi(cpu_t *cpu, mem_t *mem, char *filename) {
         mem->segments[i].size = (seg_bytes[2] << 8) | seg_bytes[3];
     }
     
-    // ===== MEMORIA COMPLETA (variable) =====
+    // MEMORIA COMPLETA (variable)
     if (fread(mem->data, 1, mem->size, arch) != mem->size) {
         fclose(arch);
         error_Output(IMAGE_ERROR);

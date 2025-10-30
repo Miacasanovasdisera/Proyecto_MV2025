@@ -25,7 +25,6 @@ void mem_init(mem_t *mem, uint32_t mem_size_kib) { //*modificacion
 
 void mem_load(mem_t *mem, char *filename, cpu_t *cpu, char **params, int argc) {
     FILE *arch = fopen(filename, "rb");
-    // el archivo no guarda el caracter nulo, por eso id[5]
     char id[6];
     uint8_t version, size_bytes[2];
     uint16_t code_size;
@@ -105,7 +104,7 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc) { 
     fread(size_bytes, 1, 2, arch);
     entry_point = (size_bytes[0] << 8) | size_bytes[1];
 
-    // PASO 1: Crear Param Segment (si hay parámetros)
+    // Crear Param Segment (si hay parámetros)
     uint32_t ps_size = create_param_segment(mem, params, argc);
     uint32_t offset = 0;
     uint8_t seg_index = 0;
@@ -120,21 +119,20 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc) { 
     else
         cpu->PS = 0xFFFFFFFF;
 
-    // PASO 2: Const Segment
+    // Const Segment
     if (ks_size > 0) {
         mem->segments[seg_index].base = offset;
         mem->segments[seg_index].size = ks_size;
         cpu->KS = (seg_index << 16);
 
         // Leer constantes después del código (al final del archivo)
-        // Por ahora solo reservamos espacio, se lee después
         offset += ks_size;
         seg_index++;
     }
     else
         cpu->KS = 0xFFFFFFFF;
 
-    // PASO 3: Code Segment
+    // Code Segment
     if (cs_size > 0) {
         mem->segments[seg_index].base = offset;
         mem->segments[seg_index].size = cs_size;
@@ -150,7 +148,7 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc) { 
         seg_index++;
     }
 
-    // PASO 4: Data Segment
+    // Data Segment
     if (ds_size > 0) {
         mem->segments[seg_index].base = offset;
         mem->segments[seg_index].size = ds_size;
@@ -161,7 +159,7 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc) { 
     else
         cpu->DS = 0xFFFFFFFF;
 
-    // PASO 5: Extra Segment
+    // Extra Segment
     if (es_size > 0) {
         mem->segments[seg_index].base = offset;
         mem->segments[seg_index].size = es_size;
@@ -172,7 +170,7 @@ void mem_load_v2(mem_t *mem, FILE *arch, cpu_t *cpu, char **params, int argc) { 
     else
         cpu->ES = 0xFFFFFFFF;
 
-    // PASO 6: Stack Segment
+    // Stack Segment
     if (ss_size > 0) {
         mem->segments[seg_index].base = offset;
         mem->segments[seg_index].size = ss_size;
@@ -264,11 +262,11 @@ uint32_t create_param_segment(mem_t *mem, char **params, int argc) { //*modifica
         return 0; // No hay parámetros
     }
 
-    // ===== PARTE 1: COPIAR LOS STRINGS =====
+    // COPIAR LOS STRINGS
     // params es un array de C: params[0], params[1], params[2], ...
     // Cada params[i] es un string (char*)
 
-    uint32_t offset = 0; // Empezamos en la dirección 0 del Param Segment
+    uint32_t offset = 0; // Dirección 0 del Param Segment
 
     // Guardar donde empieza cada string para después
     uint32_t string_offsets[argc];
@@ -289,7 +287,7 @@ uint32_t create_param_segment(mem_t *mem, char **params, int argc) { //*modifica
     // string_offsets[1] = 9
     // string_offsets[2] = 12
 
-    // ===== PARTE 2: CREAR EL ARRAY DE PUNTEROS (argv) =====
+    // CREAR EL ARRAY DE PUNTEROS (argv)
     uint32_t argv_start = offset; // argv empieza donde terminan los strings
 
     for (int i = 0; i < argc; i++) {
@@ -302,7 +300,7 @@ uint32_t create_param_segment(mem_t *mem, char **params, int argc) { //*modifica
         // Ejemplo para params[0]:
         // pointer = 0x00000000 (segmento 0, offset 0)
 
-        // Escribir en memoria en BIG ENDIAN (4 bytes)
+        // Escribir en memoria(4 bytes)
         uint32_t pos = argv_start + (i * 4); // Cada puntero ocupa 4 bytes
 
         mem->data[pos + 0] = (pointer >> 24) & 0xFF; // Byte más significativo

@@ -34,7 +34,7 @@ int error_Output(int error_code) {
             printf("Error %d: Desbordamiento de pila.\n", error_code);
             break;
         case STACK_UNDERFLOW:
-            printf("Error %d: Subdesbordamiento de pila.\n", error_code);
+            printf("Error %d: Sub-desbordamiento de pila.\n", error_code);
             break;
         case INSUFFICIENT_MEMORY:
             printf("Error %d: Memoria insuficiente.\n", error_code);

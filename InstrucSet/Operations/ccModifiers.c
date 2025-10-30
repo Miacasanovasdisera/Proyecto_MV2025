@@ -1,7 +1,6 @@
 #include "ccModifiers.h"
 #include "../helpers.h"
 #include "alu.h"
-#include "shiftModule.h"
 #include "../../Utils/errors.h"
 #include "operands.h"
 

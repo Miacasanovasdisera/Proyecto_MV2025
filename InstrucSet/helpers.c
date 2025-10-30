@@ -21,6 +21,31 @@ void get_destination_address(cpu_t *cpu, int32_t OP, uint32_t *dest_addrss) {
     }
 }
 
+int auxiliar_SAR(cpu_t *cpu, int32_t value, int32_t num_bits) {
+    // shift aritmetico a la derecha
+    int32_t result = value;
+    
+    if(result & 0x00800000)
+        result = result | 0xFF000000;
+    
+    if (num_bits >= 32)
+        result = (value < 0) ? -1 : 0; 
+    
+    else
+        for (int i = 0; i < num_bits; i++)
+            if(result & 0x80000000){
+                result = (result >> 1);
+                result = result | 0x80000000;
+            }
+            else
+                result = (result >> 1);
+    
+    if(result & 0x80000000)
+        result = result & 0x00FFFFFF;
+   
+    return result;
+}
+
 void get_value(cpu_t *cpu, mem_t *mem, int32_t OP, int32_t *content) {
     int32_t dataOP;
     uint32_t logic_addr;
@@ -51,7 +76,7 @@ void get_value(cpu_t *cpu, mem_t *mem, int32_t OP, int32_t *content) {
         case MEMORY_OPERAND: { //*modificacion
             logic_addr = calculate_logical_address(cpu, typeOP, dataOP);
             
-            // ===== NUEVO: Obtener tamaño del modificador =====
+            // Obtener tamaño del modificador
             int size = get_memory_size(OP);
            
             // Leer con el tamaño especificado

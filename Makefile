@@ -9,7 +9,7 @@ TARGET = vmx
 CC = gcc
 
 # Flags base de compilación
-CFLAGS = -Wall -Wextra -Wpedantic -std=c11 -MMD -MP
+CFLAGS = -Wall -Wextra -Wpedantic -std=c11
 
 # Flags de optimización (cambiar según necesidad)
 ifdef DEBUG
@@ -50,9 +50,6 @@ SRCS = $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
 
 # Generar lista de archivos objeto (.o)
 OBJS = $(SRCS:.c=.o)
-
-# Generar lista de archivos de dependencias (.d)
-DEPS = $(SRCS:.c=.d)
 
 # ----------------------------------------------------------------------------
 # DETECCIÓN DE SISTEMA OPERATIVO
@@ -124,22 +121,18 @@ $(TARGET_FULL): $(OBJS)
 	@echo "$(COLOR_YELLOW)→ Compilando $<...$(COLOR_RESET)"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-# Incluir archivos de dependencias (si existen)
--include $(DEPS)
-
 # ----------------------------------------------------------------------------
 # LIMPIEZA
 # ----------------------------------------------------------------------------
 
-# Limpieza básica (solo .o y .d)
+# Limpieza básica (solo .o)
 clean:
 	@echo "$(COLOR_YELLOW)→ Limpiando archivos temporales...$(COLOR_RESET)"
 ifeq ($(DETECTED_OS),Windows)
 	@for %%d in ($(SRC_DIRS)) do @if exist %%d\*.o del /F /Q %%d\*.o 2>nul
-	@for %%d in ($(SRC_DIRS)) do @if exist %%d\*.d del /F /Q %%d\*.d 2>nul
 	@if exist $(TARGET_FULL) del /F /Q $(TARGET_FULL) 2>nul
 else
-	@$(RM) $(OBJS) $(DEPS) $(TARGET_FULL)
+	@$(RM) $(OBJS) $(TARGET_FULL)
 endif
 	@echo "$(COLOR_GREEN)✓ Limpieza completada$(COLOR_RESET)"
 

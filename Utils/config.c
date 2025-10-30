@@ -19,7 +19,7 @@ void config_parse(vm_config_t *config, int argc, char *argv[]) {
     while (i < argc) {
         char *arg = argv[i];
         
-        // Si ya estamos leyendo parámetros (-p), todo lo demás son parámetros
+        // Si -p, todo lo demás son parámetros
         if (reading_params) {
             if (config->param_count >= MAX_PARAMS) {
                     error_Output(ARGUMENT_ERROR);

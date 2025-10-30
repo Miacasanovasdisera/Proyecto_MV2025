@@ -56,7 +56,7 @@ Parámetros de línea de comandos:
 
 - `-d`: imprime el desensamblado antes de ejecutar.
 - `-p`: a partir de aquí, cada token se trata como parámetro del programa (se cargarán en el Param Segment).
-- `m=NNNN`: tamaño de memoria en KiB (1..65535).
+- `m=NNNN`: tamaño de memoria en KiB (por defecto 16 Kib).
 - Si se pasa un `.vmi` junto a un `.vmx`, `SYS 15` (breakpoint) guardará el estado en ese archivo. Si se pasa únicamente un `.vmi`, se reanuda desde esa imagen.
 
 ---
@@ -164,22 +164,26 @@ Notas:
 
 ## Desensamblador y Snapshots
 
-- `-d`: imprime el desensamblado del `.vmx` (códigos, operandos y comentarios).
-- Snapshots `.vmi`:
-  - `save_vmi`: guarda registros, tabla de segmentos y memoria completa.
-  - `load_vmi`: restaura el estado para reanudar ejecución.
-  - Se activa con `.vmx + .vmi` en la línea de comandos; `SYS 15` realiza el guardado.
+- `-d`: imprime el desensamblado del `.vmx` (códigos y operandos).
+- Snapshots `.vmi`: restaura o guarda registros, tabla de segmentos y memoria completa.
 
 ---
 
 ## Errores reportados por la VM
 
+- Operando invalido
+- Sub-desbordamiento de pila
+- Desbordamiento de pila
+- Memoria insuficiente
+- Semento no encontrado
 - Instrucción inválida
 - División por cero
+- Tamaño de lectura/escritura inválido
 - Error de segmento (acceso fuera de límites)
 - Error de carga del programa
 - Error de registro (código de registro inválido)
-- Tamaño de lectura/escritura inválido
+- Error de argumentos (entrada de datos desde terminal)
+- Error de imagen
 
 ---
 
